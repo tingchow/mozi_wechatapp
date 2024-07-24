@@ -1,3 +1,5 @@
 export default definePageConfig({
-  navigationBarTitleText: '首页'
+  navigationBarTitleText: '我的',
+  navigationStyle: 'custom',
+  enableShareTimeline: true,
 })

@@ -1,5 +1,11 @@
 export default {
-  mini: {},
+  mini: {
+    prerender: {
+      match: 'pages/index/**', // 所有以 `pages/shop/` 开头的页面都参与 prerender
+      include: ['pages/find/index'], // `pages/any/way/index` 也会参与 prerender
+      // exclude: ['pages/shop/index/index'] // `pages/shop/index/index` 不用参与 prerender
+    }
+  },
   h5: {
     /**
      * WebpackChain 插件配置

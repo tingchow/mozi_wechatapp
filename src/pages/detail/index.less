@@ -1,0 +1,246 @@
+.indexBox {
+  background-color: #efefef;
+  padding: 20px 0 50px;
+  box-sizing: border-box;
+  min-height: 100vh;
+
+  .box {
+    width: 100%;
+    background: #fff;
+    margin-bottom: 20px;
+  }
+
+  .header {
+    
+
+    .headerBox {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+
+      .left {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex-direction: column;
+
+        .coinInfo {
+          display: flex;
+          align-items: center;
+
+          .coinIcon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+          }
+
+          .coin-symbol {
+            margin-right: 20px;
+            font-size: 24px;
+          }
+
+          .coin-price {
+            // margin-left: 20px;
+            font-weight: bold;
+            font-size: 30px;
+          }
+        }
+  
+        .caretBox {
+          display: flex;
+          align-items: center;
+          margin-top: 10px;
+          font-size: 24px;
+
+          .precentBox {
+            display: flex;
+
+            .priceItem {
+              margin-right: 20px;
+            }
+          }
+          
+          .upPercent {
+            color: #02c076;
+          }
+  
+          .downPercent {
+            color: #ff3333;
+          }
+        }
+      }
+  
+      .right {
+        flex: 1;
+        text-align: right;
+
+        .marketRank {
+          color: #02c076;
+          border: 1px solid #02c076;
+          border-radius: 10rpx;
+          display: inline-block;
+          padding: 4rpx 10rpx;
+          font-weight: bold;
+          
+        }
+
+        .marketItem {
+          margin-top: 10px;
+          font-size: 24px;
+        }
+  
+        .rightBox {
+          margin-bottom: 10px;
+          span {
+            display: inline;
+            margin-right: 10px;
+          }
+  
+          .rightTitle {
+            font-size: 24px;
+            color: #898989;
+          }
+        }
+      }
+    }
+
+    .coin-info-caret {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .headerInfo{
+      display: flex;
+      justify-content: space-evenly;
+      font-size: 22px;
+
+      .left {
+        flex: 1;
+        border-right: 1px solid #efefef;
+        padding: 0 20px;
+      }
+      .right {
+        flex: 1;
+        padding: 0 20px;
+      }
+      .center {
+        width: 1px;
+        height: auto;
+        background-color: #efefef;
+      }
+
+      .headerInfoItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .name {
+          color: #898989;
+        }
+      }
+    }
+    
+  }
+
+  .f2Box {
+    padding-top: 20px;
+
+    .chartTab {
+      width: 80%;
+      height: 50px;
+      padding: 0 20px;
+      margin-bottom: 20px;
+      font-size: 24px;
+
+      .adm-tab-bar-wrap {
+        gap: 20px;
+        height: 100%;
+        min-height: 0;
+    
+        .adm-tab-bar-item {
+          // height: 20px;
+          border-radius: 10px;
+          border: 1px solid transparent;
+          // background-color: #f5f5f5;
+          color: #333;
+          padding: 20px 0;
+        }
+      
+        .adm-tab-bar-item-active {
+          background-color: rgba(69,232,127,0.2);
+          color: rgba(69,232,127,1);
+        }
+      }
+    }
+
+    
+
+    .chartBox {
+      width: 100%;
+      height: 600px;
+      padding: 0 20px;
+    }
+  }
+  
+  .tabContainer {
+    background-color: #fff;
+
+    .adm-tab-bar-item {
+      border-bottom: 1px solid transparent;
+    }
+
+    .adm-tab-bar-item-active {
+      border-bottom: 1px solid #45e87f;
+    }
+  }
+  
+  .footer-list {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: #f5f5f5;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 24px;
+
+    .footer-item {
+      // background-: #efefef;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      background-color: transparent;
+      padding: 0;
+      margin: 0;
+      border-radius: 0;
+      line-height: normal;
+      font-size: 24rpx;
+
+      // .footer-share-btn {
+      //   background-color: transparent;
+      //   padding: 0;
+      //   margin: 0;
+      //   border-radius: 0;
+      //   line-height: normal;
+      //   font-size: 24rpx;
+      // }
+      .footer-share-btn::after {
+        border: none;
+      }
+    }
+
+    .footer-item::after {
+      border: none;
+    }
+
+    
+  }
+  
+}
+

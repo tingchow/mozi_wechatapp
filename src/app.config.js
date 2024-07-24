@@ -1,15 +1,36 @@
+import { useGlobalIconFont } from './components/iconfont/helper';
+
+
 export default defineAppConfig({
   pages: [
+    // 首页
     'pages/index/index',
-    'pages/rank/index',
-    'pages/community/index',
+    // 通用列表页
+    'pages/list/index',
+    // 我的
     'pages/me/index',
+    // 发现页
+    'pages/find/index',
+    
+    // 币种详情页
+    'pages/detail/index',
+    // 搜索页
+    'pages/search/index',
+    // 多空比
+    'pages/putcallratio/index',
+    // 用户信息
+    'pages/user/index',
+    
+    // 社区
+    'pages/community/index',
+    
   ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: 'WeChat',
-    navigationBarTextStyle: 'black'
+    navigationBarTextStyle: 'black',
+    // enablePullDownRefresh: true
   },
   tabBar: {
     color: '#cecece',
@@ -18,16 +39,28 @@ export default defineAppConfig({
     borderStyle: 'black',
     list: [{
       pagePath: 'pages/index/index',
+      iconPath: 'assets/icon/shouye-default.png',
+      selectedIconPath: 'assets/icon/shouye-select.png',
       text: '首页',
     }, {
-      pagePath: 'pages/rank/index',
-      text: '排行榜',
-    }, {
-      pagePath: 'pages/community/index',
-      text: '社区',
-    }, {
+      pagePath: 'pages/find/index',
+      iconPath: 'assets/icon/chengguo-default.png',
+      selectedIconPath: 'assets/icon/chengguo-select.png',
+      text: '发现',
+    },
+    // {
+    //   pagePath: 'pages/community/index',
+    //   iconPath: 'assets/icon/xiaoxi-default.png',
+    //   selectedIconPath: 'assets/icon/xiaoxi-select.png',
+    //   text: '社区',
+    // },
+    {
       pagePath: 'pages/me/index',
+      iconPath: 'assets/icon/huiyuan-default.png',
+      selectedIconPath: 'assets/icon/huiyuan-select.png',
       text: '我的',
     }]
-  }
+  },
+  usingComponents: Object.assign(useGlobalIconFont(), ''),
+  lazyCodeLoading: 'requiredComponents',
 })

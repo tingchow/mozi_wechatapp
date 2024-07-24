@@ -1,0 +1,47 @@
+.PCRBox {
+  .PCRDesc {
+    display: flex;
+
+    .PCRDescName {
+      flex: 1;
+    }
+
+    .PCRDescContent {
+      flex: 2;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .PCRList {
+    .pcrItem {
+      display: flex;
+
+      .pcrItemName {
+        flex: 1;
+      }
+
+      .pcrItemRatio {
+        flex: 2;
+        display: flex;
+        background:  linear-gradient(to right, #ff000000, #d32f2f80 90%, #d32f2f80);
+        position: relative;
+
+        .pcrItemLeft {
+          background: linear-gradient(to left, #5dc78721, #5dc7878c 50%, #5dc787);
+          text-align: right;
+          padding-right: 10px;
+          transition: all .3s linear;
+        }
+
+        .pcrItemDesc {
+          position: absolute;
+          width: 100%;
+          display: flex;
+          justify-content: space-around;
+        }
+      }
+    }
+  }
+}
+

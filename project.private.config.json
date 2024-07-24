@@ -3,5 +3,47 @@
   "projectname": "mozi_wechatapp",
   "setting": {
     "compileHotReLoad": true
+  },
+  "libVersion": "2.33.0",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/search/index",
+          "pathName": "pages/search/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "find/index",
+          "pathName": "pages/find/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/putcallratio/index",
+          "pathName": "pages/putcallratio/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": 1011
+        },
+        {
+          "name": "me/index",
+          "pathName": "pages/me/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "detail/index",
+          "pathName": "pages/detail/index",
+          "query": "symbol=BTC",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
   }
 }

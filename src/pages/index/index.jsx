@@ -1,8 +1,17 @@
-import { View, Text, Input, Button, Image as TaroImage } from '@tarojs/components'
-import { useLoad } from '@tarojs/taro'
-import { Card, Image, List, Grid } from 'antd-mobile';
-import { RightOutline } from 'antd-mobile-icons';
-import logo from '../../assets/mozilogo.png';
+import { View, Image, ScrollView } from '@tarojs/components'
+import Taro, { useLoad } from '@tarojs/taro';
+import IconFont from '../../components/iconfont';
+import { useState } from 'react';
+import { request } from '../../utils/request';
+import { Interface } from '../../utils/constants';
+import { MoziCard } from '../../components/MoziCard';
+import { MoziGrid } from '../../components/MoziGrid';
+import { SearchInput } from '../../components/SearchInput';
+import { Layout } from '../../components/Layout';
+import { AddCollect } from '../../components/AddCollect';
+import { HighlightArea } from '../../components/HighlightArea';
+import { MoziTreeMap } from '../../components/MoziChart/TreeMap';
+import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
 // 区块内容
@@ -10,139 +19,217 @@ const area = {
   derivativeArea: {
     title: '衍生品专区',
     list: [{
-      icon: '多空比图片',
+      icon: 'jijin',
       text: '多空比',
-      path: '跳转地址'
+      // path: '跳转地址',
+      callback: () => {jump2NoTab('putcallratio')}
     }, {
-      icon: '持仓量图片',
+      icon: 'jifen',
       text: '持仓量',
       path: '跳转地址'
     }, {
-      icon: '资金费率图片',
+      icon: 'bodongfenxi',
       text: '资金费率',
       path: '跳转地址'
     }, {
-      icon: '成交额图片',
+      icon: 'jiaoyichaxun',
       text: '成交额',
       path: '跳转地址'
     }]
   },
-  investArea: {
-    title: '投资机会',
-    list: [{
-      icon: '热门交易所图片',
-      text: '热门交易所',
-      path: '跳转地址'
-    }, {
-      icon: '热门币种图片',
-      text: '热门币种',
-      path: '跳转地址'
-    }, {
-      icon: '热门版块图片',
-      text: '热门版块',
-      path: '跳转地址'
-    }, {
-      icon: '热门合约图片',
-      text: '热门合约',
-      path: '跳转地址'
-    }]
-  }
 };
 
-const mockZixuan = [{
-  title: 'BTC',
-  price: '10',
-  rise: '20',
-  isOwn: true,
-}, {
-  title: 'OKX',
-  price: '40',
-  rise: '-10',
-  isOwn: false,
-}];
+export default function Putcallratio() {
 
-export default function Index() {
+  const [ hot_coin, setHotCoin ] = useState(null);
+  const [ hot_industry, setHotIndustry ] = useState(null);
+  const [ hot_contract, setHotContract ] = useState(null);
+  const [ coinLoading, setCoinLoading ] = useState(true);
+  const [ industryLoading, setIndustryLoading ] = useState(true);
+  const [ contractLoading, setContractLoading ] = useState(true);
+  const [ my_own, setOwn ] = useState(null);
+  const [ myOwnLoading, setMyOwnLoading ] = useState(true);
 
-  useLoad(() => {
-    console.log('Page loaded.')
-  })
+  useLoad(async () => {
+    // 热门币种
+    const coin = await cardRequest(Interface.hot_coin, {
+      pageSize: 10
+    });
+    setHotCoin(coin.data);
+    setCoinLoading(false);
+    // 热门版块
+    const indusry = await cardRequest(Interface.hot_industry, {
+      pageSize: 10
+    });
+    setHotIndustry(indusry.data);
+    setIndustryLoading(false);
+    // 热门合约
+    const contract = await cardRequest(Interface.hot_contract, {
+      pageSize: 10
+    });
+    setHotContract(contract.data);
+    setContractLoading(false);
+    
+    // 自选
+    const self_select = await cardRequest(Interface.find_coin, {
+      pageSize: 10,
+      pageNo: 1
+    });
+    const temp_self_select = self_select.data.list.map((item) => {
+      return {
+        symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+        currentPrice: item.currentPrice,
+        priceChangePercentage24h: <HighlightArea value={item.priceChangePercentage24h}></HighlightArea>,
+        totalVolume: item.totalVolume,
+        own: <AddCollect symbol={item.symbol} isOwn={false} />,
+        key: item.symbol
+      };
+    });
+    setOwn(temp_self_select);
+    setMyOwnLoading(false);
+  });
+
+  const cardRequest = async (url, data) => {
+    const res = await request({
+      url,
+      data,
+    });
+    // setHotIndustry(res.data);
+    return res;
+  };
+
+  const jump2Search = () => {
+    jump2NoTab('search')
+  };
 
   return (
-    <div className='indexBox'>
-      <div className='header'>
-        <TaroImage src={logo} />
-        {/* <div className='logo'></div> */}
-        <div className='searchBox'>
-          <div className='searchIcon'>icon</div>
-          <Input className='searchInput' type='text' placeholder='请输入内容' confirm-type='search' />
-          <div className='searchCancel'>取消</div>
-        </div>
-      </div>
-      <Card
+    <View className='indexBox'>
+      {/* 头部-搜索框 */}
+      <View className='header' onClick={jump2Search}>
+        <View className='searchBox'>
+          <View className='searchIcon'>
+            <IconFont name='search' size={30} />
+          </View>
+          <View className='searchInput'>请搜索币种</View>
+          <View className='searchCancel'>
+            <IconFont name='close-circle-fill' color='#b2b2b2' size={30} />
+          </View>
+        </View>
+      </View>
+      {/* 衍生品专区 */}
+      {/* <MoziCard
         title={area.derivativeArea.title}
-        extra='>'
-        style={{ borderRadius: '8px', backgroundColor: '#fff' }}
-        bodyClassName='derivativeBody'
       >
         <Grid columns={4}>
         {
           area.derivativeArea.list.map((item, index) => {
             return (
-              <Grid.Item className='derivativeItem'>
-                <Image className='derivativeIcon' src={item.icon} />
+              <Grid.Item className='derivativeItem' onClick={item.callback}>
+                <div className='derivativeIcon'>
+                  <IconFont name={item.icon} size={50} />
+                </div>
                 <span>{item.text}</span>
               </Grid.Item>
             )
           })
         }
         </Grid>
-      </Card>
-      <Card
-        title={area.investArea.title}
-        extra='>'
-        style={{ borderRadius: '8px', backgroundColor: '#fff' }}
-        bodyClassName='derivativeBody'
+      </MoziCard> */}
+
+      {/* 投资机会 */}
+      <MoziCard
+        title='投资机会'
+        type='more'
+        moreDesc='查看更多'
+        callback={() => jump2Market('rank')}
       >
-        <Grid columns={4}>
-        {
-          area.investArea.list.map((item, index) => {
-            return (
-              <Grid.Item className='derivativeItem'>
-                <Image className='derivativeIcon' src={item.icon} />
-                <span>{item.text}</span>
-              </Grid.Item>
-            )
-          })
-        }
-        </Grid>
-      </Card>
-      <Card
-        title='自选'
-        extra='>'
-        style={{ borderRadius: '8px', backgroundColor: '#fff' }}
-        // bodyClassName='derivativeBody'
+        <ScrollView scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}}>
+          
+          <div className='treemapBox' onClick={() => {jump2List({
+            interFace: [Interface.hot_coin],
+            gridTitle: ['币种', '热门指数', '24H价格变化'],
+            gridCon: [{
+              type: 'Text',
+              data: 'coin'
+            }, {
+              type: 'Text',
+              data: 'hot'
+            }, {
+              type: 'HighlightArea',
+              data: 'priceChangePercent'
+            }]
+          })}}>
+            <div className='treemapTitle'>热门币种</div>
+            <Layout isLoading={coinLoading}>
+              <MoziTreeMap
+                list={hot_coin}
+                name='coin'
+                desc='priceChangePercent'
+              />
+            </Layout>
+          </div>
+          <div className='treemapBox' onClick={() => {jump2List({
+            interFace: [Interface.hot_contract],
+            gridTitle: ['合约', '热门指数', '24H价格变化'],
+            gridCon: [{
+              type: 'Text',
+              data: 'coin'
+            }, {
+              type: 'Text',
+              data: 'hot'
+            }, {
+              type: 'HighlightArea',
+              data: 'priceChangePercent'
+            }]
+          })}}>
+            <div className='treemapTitle'>热门合约</div>
+            <Layout isLoading={contractLoading}>
+              <MoziTreeMap
+                list={hot_contract}
+                name='coin'
+                desc='priceChangePercent'
+              />
+            </Layout>
+          </div>
+          <div className='treemapBox last' onClick={() => {jump2List({
+            interFace: [Interface.hot_industry],
+            gridTitle: ['版块', '24H变化'],
+            gridCon: [{
+              type: 'Text',
+              data: 'section'
+            }, {
+              type: 'HighlightArea',
+              data: 'changes'
+            }]
+          })}}>
+            <div className='treemapTitle'>热门版块</div>
+            <Layout isLoading={industryLoading}>
+              <MoziTreeMap
+                // list={mock_hotbankuai.data}
+                list={hot_industry}
+                name='section'
+                desc='changes'
+              />
+            </Layout>
+          </div>
+        </ScrollView>
+      </MoziCard>
+
+      {/* 自选 */}
+      <MoziCard
+        title='可能感兴趣'
+        type='more'
+        callback={() => jump2Market('market')}
       >
-        <Grid className='ownSelect' columns={4}>
-           <Grid.Item className='ownTitle'>热门交易所</Grid.Item>
-           <Grid.Item className='ownTitle'>最新价</Grid.Item>
-           <Grid.Item className='ownTitle'>24小时涨幅</Grid.Item>
-           <Grid.Item className='ownTitle'>加自选</Grid.Item>
-        </Grid>
-        <List>
-          {mockZixuan.map((item, index) => {
-            return (
-              <List.Item>
-                <Grid columns={4}>
-                  <Grid.Item>{item.title}</Grid.Item>
-                  <Grid.Item>{item.price}</Grid.Item>
-                  <Grid.Item>{item.rise}</Grid.Item>
-                  <Grid.Item>{item.isOwn}</Grid.Item>
-                </Grid>
-              </List.Item>
-            )
-          })}
-        </List>
-      </Card>
-    </div>
+        <Layout isLoading={myOwnLoading}>
+          <MoziGrid
+            length={5}
+            colName={['币种', '最新价', '24小时涨幅', '总交易额', '加自选']}
+            gridContent={my_own}
+            callback={(gridCon) => {jump2Detail(gridCon.key)}}
+          />
+        </Layout>
+      </MoziCard>
+    </View>
   )
 }
