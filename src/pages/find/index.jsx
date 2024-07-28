@@ -1,6 +1,7 @@
 import { View, Image, Button } from '@tarojs/components';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Taro, { useDidShow, useLoad } from '@tarojs/taro';
+import { Grid } from 'antd-mobile';
 import { Layout } from '../../components/Layout';
 import { Login } from '../../components/Login';
 import { TabBar } from 'antd-mobile';
@@ -78,8 +79,13 @@ export default function Find() {
       return;
     }
 
-    if (isEmpty(coinSelectRes?.data)) {
+    if (!coinSelectRes?.data) {
       setOwnError(true);
+      return;
+    }
+    if (coinSelectRes?.data.length === 0) {
+      setOwnLoading(false);
+      setOwn([]);
       return;
     }
 
@@ -288,6 +294,13 @@ export default function Find() {
 
   // 涨跌幅排行
   const dimArr = ['1_day', '3_day', '5_day', '7_day', '15_day', '1_month', '3_month', '6_month', '1_year'];
+  const dimRequestData = () => {
+    return dimArr.map((item) => {
+      return {
+        dim: item
+      }
+    });
+  };
   const pickArr = ['1天', '3天', '5天', '7天', '15天', '1个月', '3个月', '6个月', '1年']
   // 涨幅详情
   const [priceData, setPriceData] = useState({
@@ -409,6 +422,13 @@ export default function Find() {
 
   // 交易额榜
   const intervalsArr = ['today', '3_day', '7_day', '15_day', '1_month'];
+  const tradeRequestData = () => {
+    return intervalsArr.map((item) => {
+      return {
+        intervals: item
+      }
+    });
+  }
   const tradePickArr = ['今日', '3天', '7天', '15天', '1个月'];
   const [tradeData, setTradeData] = useState({
     tradeSelect: [],
@@ -484,13 +504,23 @@ export default function Find() {
                 my_own.length === 0 ? (
                   <Button className='addOwnBtn' onClick={addOwn}>添加自选</Button>
                 ): (
-                  <ComplexList
-                    gridTitle={['币种', '最新价', '24小时涨幅', '是否自选']}
-                    defaultpageSize={20}
-                    enableLoadMore={false}
-                    data={my_own}
-                    isFinish={true}
-                  />
+                  <>
+                    <Grid className='gridTitle' columns={4}>
+                      {
+                        ['币种', '最新价', '24小时涨幅', '是否自选'].map((colNameItem, colNameIndex) => {
+                          return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+                        })
+                      }
+                    </Grid>
+                    <ComplexList
+                      gridTitle={['币种', '最新价', '24小时涨幅', '是否自选']}
+                      defaultpageSize={20}
+                      enableLoadMore={false}
+                      data={my_own}
+                      isFinish={true}
+                      hideTitle={true}
+                    />
+                  </>
                 )
               }
               
@@ -502,13 +532,21 @@ export default function Find() {
         pageActiveKey === 'market' && (
         <View className='marketBox'>
           <Layout isLoading={marketLoading} isError={isMarketError}>
+            <Grid className='gridTitle' columns={3}>
+              {
+                ['币种/市值', '最新价格/24H价格变化', '24H价格变化'].map((colNameItem, colNameIndex) => {
+                  return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+                })
+              }
+            </Grid>
             <ComplexList
-              gridTitle={['币种/总交易额', '最新价格/24H价格变化', '24H价格变化']}
+              gridTitle={['币种/市值', '最新价格/24H价格变化', '24H价格变化']}
               defaultpageSize={20}
               enableLoadMore={true}
               data={marketData}
               loadMore={loadMore}
               isFinish={isFinish}
+              hideTitle={true}
             />
 
           </Layout>
@@ -523,12 +561,12 @@ export default function Find() {
           {/* 交易所排行榜 */}
           <Layout isLoading={isExchangeLoading} isError={isExchangeError}>
             <MoziCard
-              title={<View className='rankTitle'><View>交易所排行榜</View><View className='rankTitleTime'>实时更新</View></View>}
+              title={<View className='rank-title'><View>交易所排行榜</View><View className='rank-title-time'>实时更新</View></View>}
               type='select'
               selectArr={exchangeData.exchangeSelect}
               callback={() => {
                 jump2List({
-                  interFace: [Interface.hot_exchange],
+                  interFace: Interface.hot_exchange,
                   requestData: [{
                     type: 'SPOT'
                   }, {
@@ -551,89 +589,250 @@ export default function Find() {
                     type: 'img',
                     data: 'url'
                   }],
-                  rankName: '交易所排行榜',
+                  rankTitle: '交易所排行榜',
+                  rankName: 'Top100',
                   rankDesc: '实时更新',
                   selectArr: exchangeData.exchangeSelect
                 });
               }}
               pickChange={exchangePickChange}
             >
-              <MoziGrid
-                length={4}
-                colName={['交易所', '24H交易量', '市场', '货币']}
-                gridContent={exchangeData.exchangeArr}
-                // callback={jump2List}
-              >
-              </MoziGrid>
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.hot_exchange,
+                  requestData: [{
+                    type: 'SPOT'
+                  }, {
+                    type: 'Futures'
+                  }],
+                  gridTitle: ['交易所', '24H交易量', '市场', '货币'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'exchange']
+                  }, {
+                    type: 'Text',
+                    data: 'usd'
+                  }, {
+                    type: 'Text',
+                    data: 'markets'
+                  }, {
+                    type: 'Text',
+                    data: 'coins'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '交易所排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: exchangeData.exchangeSelect
+                });
+              }}>
+                <MoziGrid
+                  length={4}
+                  colName={['交易所', '24H交易量', '市场', '货币']}
+                  // hideTitle={false}
+                  gridContent={exchangeData.exchangeArr}
+                >
+                </MoziGrid>
+              </View>
+              
             </MoziCard>
           </Layout>
 
           {/* 涨幅榜 */}
           <Layout isLoading={isPriceLoading} isError={isPriceError}>
             <MoziCard
-              title={<View className='rankTitle'><View>涨幅榜</View><View className='rankTitleTime'>实时更新</View></View>}
+              title={<View className='rank-title'><View>涨幅榜</View><View className='rank-title-time'>实时更新</View></View>}
               type='select'
               selectArr={priceData.priceSelect}
-              callback={jump2List}
+              callback={() => {
+                jump2List({
+                  interFace: Interface.price_change,
+                  requestData: dimRequestData(),
+                  gridTitle: ['币种', '涨幅'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'priceRange'
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '涨幅排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: priceData.priceSelect
+                });
+              }}
               pickChange={pricePickChange}
             >
-              <RankGrid
-                length={2}
-                colName={['币种', '涨跌幅']}
-                gridContent={priceData.priceArr}
-                callback={jump2List}
-              />
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.price_change,
+                  requestData: dimRequestData(),
+                  gridTitle: ['币种', '涨幅'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'priceRange'
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '涨幅排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: priceData.priceSelect
+                });
+              }}>
+                <RankGrid
+                  length={2}
+                  colName={['币种', '涨幅']}
+                  gridContent={priceData.priceArr}
+                />
+              </View>
+              
             </MoziCard>
           </Layout>
 
           {/* 波幅榜 */}
           <Layout isLoading={isWaveLoading} isError={isWaveError}>
             <MoziCard
-              title={<View className='rankTitle'><View>波幅榜</View><View className='rankTitleTime'>实时更新</View></View>}
+              title={<View className='rank-title'><View>波幅榜</View><View className='rank-title-time'>实时更新</View></View>}
               type='select'
               selectArr={waveData.waveSelect}
-              callback={jump2List}
+              callback={() => {
+                jump2List({
+                  interFace: Interface.price_wave,
+                  requestData: dimRequestData(),
+                  gridTitle: ['币种', '波幅'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'priceRange'
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '波幅排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: waveData.waveSelect
+                });
+              }}
               pickChange={wavePickChange}
             >
-              <RankGrid
-                length={2}
-                colName={['币种', '波幅']}
-                gridContent={waveData.waveArr}
-                callback={jump2List}
-              />
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.price_wave,
+                  requestData: dimRequestData(),
+                  gridTitle: ['币种', '波幅'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'priceRange'
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '波幅排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: waveData.waveSelect
+                });
+              }}>
+                <RankGrid
+                  length={2}
+                  colName={['币种', '波幅']}
+                  gridContent={waveData.waveArr}
+                />
+              </View>
             </MoziCard>
           </Layout>
-
-          {/* 热门交易榜 */}
-          {/* <MoziCard
-            title={<View className='rankTitle'><View>热门交易榜</View><View className='rankTitleTime'>每天更新</View></View>}
-            type='select'
-            selectArr={['近1天', '近3天', '近7天']}
-            callback={jump2List}
-          >
-            <RankGrid
-              length={2}
-              colName={['币种', '热门指数']}
-              gridContent={mockRank}
-              callback={jump2List}
-            />
-          </MoziCard> */}
 
           {/* 成交额榜 */}
           <Layout isLoading={isTradeLoading} isError={isTradeError}>
             <MoziCard
-              title={<View className='rankTitle'><View>成交额榜</View><View className='rankTitleTime'>每天更新</View></View>}
+              title={<View className='rank-title'><View>成交额榜</View><View className='rank-title-time'>每天更新</View></View>}
               type='select'
               selectArr={tradeData.tradeSelect}
-              callback={jump2List}
+              callback={() => {
+                jump2List({
+                  interFace: Interface.coin_trade,
+                  requestData: tradeRequestData(),
+                  gridTitle: ['币种', '成交额'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'usd'
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '成交额排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '每天更新',
+                  selectArr: tradeData.tradeSelect
+                });
+              }}
               pickChange={tradePickChange}
             >
-              <RankGrid
-                length={2}
-                colName={['币种', '成交额']}
-                gridContent={tradeData.tradeArr}
-                callback={jump2List}
-              />
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.coin_trade,
+                  requestData: tradeRequestData(),
+                  gridTitle: ['币种', '成交额'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'usd'
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '成交额排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '每天更新',
+                  selectArr: tradeData.tradeSelect
+                });
+              }}>
+                <RankGrid
+                  length={2}
+                  colName={['币种', '成交额']}
+                  gridContent={tradeData.tradeArr}
+                />
+              </View>
             </MoziCard>
           </Layout>
         </View>

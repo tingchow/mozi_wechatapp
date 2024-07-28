@@ -24,7 +24,7 @@ export const RankGrid = (props) => {
           {
             props.gridContent.map((gridCon) => {
               return (
-                <List.Item className='gridListItem' onClick={() => { props.callback(gridCon) }} clickable={false}>
+                <List.Item className='gridListItem' onClick={() => { props.callback && props.callback(gridCon) }} clickable={false}>
                   <Grid className='gridContent' columns={props.length}>
                     {
                       Object.keys(gridCon).map((gridConItem, girdConIndex) => {

@@ -66,7 +66,7 @@ export const MoziTreeMap = (props) => {
       {
         newList.map((item) => {
           return (
-            <Grid.Item className={`treemapItem ${item[desc] > 0? 'green': 'red'}`} span={item.span}>
+            <Grid.Item className={`treemapItem ${item[desc].includes('-')? 'red': 'green'}`} span={item.span}>
               <div>{item[name]}</div>
               <div>{item[desc]}</div>
             </Grid.Item>

@@ -11,7 +11,7 @@ import { GardenLoading } from '../../Loading';
 import { TopBtn } from '../../TopBtn';
 // import { throttle } from 'lodash';
 
-export const ComplexList = memo(({data, gridTitle, loadMore, isFinish}) => {
+export const ComplexList = memo(({data, gridTitle, loadMore, isFinish, hideTitle}) => {
   const isLoadMore = useRef(false);
 
   const getMore = async () => {
@@ -36,6 +36,7 @@ export const ComplexList = memo(({data, gridTitle, loadMore, isFinish}) => {
           colName={gridTitle}
           gridContent={data}
           callback={(gridCon) => {jump2Detail(gridCon.key)}}
+          hideTitle={hideTitle}
         />
         {
           isFinish?

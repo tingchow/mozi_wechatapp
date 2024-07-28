@@ -1,6 +1,7 @@
 import { View, Image, ScrollView, Text, Picker } from '@tarojs/components';
 import { useState, useEffect, useRef } from 'react';
 import Taro, { useLoad, getCurrentInstance, useDidShow, useReady } from '@tarojs/taro'
+import { Grid } from 'antd-mobile';
 import { MoziGrid } from '../../MoziGrid';
 import IconFont from '../../iconfont';
 import { HighlightArea } from '../../HighlightArea';
@@ -17,33 +18,49 @@ export const SimpleList = ({
   defaultpageSize = 20,
   enableLoadMore = false,
   requestData = [],
+  rankTitle='Mozi列表',
   rankName='',
   rankDesc='',
-  selectArr=[]
+  selectArr=[],
+  renderData=[],
+  loadMore,
+  onChangeCb,
+  // loginCb,
+  // showHeader
 }) => {
-  console.log({
-    ...requestData,
-    pageNo: 1,
-    pageSize: 1
-  });
+  console.log('进入列表');
 
   const [data, setData] = useState([]);
-  const [showHeader, setShowHeader] = useState(false);
+  // const [showHeader, setShowHeader] = useState(selectArr.length > 0);
 
   const pageNo = useRef(1);
   const pageSize = useRef(defaultpageSize);
   const pageFinish = useRef(false);
 
-  useDidShow(() => {
-    init();
-  });
+  useEffect(() => {
+    // init();
+    console.log('renderData', renderData);
+    const tempFindCoin = renderData.map((item) => {
+      const itemObj = {};
+      gridCon.forEach((value, index) => {
+        if (value.type === 'key' || value.type === 'img') {
+          itemObj[value.type] = item[value.data]
+        } else {
+          itemObj[`key${index + 1}`] = matchDom(value.type, item, value.data)
+        }
+      });
+      return itemObj;
+    });
+    console.log('tempFindCoin', tempFindCoin);
+    setData(tempFindCoin);
+  }, [renderData]);
 
   useDidShow(() => {
-    console.log('试个列表,', requestData);
-    if (Array.isArray(requestData) && requestData.length > 1) {
-      console.log('试个列表');
-      setShowHeader(true);
-    }
+    // console.log('试个列表,', requestData);
+    // if (Array.isArray(requestData) && requestData.length > 1) {
+    //   console.log('试个列表');
+    //   setShowHeader(true);
+    // }
   });
 
   const matchDom = (type, data, dataKey) => {
@@ -96,43 +113,44 @@ export const SimpleList = ({
 
   
 
-  const loadMore = async (e) => {
-    if (!enableLoadMore) return;
-    if (pageFinish.current) return;
-    console.log('pageNo', pageNo)
+  // const loadMore = async (e) => {
+  //   if (!enableLoadMore) return;
+  //   if (pageFinish.current) return;
+  //   console.log('pageNo', pageNo)
 
-    const coinData = await request({
-      url: interFace[0],
-      data: {
-        ...requestData[0],
-        pageNo: ++pageNo.current,
-        pageSize: pageSize.current
-      }
-    });
+  //   const coinData = await request({
+  //     url: interFace[0],
+  //     data: {
+  //       ...requestData[0],
+  //       pageNo: ++pageNo.current,
+  //       pageSize: pageSize.current
+  //     }
+  //   });
 
-    if (pageNo.current * pageSize.current >= coinData.data.pageCount) {
-      pageFinish.current = true;
-    }
-    const tempFindCoin = coinData.data.map((item) => {
-      const itemObj = {};
-      gridCon.forEach((value, index) => {
-        if (value.type === 'key') {
-          itemObj.key = item[value.data]
-        } else {
-          itemObj[`key${index + 1}`] = matchDom(value.type, item, value.data)
-        }
-      });
-      return itemObj;
-    });
-    setData([...data, ...tempFindCoin]);
+  //   if (pageNo.current * pageSize.current >= coinData.data.pageCount) {
+  //     pageFinish.current = true;
+  //   }
+  //   const tempFindCoin = coinData.data.map((item) => {
+  //     const itemObj = {};
+  //     gridCon.forEach((value, index) => {
+  //       if (value.type === 'key') {
+  //         itemObj.key = item[value.data]
+  //       } else {
+  //         itemObj[`key${index + 1}`] = matchDom(value.type, item, value.data)
+  //       }
+  //     });
+  //     return itemObj;
+  //   });
+  //   setData([...data, ...tempFindCoin]);
     
-  };
+  // };
 
   const [ selected, setSelected ] = useState(selectArr[0]);
   const onChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setSelected(selectArr[e.detail.value]);
+    if (onChangeCb) onChangeCb(e.detail.value);
   }
 
 
@@ -143,13 +161,14 @@ export const SimpleList = ({
     return (
       <View className='scroll-list'>
         {
-          showHeader && data && (
+          selectArr.length > 0 && (
             <View className='header'>
               <View className='left'>
-                <View className='title'>Mozi行情榜</View>
+                <View className='title'>{rankTitle}</View>
                 <View>{rankName}</View>
                 <View className='desc'>
-                  <Text className='desc-con'>{rankDesc}</Text>
+                  {rankDesc && <Text className='desc-con'>{rankDesc}</Text>}
+                  
                   <Picker mode='selector' range={selectArr} onChange={onChange}>
                     <View className='picker-select'>
                       <View className='select-icon'>{selected}</View>
@@ -165,8 +184,15 @@ export const SimpleList = ({
             </View>
           )
         }
+        <Grid className={`gridTitle ${selectArr.length > 0? 'show-header-grid': ''}`} columns={gridTitle.length}>
+          {
+            gridTitle.map((colNameItem, colNameIndex) => {
+              return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+            })
+          }
+        </Grid>
         <ScrollView
-          className='scroll'
+          className={`scroll ${selectArr.length > 0? 'show-header': ''}`}
           scrollY
           enableBackToTop={true}
           enablePassive={true}
@@ -181,6 +207,7 @@ export const SimpleList = ({
               if (!gridCon.key) return;
               jump2Detail(gridCon.key);
             }}
+            hideTitle={true}
           />
         </ScrollView>
       </View>

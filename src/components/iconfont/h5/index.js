@@ -1,6 +1,13 @@
 /* eslint-disable */
 
 import React from 'react';
+import IconInfoCircle from './IconInfoCircle';
+import IconPlusSquare from './IconPlusSquare';
+import IconMoneycollect from './IconMoneycollect';
+import IconAttachment from './IconAttachment';
+import IconShare from './IconShare';
+import IconWechatFill from './IconWechatFill';
+import IconMPingfen from './IconMPingfen';
 import IconInfoCircleFill from './IconInfoCircleFill';
 import IconFileCopy from './IconFileCopy';
 import IconCaretDown from './IconCaretDown';
@@ -17,6 +24,13 @@ import IconHeartFill from './IconHeartFill';
 import IconCloseCircleFill from './IconCloseCircleFill';
 import IconSearch from './IconSearch';
 import IconRight from './IconRight';
+export { default as IconInfoCircle } from './IconInfoCircle';
+export { default as IconPlusSquare } from './IconPlusSquare';
+export { default as IconMoneycollect } from './IconMoneycollect';
+export { default as IconAttachment } from './IconAttachment';
+export { default as IconShare } from './IconShare';
+export { default as IconWechatFill } from './IconWechatFill';
+export { default as IconMPingfen } from './IconMPingfen';
 export { default as IconInfoCircleFill } from './IconInfoCircleFill';
 export { default as IconFileCopy } from './IconFileCopy';
 export { default as IconCaretDown } from './IconCaretDown';
@@ -36,6 +50,20 @@ export { default as IconRight } from './IconRight';
 
 const IconFont = ({ name, ...rest }) => {
   switch (name) {
+    case 'info-circle':
+      return <IconInfoCircle {...rest} />;
+    case 'plus-square':
+      return <IconPlusSquare {...rest} />;
+    case 'moneycollect':
+      return <IconMoneycollect {...rest} />;
+    case 'attachment':
+      return <IconAttachment {...rest} />;
+    case 'share':
+      return <IconShare {...rest} />;
+    case 'wechat-fill':
+      return <IconWechatFill {...rest} />;
+    case 'm-pingfen':
+      return <IconMPingfen {...rest} />;
     case 'info-circle-fill':
       return <IconInfoCircleFill {...rest} />;
     case 'file-copy':

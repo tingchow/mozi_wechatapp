@@ -16,10 +16,11 @@ export default defineAppConfig({
     'pages/detail/index',
     // 搜索页
     'pages/search/index',
-    // 多空比
-    'pages/putcallratio/index',
     // 用户信息
     'pages/user/index',
+    // 多空比
+    'pages/putcallratio/index',
+    
     
     // 社区
     'pages/community/index',

@@ -7,19 +7,24 @@ export const MoziGrid = (props) => {
   console.log('grid', props);
   return (
     <View>
-      <Grid className='gridTitle' columns={props.length}>
-        {
-          props.colName.map((colNameItem, colNameIndex) => {
-            return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
-          })
-        }
-      </Grid>
+      {
+        !props?.hideTitle && (
+        <Grid className='gridTitle' columns={props.length}>
+          {
+            props.colName.map((colNameItem, colNameIndex) => {
+              return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+            })
+          }
+        </Grid>
+        )
+      }
+      
       <View className='list'>
         <List>
           {
             props.gridContent.map((gridCon) => {
               return (
-                <List.Item className='gridListItem' onClick={() => { props.callback(gridCon) }} clickable={false}>
+                <List.Item className='gridListItem' onClick={(e) => { e.stopPropagation; props.callback && props.callback(gridCon) }} clickable={false}>
                   <Grid className='gridContent' columns={props.length}>
                     {
                       Object.keys(gridCon).map((gridConItem, girdConIndex) => {

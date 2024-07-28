@@ -8,6 +8,32 @@
     height: 100vh;
     padding-top: 110px;
 
+    .scroll {
+      height: 100vh;
+    }
+
+    .gridTitle {
+      font-size: 20px;
+      color: #898989;
+      // padding-left: 24px;
+      margin-bottom: 10px;
+      position: fixed;
+      top: 60px;
+      background-color: #efefef;
+      z-index: 200;
+      align-items: center;
+      padding: 10px 20px;
+      box-sizing: border-box;
+    
+      .text {
+        text-align: right;
+      }
+    }
+    
+    .gridListItem {
+      padding: 0 20px;
+    }
+
     .ownTitle {
       display: flex;
       width: 100%;
@@ -32,7 +58,29 @@
   .marketBox {
     height: 100vh;
     .scroll {
-      padding-top: 110px;
+      margin-top: 8vh;
+    }
+
+    .gridTitle {
+      font-size: 20px;
+      color: #898989;
+      // padding-left: 24px;
+      margin-bottom: 10px;
+      position: fixed;
+      top: 60px;
+      background-color: #efefef;
+      z-index: 200;
+      align-items: center;
+      padding: 10px 20px;
+      box-sizing: border-box;
+    
+      .text {
+        text-align: right;
+      }
+    }
+    
+    .gridListItem {
+      padding: 0 20px;
     }
   }
 
@@ -115,9 +163,20 @@
 
 .rankTitle {
   display: flex;
-  align-items: center;
+  // align-items: baseline;
 
   .rankTitleTime {
+    font-size: 20px;
+    color: #898989;
+    margin-left: 10px;
+  }
+}
+
+.rank-title {
+  display: flex;
+  align-items: baseline;
+
+  .rank-title-time {
     font-size: 20px;
     color: #898989;
     margin-left: 10px;
@@ -128,3 +187,4 @@
   display: flex;
   align-items: center;
 }
+

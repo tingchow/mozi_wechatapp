@@ -47,8 +47,14 @@ export const Interface = {
   // 交易对
   COIN_SPOT: 'https://moziinnovations.com/search/symbolprice',
 
+  // 我的
+  // 评分
+  MOZI_COMMENT: 'https://moziinnovations.com/feedback/add',
+
   // 添加自选
   ADD_OWN: 'https://moziinnovations.com/selfselect/add',
+  // 删除自选
+  CANCEL_OWN: 'https://moziinnovations.com/selfselect/cancel',
 };
 
 // 邮箱

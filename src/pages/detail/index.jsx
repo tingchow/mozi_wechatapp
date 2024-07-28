@@ -3,12 +3,14 @@ import Taro, { useLoad, getCurrentInstance, useRouter, useUnload } from '@tarojs
 import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
+import { PageLogin } from '../../components/PageLogin';
 import { Card, List, Grid, CapsuleTabs, Tabs, TabBar } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
 import { MoziCard } from '../../components/MoziCard';
 import { MoziGrid } from '../../components/MoziGrid';
 import { Layout } from '../../components/Layout';
 import { handleOptions } from '../../components/MoziChart/options';
+import { HighlightArea } from '../../components/HighlightArea';
 import { AddCollect } from '../../components/AddCollect';
 import { jump2List } from '../../utils/core';
 import './index.less';
@@ -105,6 +107,7 @@ export default function Detail() {
 
   // 控制展开收起
   const [infoShow, setInfoShow] = useState(false);
+  const [ popVis, setPopVis ] = useState(false);
 
   const chartRef = useRef(null)
 
@@ -241,7 +244,7 @@ export default function Detail() {
         return {
           title: <View className='gridText'><Image className='girdIcon' mode='aspectFit' src={item.url} />{item.exchanges}</View>,
           last: item.last,
-          price24h: item.price24h,
+          price24h: <HighlightArea value={item.price24h} />,
           vol: item.vol,
           usd: item.usd
         }
@@ -486,14 +489,14 @@ export default function Detail() {
           </View>
           {/* <View className='footer-item'> */}
             <Button className='footer-item' openType='share'>
-              <IconFont name='heart-fill' color={'red'} size={40} />
+              <IconFont name='share' size={40} />
               <View>分享</View>
             </Button>
           {/* </View> */}
         </View>
       )}
       
-      
+      {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
     </View>
   )
 }

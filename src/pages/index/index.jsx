@@ -11,6 +11,8 @@ import { Layout } from '../../components/Layout';
 import { AddCollect } from '../../components/AddCollect';
 import { HighlightArea } from '../../components/HighlightArea';
 import { MoziTreeMap } from '../../components/MoziChart/TreeMap';
+import { PageLogin } from '../../components/PageLogin';
+import { Popup } from '../../components/PopLogin'
 import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
@@ -49,6 +51,7 @@ export default function Putcallratio() {
   const [ contractLoading, setContractLoading ] = useState(true);
   const [ my_own, setOwn ] = useState(null);
   const [ myOwnLoading, setMyOwnLoading ] = useState(true);
+  const [ popVis, setPopVis ] = useState(false);
 
   useLoad(async () => {
     // 热门币种
@@ -81,7 +84,7 @@ export default function Putcallratio() {
         currentPrice: item.currentPrice,
         priceChangePercentage24h: <HighlightArea value={item.priceChangePercentage24h}></HighlightArea>,
         totalVolume: item.totalVolume,
-        own: <AddCollect symbol={item.symbol} isOwn={false} />,
+        own: <AddCollect symbol={item.symbol} isOwn={false} loginCb={() => {setPopVis(true)}} />,
         key: item.symbol
       };
     });
@@ -97,6 +100,8 @@ export default function Putcallratio() {
     // setHotIndustry(res.data);
     return res;
   };
+
+  const handlePopupConfirm = () => {console.log(1)}
 
   const jump2Search = () => {
     jump2NoTab('search')
@@ -146,7 +151,7 @@ export default function Putcallratio() {
         <ScrollView scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}}>
           
           <div className='treemapBox' onClick={() => {jump2List({
-            interFace: [Interface.hot_coin],
+            interFace: Interface.hot_coin,
             gridTitle: ['币种', '热门指数', '24H价格变化'],
             gridCon: [{
               type: 'Text',
@@ -169,7 +174,7 @@ export default function Putcallratio() {
             </Layout>
           </div>
           <div className='treemapBox' onClick={() => {jump2List({
-            interFace: [Interface.hot_contract],
+            interFace: Interface.hot_contract,
             gridTitle: ['合约', '热门指数', '24H价格变化'],
             gridCon: [{
               type: 'Text',
@@ -192,7 +197,7 @@ export default function Putcallratio() {
             </Layout>
           </div>
           <div className='treemapBox last' onClick={() => {jump2List({
-            interFace: [Interface.hot_industry],
+            interFace: Interface.hot_industry,
             gridTitle: ['版块', '24H变化'],
             gridCon: [{
               type: 'Text',
@@ -229,6 +234,7 @@ export default function Putcallratio() {
             callback={(gridCon) => {jump2Detail(gridCon.key)}}
           />
         </Layout>
+        {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
       </MoziCard>
     </View>
   )

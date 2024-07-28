@@ -2,7 +2,7 @@
 import React, { FunctionComponent } from 'react';
 
 interface Props {
-  name: 'info-circle-fill' | 'file-copy' | 'caret-down' | 'caret-up' | 'bodongfenxi' | 'jijin' | 'jiaoyichaxun' | 'jifen' | 'wangdian' | 'piaowu' | 'licaichanpin2' | 'licaichanpin' | 'heart-fill' | 'close-circle-fill' | 'search' | 'right';
+  name: 'info-circle' | 'plus-square' | 'moneycollect' | 'attachment' | 'share' | 'wechat-fill' | 'm-pingfen' | 'info-circle-fill' | 'file-copy' | 'caret-down' | 'caret-up' | 'bodongfenxi' | 'jijin' | 'jiaoyichaxun' | 'jifen' | 'wangdian' | 'piaowu' | 'licaichanpin2' | 'licaichanpin' | 'heart-fill' | 'close-circle-fill' | 'search' | 'right';
   size?: number;
   color?: string | string[];
   style?: React.CSSProperties;

@@ -2,6 +2,13 @@
 
 import React from 'react';
 
+import IconInfoCircle from './IconInfoCircle';
+import IconPlusSquare from './IconPlusSquare';
+import IconMoneycollect from './IconMoneycollect';
+import IconAttachment from './IconAttachment';
+import IconShare from './IconShare';
+import IconWechatFill from './IconWechatFill';
+import IconMPingfen from './IconMPingfen';
 import IconInfoCircleFill from './IconInfoCircleFill';
 import IconFileCopy from './IconFileCopy';
 import IconCaretDown from './IconCaretDown';
@@ -18,6 +25,13 @@ import IconHeartFill from './IconHeartFill';
 import IconCloseCircleFill from './IconCloseCircleFill';
 import IconSearch from './IconSearch';
 import IconRight from './IconRight';
+export { default as IconInfoCircle } from './IconInfoCircle';
+export { default as IconPlusSquare } from './IconPlusSquare';
+export { default as IconMoneycollect } from './IconMoneycollect';
+export { default as IconAttachment } from './IconAttachment';
+export { default as IconShare } from './IconShare';
+export { default as IconWechatFill } from './IconWechatFill';
+export { default as IconMPingfen } from './IconMPingfen';
 export { default as IconInfoCircleFill } from './IconInfoCircleFill';
 export { default as IconFileCopy } from './IconFileCopy';
 export { default as IconCaretDown } from './IconCaretDown';
@@ -37,38 +51,52 @@ export { default as IconRight } from './IconRight';
 
 let IconFont = ({ name, ...rest }) => {
   switch (name) {
+    case 'info-circle':
+      return <IconInfoCircle key="1" {...rest} />;
+    case 'plus-square':
+      return <IconPlusSquare key="2" {...rest} />;
+    case 'moneycollect':
+      return <IconMoneycollect key="3" {...rest} />;
+    case 'attachment':
+      return <IconAttachment key="4" {...rest} />;
+    case 'share':
+      return <IconShare key="5" {...rest} />;
+    case 'wechat-fill':
+      return <IconWechatFill key="6" {...rest} />;
+    case 'm-pingfen':
+      return <IconMPingfen key="7" {...rest} />;
     case 'info-circle-fill':
-      return <IconInfoCircleFill key="1" {...rest} />;
+      return <IconInfoCircleFill key="8" {...rest} />;
     case 'file-copy':
-      return <IconFileCopy key="2" {...rest} />;
+      return <IconFileCopy key="9" {...rest} />;
     case 'caret-down':
-      return <IconCaretDown key="3" {...rest} />;
+      return <IconCaretDown key="10" {...rest} />;
     case 'caret-up':
-      return <IconCaretUp key="4" {...rest} />;
+      return <IconCaretUp key="11" {...rest} />;
     case 'bodongfenxi':
-      return <IconBodongfenxi key="5" {...rest} />;
+      return <IconBodongfenxi key="12" {...rest} />;
     case 'jijin':
-      return <IconJijin key="6" {...rest} />;
+      return <IconJijin key="13" {...rest} />;
     case 'jiaoyichaxun':
-      return <IconJiaoyichaxun key="7" {...rest} />;
+      return <IconJiaoyichaxun key="14" {...rest} />;
     case 'jifen':
-      return <IconJifen key="8" {...rest} />;
+      return <IconJifen key="15" {...rest} />;
     case 'wangdian':
-      return <IconWangdian key="9" {...rest} />;
+      return <IconWangdian key="16" {...rest} />;
     case 'piaowu':
-      return <IconPiaowu key="10" {...rest} />;
+      return <IconPiaowu key="17" {...rest} />;
     case 'licaichanpin2':
-      return <IconLicaichanpin2 key="11" {...rest} />;
+      return <IconLicaichanpin2 key="18" {...rest} />;
     case 'licaichanpin':
-      return <IconLicaichanpin key="12" {...rest} />;
+      return <IconLicaichanpin key="19" {...rest} />;
     case 'heart-fill':
-      return <IconHeartFill key="13" {...rest} />;
+      return <IconHeartFill key="20" {...rest} />;
     case 'close-circle-fill':
-      return <IconCloseCircleFill key="14" {...rest} />;
+      return <IconCloseCircleFill key="21" {...rest} />;
     case 'search':
-      return <IconSearch key="15" {...rest} />;
+      return <IconSearch key="22" {...rest} />;
     case 'right':
-      return <IconRight key="16" {...rest} />;
+      return <IconRight key="23" {...rest} />;
   }
 
   return null;

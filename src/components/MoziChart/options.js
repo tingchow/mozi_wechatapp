@@ -44,6 +44,13 @@ export const handleOptions = (data, type) => {
       legend: {
         type: 'scroll',
         data: ['K线', 'MA5', 'MA10', 'MA20', 'MA30'],
+        selected: {
+          'K线': true,
+          'MA5': false,
+          'MA10': false,
+          'MA20': false,
+          'MA30': false,
+        }
       },
       // 移动端暂不展示tooltip，需要考虑更好的展示方法
       // tooltip: {
