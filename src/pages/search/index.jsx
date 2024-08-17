@@ -83,7 +83,7 @@ export default function Search() {
           // 币种信息
           tempData = sectionRes.data.slice(0, 3).map((item) => {
             return {
-              title: <View className='gridText'><Image className='girdIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+              title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
               last: item.last,
               price24h: (<HighlightArea value={item.price24h} />),
               isOwn: (<AddCollect isOwn={item.isOwn} symbol={item.symbol} />),
@@ -125,7 +125,7 @@ export default function Search() {
           // 可交易平台信息
           tempData = sectionRes.data.slice(0, 3).map((item) => {
             return {
-              title: <View className='gridText'><Image className='girdIcon' mode='aspectFit' src={item.url} />{item.exchanges}</View>,
+              title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.exchanges}</View></View>,
               chain: item.chain,
               withdrawfee: item.withdrawfee,
               withdrawmin: item.withdrawmin,
@@ -152,7 +152,7 @@ export default function Search() {
           if (!isEmpty(sectionRes.data?.spot)) {
             tempData = sectionRes.data.spot.slice(0, 3).map((item) => {
               return {
-                title: <View className='gridText'><Image className='girdIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+                title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
                 symbol: item.exchanges,
                 lasts: item.lasts,
                 price24h: <HighlightArea value={item.price24h} />,
@@ -163,7 +163,7 @@ export default function Search() {
           if (!isEmpty(sectionRes.data?.nonSpot)) {
             tempData = sectionRes.data.nonSpot.slice(0, 3).map((item) => {
               return {
-                title: <View className='gridText'><Image className='girdIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+                title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
                 symbol: item.exchanges,
                 lasts: item.lasts,
                 price24h: <HighlightArea value={item.price24h} />,

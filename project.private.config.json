@@ -4,10 +4,17 @@
   "setting": {
     "compileHotReLoad": true
   },
-  "libVersion": "3.5.1",
+  "libVersion": "3.5.3",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "pages/positionsize/index",
+          "pathName": "pages/positionsize/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "pages/search/index",
           "pathName": "pages/search/index",

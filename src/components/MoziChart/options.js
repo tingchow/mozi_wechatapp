@@ -1,4 +1,6 @@
 export const handleOptions = (data, type) => {
+
+  console.log(data, type)
   if (type === 'kline') {
     // 币圈遵循国外 绿涨红跌 原则
     // const upColor = '#00da3c';  // 阳线颜色
@@ -296,9 +298,9 @@ export const handleOptions = (data, type) => {
             formatter: (info) => {
               let tip = [
                   `{nameClass|${info.name}}`,
-                  `{valueClass|${info.value}}`
+                  `{valueClass|${info.data.valueDisplay}}`
                 ].join('\n');
-                return tip;
+              return tip;
             },
             rich: {
               //块内文字样式
@@ -323,10 +325,11 @@ export const handleOptions = (data, type) => {
         //弹出框配置
         formatter: function (info) {
           let value = info.value;
+          let valueDisplay = info.data.valueDisplay;
           let name = info.name;
           let tip =  `
               ${name}
-              成交量: ${value}
+              成交量: ${valueDisplay}
           `;
           return tip;
         },
@@ -377,5 +380,121 @@ export const handleOptions = (data, type) => {
         }
       ]
     }
+  }
+
+  if (type === 'samebar') {
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          // Use axis to trigger tooltip
+          type: 'line' // 'shadow' as default; can also be 'line' or 'shadow'
+        }
+      },
+      legend: {
+        selectedMode: false
+      },
+      yAxis: [{
+        type: 'value',
+      }, {
+        type: 'value',
+      }],
+      xAxis: {
+        type: 'category',
+        data: data.xAxisData
+      },
+      
+      series: [
+        {
+          name: '空',
+          type: 'bar',
+          stack: 'total',
+          label: {
+            show: true,
+            formatter: (params) => params.value *100 + '%'
+          },
+          color: '#ff3333',
+          data: data.shortData
+        },
+        {
+          name: '多',
+          type: 'bar',
+          stack: 'total',
+          color: '#02c076',
+          label: {
+            show: true,
+            formatter: (params) => params.value* 100 + '%'
+          },
+          emphasis: {
+            focus: 'series'
+          },
+          data: data.longData
+        },
+        {
+          name: '多空比',
+          type: 'line',
+          yAxisIndex: 1,
+          data: data.longShortData
+        }
+      ]
+    }
+  }
+
+  if (type === 'linebar') {
+    return {
+      tooltip: {
+        trigger: 'axis',
+        formatter: function (info) {
+          console.log('info', info);
+          let valueList = info[0].data.toolTips;
+          let tips = '';
+          valueList.forEach((item) => {
+            tips += `
+              ${item.url}${item.exchange}${item.value}
+            `
+          });
+          return tips;
+        }
+      },
+      legend: {
+        selectedMode: false
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: data.xAxisData,
+          axisPointer: {
+            type: 'line'
+          }
+        }
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          axisLabel: {
+            formatter: (value) => data.yAxisLeftSlot.replace('{}', value)
+          }
+        },
+        {
+          type: 'value',
+          axisLabel: {
+            formatter: (value) => data.yAxisRightSlot.replace('{}', value)
+          }
+        }
+      ],
+      series: [
+        {
+          name: '持仓',
+          type: 'bar',
+          data: data.barData
+        },
+        {
+          name: '价格',
+          type: 'line',
+          yAxisIndex: 1,
+          data: data.lineData
+        }
+      ]
+    };
   }
 };

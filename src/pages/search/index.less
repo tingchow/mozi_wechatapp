@@ -106,7 +106,20 @@
 }
 
 .gridText {
-  white-space: nowrap;  /* 不换行 */
-  overflow: hidden;     /* 超出宽度隐藏 */
-  text-overflow: ellipsis;  /* 超出宽度点点显示 */
+  display: flex;
+  width: 100%;
+  
+
+  .gridIcon {
+    height: 36px;
+    width: 36px;
+    margin-right: 10px;
+  }
+
+  .gridName {
+    flex: 1;
+    white-space: nowrap;  /* 不换行 */
+    overflow: hidden;     /* 超出宽度隐藏 */
+    text-overflow: ellipsis;  /* 超出宽度点点显示 */
+  }
 }

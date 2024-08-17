@@ -20,7 +20,8 @@ export default defineAppConfig({
     'pages/user/index',
     // 多空比
     'pages/putcallratio/index',
-    
+    // 持仓量
+    'pages/positionsize/index',
     
     // 社区
     'pages/community/index',

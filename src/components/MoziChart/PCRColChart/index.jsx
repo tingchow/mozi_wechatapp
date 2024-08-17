@@ -23,12 +23,16 @@ export const MoziPCRColChart = (props) => {
           data.map((pcrItem) => {
             return (
               <View className='pcrItem'>
-                <View className='pcrItemName'>{pcrItem.name}</View>
+                <View className='pcr-item-title'>
+                  <View>{pcrItem.order}</View>
+                  <Image className='pcr-item-icon' mode='aspectFit' src={pcrItem.url} />
+                  <View className='pcrItemName'>{pcrItem.name}</View>
+                </View>
                 <View className='pcrItemRatio'>
-                  <View className='pcrItemLeft' style={{width: pcrItem.left}}></View>
+                  <View className='pcrItemLeft' style={{width: pcrItem.long}}></View>
                   <View className='pcrItemDesc'>
-                    <View>{pcrItem.left}</View>
-                    <View>{pcrItem.right}</View>
+                    <View>{pcrItem.long}</View>
+                    <View>{pcrItem.short}</View>
                   </View>
                 </View>
               </View>

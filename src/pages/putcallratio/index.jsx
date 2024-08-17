@@ -7,6 +7,7 @@ import { mock_hotjiaoyisuo, mock_hotbankuai, mock_hotheyue } from '../../utils/m
 import { Card, List, Grid, TabBar } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
 import { MoziCard } from '../../components/MoziCard';
+import { Layout } from '../../components/Layout';
 import { MoziGrid } from '../../components/MoziGrid';
 import { SearchInput } from '../../components/SearchInput';
 import { AddCollect } from '../../components/AddCollect';
@@ -20,162 +21,56 @@ import './index.less';
 
 const ratioArr = ['人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比', '主动买卖量比'];
 const coinArr = ['BTC', 'BANANE'];
-const pcrArr = [{
-  name: '币安',
-  data: [
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' }
-  ]
-}, {
-  name: '币安',
-  data: [
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' }
-  ]
-}, {
-  name: '币安',
-  data: [
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' }
-  ]
-}, {
-  name: '币安',
-  data: [
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' }
-  ]
-}, {
-  name: '币安',
-  data: [
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' }
-  ]
-}, {
-  name: '币安',
-  data: [
-    { value: 1048, name: 'Search Engine' },
-    { value: 735, name: 'Direct' },
-    { value: 580, name: 'Email' },
-    { value: 484, name: 'Union Ads' },
-    { value: 300, name: 'Video Ads' }
-  ]
-}];
+const exchangesArr = ['binance'];
+
+const hisData = {
+  xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // 横坐标数据，靠近当天的index靠后
+  shortData: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7], // 空比，为0-1的小数
+  longData: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3], // 多比，为0-1的小数
+  longShortData: [0.42, 0.42, 0.42, 0.42, 0.42, 0.42, 0.42], // 多空比
+};
 
 export default function Putcallratio() {
 
   const [ ratioSelected, setRatioSelected ] = useState(ratioArr[0]);
   const [ coinSelected, setCoinSelected ] = useState(coinArr[0]);
+  const [ exchangeSelected, setExchangeSelected ] = useState(exchangesArr[0]);
+
   const [activeKey, setActiveKey] = useState('currentRatio');
+  const [curPCRData, setCurPCRData] = useState({
+    loading: true,
+    close: false,
+    data: null
+  });
+  const [hisPCRData, setHisPCRData] = useState({
+    loading: true,
+    close: false,
+    data: null
+  });
 
-  // const chartRef = useRef(null)
-  // const chartRef1 = useRef(null)
-  // const chartRef2 = useRef(null)
-  // const chartRef3 = useRef(null)
-  // const chartRef4 = useRef(null)
-  // const chartRef5 = useRef(null)
-  // const chartRef6 = useRef(null)
+  
 
+  const chartRef = useRef(null)
 
-  // const ecList = [{
-  //   onInit: (canvas, width, height, dpr) => {
-  //     const chart = echarts.init(canvas, null, {
-  //       width: width,
-  //       height: height,
-  //       devicePixelRatio: dpr // new
-  //     });
-  //     canvas.setChart(chart);
-  
-  
-  //     chartRef1.current = chart;
-  
-  //     return chart;
-  //   }
-  // }, {
-  //   onInit: (canvas, width, height, dpr) => {
-  //     const chart = echarts.init(canvas, null, {
-  //       width: width,
-  //       height: height,
-  //       devicePixelRatio: dpr // new
-  //     });
-  //     canvas.setChart(chart);
-  
-  
-  //     chartRef2.current = chart;
-  
-  //     return chart;
-  //   }
-  // }, {
-  //   onInit: (canvas, width, height, dpr) => {
-  //     const chart = echarts.init(canvas, null, {
-  //       width: width,
-  //       height: height,
-  //       devicePixelRatio: dpr // new
-  //     });
-  //     canvas.setChart(chart);
-  
-  
-  //     chartRef3.current = chart;
-  
-  //     return chart;
-  //   }
-  // }, {
-  //   onInit: (canvas, width, height, dpr) => {
-  //     const chart = echarts.init(canvas, null, {
-  //       width: width,
-  //       height: height,
-  //       devicePixelRatio: dpr // new
-  //     });
-  //     canvas.setChart(chart);
-  
-  
-  //     chartRef4.current = chart;
-  
-  //     return chart;
-  //   }
-  // }, {
-  //   onInit: (canvas, width, height, dpr) => {
-  //     const chart = echarts.init(canvas, null, {
-  //       width: width,
-  //       height: height,
-  //       devicePixelRatio: dpr // new
-  //     });
-  //     canvas.setChart(chart);
-  
-  
-  //     chartRef5.current = chart;
-  
-  //     return chart;
-  //   }
-  // }, {
-  //   onInit: (canvas, width, height, dpr) => {
-  //     const chart = echarts.init(canvas, null, {
-  //       width: width,
-  //       height: height,
-  //       devicePixelRatio: dpr // new
-  //     });
-  //     canvas.setChart(chart);
-  
-  
-  //     chartRef6.current = chart;
-  
-  //     return chart;
-  //   }
-  // }]
+  const initChart = (canvas, width, height, dpr) => {
+    const chart = echarts.init(canvas, null, {
+      width: width,
+      height: height,
+      devicePixelRatio: dpr // new
+    });
+    canvas.setChart(chart);
+
+    // console.log(handleOptions(hisData, 'samebar'));
+    // canvas.setOption();
+    // console.log('chartRef.current', chartRef.current);
+    chartRef.current = chart;
+
+    return chart;
+  }
+
+  const ec = {
+    onInit: initChart
+  }
 
   const activeClick = async (value) => {
     if ( value ===  activeKey) return;
@@ -184,6 +79,7 @@ export default function Putcallratio() {
   };
 
   const onRatioChange = (e) => {
+    console.log('e', e);
     e.preventDefault();
     e.stopPropagation();
     setRatioSelected(ratioArr[e.detail.value]);
@@ -192,24 +88,92 @@ export default function Putcallratio() {
   const onCoinChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setRatioSelected(setCoinSelected[e.detail.value]);
+    setCoinSelected(coinArr[e.detail.value]);
+  };
+
+  const onExchangeChange = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExchangeSelected(exchangesArr[e.detail.value]);
   };
 
   useLoad(() => {
-    // pcrArr.forEach((pcrItem, pcrIndex) => {
-    //   console.log(ecList[`onInit${pcrIndex + 1}`]);
-    //   chartRef.current.setOption(handleOptions(pcrItem.data, 'pie'));
-    // })
-    // chartRef1.current.setOption(handleOptions(coin_line1.data, 'pie'));
-    // setTimeout(() => {
-    //   console.log(chartRef1);
-    //   chartRef1.current.setOption(handleOptions(pcrArr[0].data, 'pie'));
-    //   chartRef2.current.setOption(handleOptions(pcrArr[1].data, 'pie'));
-    //   chartRef3.current.setOption(handleOptions(pcrArr[2].data, 'pie'));
-    //   chartRef4.current.setOption(handleOptions(pcrArr[3].data, 'pie'));
-    //   chartRef5.current.setOption(handleOptions(pcrArr[4].data, 'pie'));
-    //   chartRef6.current.setOption(handleOptions(pcrArr[5].data, 'pie'));
-    // }, 2000);
+    setTimeout(() => {
+      setCurPCRData({
+        ...curPCRData,
+        loading: false,
+        data: {
+          symbol: 'BTC',
+          list: [{
+            name: 'BTC',
+            url: '', // 交易所icon/币种icon
+            order: 0,
+            short: '48.56%', // 空
+            long: '48.56%', // 多
+          }, {
+            name: 'Binance',
+            url: '', // 交易所icon
+            order: 1,
+            short: '48.56%', // 空
+            long: '48.56%', // 多
+          }, {
+            name: 'Binance',
+            url: '', // 交易所icon
+            order: 2,
+            short: '48.56%', // 空
+            long: '48.56%', // 多
+          }, {
+            name: 'Binance',
+            url: '', // 交易所icon
+            order: 3,
+            short: '48.56%', // 空
+            long: '48.56%', // 多
+          }]
+        }
+      });
+
+      
+      setHisPCRData({
+        ...hisPCRData,
+        loading: false,
+        data: hisData
+      });
+
+      chartRef.current.setOption(handleOptions(hisData, 'samebar'));
+
+
+      // var option = {
+      //   title: {
+      //     text: 'K 线图'
+      //   },
+      //   xAxis: {
+      //     data: ['10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00']
+      //   },
+      //   yAxis: {},
+      //   series: [{
+      //     type: 'k',
+      //     data: [
+      //       [100, 200, 40, 250],
+      //       [80, 90, 66, 100],
+      //       [90, 40, 33, 110],
+      //       [50, 60, 40, 80],
+      //       [200, 180, 160, 200],
+      //       [100, 200, 40, 250],
+      //       [80, 90, 66, 100]
+      //     ],
+      //     itemStyle: {
+      //       normal: {
+      //         color: '#ff0000',
+      //         color0: '#00ff00',
+      //         borderWidth: 1,
+      //         opacity: 1,
+      //       }
+      //     }
+      //   }]
+      // };
+
+      // chartRef.current.setOption(option);
+    }, 5000);
   });
 
   
@@ -220,47 +184,48 @@ export default function Putcallratio() {
         <TabBar.Item key='currentRatio' title='当前多空比' />
         <TabBar.Item key='historyRatio' title='历史多空比' />
       </TabBar>
-      <View className='currentPCR'>
-        <View className='pickerList'>
-          <Picker mode='selector' range={ratioArr} onChange={onRatioChange}>
-            <View className='pickerSelect'>
-              <View className='selectIcon'>{ratioSelected}</View>
-              <IconFont name='caret-down' />
-            </View>
-          </Picker>
-          <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
-            <View className='pickerSelect'>
-              <View className='selectIcon'>{coinSelected}</View>
-              <IconFont name='caret-down' />
-            </View>
-          </Picker>
-        </View>
-        <View className='currentPCRChart'>
-          <MoziPCRColChart
-            data={
-              [{
-                name: 'Binance',
-                left: '49%',
-                right: '51%'
-              }, {
-                name: 'OKX',
-                left: '51%',
-                right: '49%'
-              }]
-            }
-          />
-          {/* {
-            pcrArr.map((pcrItem, pcrIndex) => {
-              return (
-                <View className='pcrItem'>
-                  <View>{pcrItem.name}</View>
-                  <ec-canvas canvas-id="mychart-pie" ec={ecList[pcrIndex]}></ec-canvas>
-                </View>
-              )
-            })
-          } */}
-        </View>
+      <View className='pickerList'>
+        <Picker mode='selector' range={ratioArr} onChange={onRatioChange}>
+          <View className='pickerSelect'>
+            <View className='selectIcon'>{ratioSelected}</View>
+            <IconFont name='caret-down' />
+          </View>
+        </Picker>
+        <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
+          <View className='pickerSelect'>
+            <View className='selectIcon'>{coinSelected}</View>
+            <IconFont name='caret-down' />
+          </View>
+        </Picker>
       </View>
+      <Layout isLoading={curPCRData.loading} isClose={curPCRData.close}>
+        
+        <View className='currentPCR'>
+          <View>当前多空比</View>
+          <MoziPCRColChart
+            data={curPCRData.data?.list}
+          />
+        </View>
+      </Layout>
+      {/* <Layout isLoading={hisPCRData.loading} isClose={hisPCRData.close}> */}
+        <View className='currentPCR'>
+          <View className='header'>
+            <View>历史多空比</View>
+            <View className='pickerList'>
+              <Picker mode='selector' range={exchangesArr} onChange={onExchangeChange}>
+                <View className='pickerSelect'>
+                  <View className='selectIcon'>{exchangeSelected}</View>
+                  <IconFont name='caret-down' />
+                </View>
+              </Picker>
+            </View>
+          </View>
+          
+          <View className='currentPCRChart'>
+            <ec-canvas className='chart' canvas-id="mychart-pcr" ec={ec}></ec-canvas>
+          </View>
+        </View>
+      {/* </Layout> */}
     </View>
   )
 }

@@ -1,6 +1,7 @@
-import { View, Image, ScrollView } from '@tarojs/components'
+import { View, Image, ScrollView, Button } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro';
 import IconFont from '../../components/iconfont';
+import { Grid } from 'antd-mobile';
 import { useState } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -110,6 +111,7 @@ export default function Putcallratio() {
   return (
     <View className='indexBox'>
       {/* 头部-搜索框 */}
+      {/* <Button openType='contact'>测试-跟我聊天</Button> */}
       <View className='header' onClick={jump2Search}>
         <View className='searchBox'>
           <View className='searchIcon'>
@@ -122,7 +124,7 @@ export default function Putcallratio() {
         </View>
       </View>
       {/* 衍生品专区 */}
-      {/* <MoziCard
+      <MoziCard
         title={area.derivativeArea.title}
       >
         <Grid columns={4}>
@@ -139,7 +141,7 @@ export default function Putcallratio() {
           })
         }
         </Grid>
-      </MoziCard> */}
+      </MoziCard>
 
       {/* 投资机会 */}
       <MoziCard
@@ -236,6 +238,7 @@ export default function Putcallratio() {
         </Layout>
         {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
       </MoziCard>
+      
     </View>
   )
 }
