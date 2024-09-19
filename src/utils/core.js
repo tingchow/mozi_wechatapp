@@ -46,6 +46,15 @@ export const jump2NoTab = (pageName, params = {}) => {
   });
 };
 
+// 跳转非Tab页面
+export const jump2DataPage = (pageName, dataName, data = {}) => {
+  const app = Taro.getApp();
+  app[dataName] = data;
+  Taro.navigateTo({
+    url: `/pages/${pageName}/index`,
+  });
+};
+
 
 // 列表处理
 // export const handleList = (oldList, listItemName) => {

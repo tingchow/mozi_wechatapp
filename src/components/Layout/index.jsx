@@ -34,6 +34,10 @@ export const Layout = (props) => {
             // 如果是登录，表示有用户信息
             // setUserInfo(userInfo);
             // Taro.setStorage('userInfo', userInfo);
+            if (props?.needAccount) {
+              registerAccount();
+              return;
+            }
             props.loginCallback();
           } else {
             console.log('数据失败');
@@ -50,6 +54,12 @@ export const Layout = (props) => {
     })
   };
 
+  const registerAccount = () => {
+    // todo 开通会员
+    console.log('开通回调');
+    props.accountCallback();
+  };
+
 
   if (props.isError) {
     return (
@@ -58,6 +68,20 @@ export const Layout = (props) => {
       </View>
     )
   }
+
+  if (props.needAccount) {
+    return (
+      <View className='login-box'>
+        <View>您还不是会员，请开通会员体验</View>
+        { 
+          props?.needLogin? 
+          <Button className='login-btn' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>开通会员</Button>:
+          <Button className='login-btn' onClick={registerAccount}>开通会员</Button>
+        }
+      </View>
+    );
+  }
+
   if (props.isLoading) {
     return (
       <View className='loadingBox'>
@@ -65,6 +89,9 @@ export const Layout = (props) => {
       </View>
     )
   }
+
+  
+
   if (props.needLogin) {
     return (
       <View className='login-box'>

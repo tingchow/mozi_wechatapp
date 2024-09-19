@@ -29,20 +29,20 @@ const area = {
     }, {
       icon: 'jifen',
       text: '持仓量',
-      path: '跳转地址'
+      callback: () => {jump2NoTab('positionsize')}
     }, {
       icon: 'bodongfenxi',
       text: '资金费率',
-      path: '跳转地址'
+      callback: () => {jump2NoTab('fundingrate')}
     }, {
       icon: 'jiaoyichaxun',
       text: '成交额',
-      path: '跳转地址'
+      callback: () => {jump2NoTab('tradevol')}
     }]
   },
 };
 
-export default function Putcallratio() {
+export default function Index() {
 
   const [ hot_coin, setHotCoin ] = useState(null);
   const [ hot_industry, setHotIndustry ] = useState(null);
@@ -55,6 +55,12 @@ export default function Putcallratio() {
   const [ popVis, setPopVis ] = useState(false);
 
   useLoad(async () => {
+
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+
     // 热门币种
     const coin = await cardRequest(Interface.hot_coin, {
       pageSize: 10

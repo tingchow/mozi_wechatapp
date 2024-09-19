@@ -1,0 +1,307 @@
+import { View, Text, Input, Button, Image, ScrollView, Picker } from '@tarojs/components'
+import Taro, { useLoad } from '@tarojs/taro';
+import ReactDOM, { useState, useEffect, useRef } from 'react';
+import { request } from '../../utils/request';
+import { Interface } from '../../utils/constants';
+import { mock_hotjiaoyisuo, mock_hotbankuai, mock_hotheyue } from '../../utils/mock';
+import { Card, List, Grid, TabBar } from 'antd-mobile';
+import IconFont from '../../components/iconfont';
+import { MoziCard } from '../../components/MoziCard';
+import { Layout } from '../../components/Layout';
+import { MoziGrid } from '../../components/MoziGrid';
+import { SearchInput } from '../../components/SearchInput';
+import { AddCollect } from '../../components/AddCollect';
+import { HighlightArea } from '../../components/HighlightArea';
+import { MoziPCRColChart } from '../../components/MoziChart/PCRColChart'; 
+// import { Pie } from '../../components/Pie';
+import { jump2Detail, jump2Market, jump2List, jump2DataPage } from '../../utils/core';
+import { handleOptions } from '../../components/MoziChart/options';
+import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
+import { isEmpty } from 'lodash';
+import './index.less';
+
+// const ratioArr = ['人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比', '主动买卖量比'];
+// const coinArr = ['BTC', 'BANANE'];
+const exchangesArr = ['binance'];
+
+const hisData = {
+  xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // 横坐标数据，靠近当天的index靠后
+  shortData: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7], // 空比，为0-1的小数
+  longData: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3], // 多比，为0-1的小数
+  longShortData: [0.42, 0.42, 0.42, 0.42, 0.42, 0.42, 0.42], // 多空比
+};
+
+export default function Fundingrate() {
+
+  // const [ ratioSelected, setRatioSelected ] = useState(ratioArr[0]);
+  
+  
+
+  // const [exchangeList, setExchangeList] = useState([]);
+  // const [ exchangeSelected, setExchangeSelected ] = useState(exchangeList[0]);
+  const [coinList, setCoinList] = useState([]);
+
+  const [cexArr, setCexArr] = useState([]);
+  const [ cexSelected, setCexSelected ] = useState('');
+  const [coinArr, setCoinArr] = useState([]);
+  const [ coinSelected, setCoinSelected ] = useState('');
+
+  const [activeKey, setActiveKey] = useState('currentRatio');
+  const [curFundData, setCurFundData] = useState({
+    loading: true,
+    close: false,
+    data: null
+  });
+  // const [hisPCRData, setHisPCRData] = useState({
+  //   loading: true,
+  //   close: false,
+  //   data: null
+  // });
+
+  
+
+  const chartRef = useRef(null)
+  const chartData = useRef(null)
+
+  const initChart = (canvas, width, height, dpr) => {
+    console.log('初始化');
+    const chart = echarts.init(canvas, null, {
+      width: width,
+      height: height,
+      devicePixelRatio: dpr // new
+    });
+    canvas.setChart(chart);
+
+    // console.log(handleOptions(hisData, 'samebar'));
+    // canvas.setOption();
+    
+    chartRef.current = chart;
+    console.log('chartRef.current', chartRef.current);
+
+    return chart;
+  }
+
+
+  const ec = {
+    onInit: initChart
+  }
+
+  const activeClick = async (value) => {
+    if ( value ===  activeKey) return;
+    console.log(value);
+    setActiveKey(value);
+    Taro.pageScrollTo({
+      selector: '.hisFR'
+    });
+  };
+
+  // const onRatioChange = (e) => {
+  //   console.log('e', e);
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   setRatioSelected(ratioArr[e.detail.value]);
+  // };
+
+  const onCoinChange = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCoinSelected(coinArr[e.detail.value]);
+
+    getData({coin: coinArr[e.detail.value]});
+  };
+
+  const onExchangeChange = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCexSelected(cexArr[e.detail.value]);
+
+    getData({exchange: cexArr[e.detail.value]});
+  };
+
+  useLoad(async () => {
+
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+
+    const allCoinData = await request({
+      url: Interface.ALL_COIN,
+    });
+
+    setCoinArr(allCoinData.data);
+    setCoinSelected(allCoinData.data[0]);
+
+    const allCexData = await request({
+      url: Interface.ALL_CEX,
+    });
+
+    setCexArr(allCexData.data);
+    setCexSelected(allCexData.data[0]);
+
+    getData({coin: allCoinData.data[0], exchange: allCexData.data[0]});
+  });
+
+  const getData = async ({coin = coinSelected, exchange = cexSelected}) => {
+    const frCurData = await request({
+      url: Interface.FR_CUR
+    });
+
+    if (isEmpty(frCurData?.data)) {
+      setCurFundData({
+        ...curFundData,
+        loading: false,
+        close: true
+      });
+      return;
+    }
+
+    const tmpFundData = {...frCurData?.data};
+    
+    const tmpList = tmpFundData.list.map((item) => {
+      item.data.unshift({
+        symbol: item.symbol,
+        url: item.url
+      })
+      return {
+        ...item,
+        data: item.data
+      }
+    });
+
+    console.log('tmpList', tmpList);
+
+    tmpFundData.exchange.unshift({
+      name: '币种'
+    });
+    tmpFundData.list = [...tmpList];
+    
+
+    setCurFundData({
+      ...curFundData,
+      loading: false,
+      data: tmpFundData
+    });
+
+
+    const frHisData = await request({
+      url: Interface.FR_HIS,
+      data: {
+        coin,
+        exchange
+      }
+    });
+
+    chartData.current = {
+      data: frHisData.data,
+      type: 'updownbarline'
+    };
+
+    chartRef.current.setOption(handleOptions(frHisData.data, 'updownbarline'));
+  };
+
+  const jump2Land = () => {
+    jump2DataPage('landscapechart', 'chartData', chartData.current);
+  };
+
+  return (
+    <View className='pcrBox'>
+      <TabBar className='pcrTab' activeKey={activeKey} onChange={activeClick}>
+        <TabBar.Item key='currentRatio' title='当前费率' />
+        <TabBar.Item key='historyRatio' title='历史费率' />
+      </TabBar>
+      <View className='currentPCR'>
+        <View className='header'>
+          <View>当前费率</View>
+          {/* <View className='pickerList'>
+            <Picker mode='selector' range={exchangeList} onChange={onExchangeChange}>
+              <View className='pickerSelect'>
+                <View className='selectIcon'>{exchangeSelected}</View>
+                <IconFont name='caret-down' />
+              </View>
+            </Picker>
+          </View> */}
+        </View>
+          
+        <View className='currentPCRChart'>
+          <Layout isLoading={curFundData.loading} isClose={curFundData.close}>
+            <ScrollView className='scroll' scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}} enablePassive={true}>
+              <View className='fund-list fund-title'>
+                {
+                  curFundData.data?.exchange.map((fundItem, fundIdx) => {
+                    if (fundIdx === 0) {
+                      return <View className='fund-item fund-item-first'>{fundItem.name}</View>
+                    }
+                    return (
+                      <View className='fund-item'>
+                        <Image className='fund-url' mode='aspectFit' src={fundItem.url} />
+                        <View className='fund-name'>{fundItem.name}</View>
+                      </View>
+                    )
+                  })
+                }
+              </View>
+              <View>
+              {
+                curFundData.data?.list.map((listItem, listIdx) => {
+                  return (
+                    <View className='fund-list list-detail' key={listIdx}>
+                      {
+                        listItem?.data.map((gridItem, gridIdx) => {
+                          if (gridIdx === 0) {
+                            return (
+                              <View className='fund-item fund-item-first' key={gridIdx}>
+                                <Image className='fund-url' mode='aspectFit' src={gridItem.url} />
+                                <View className='fund-name'>{gridItem.symbol}</View>
+                              </View>
+                            )
+                          }
+                          return <View className={`fund-item ${Number(gridItem.slice(0, gridItem.length - 1)) > 0.01 ? 'red': ''} ${Number(gridItem.slice(0, gridItem.length - 1)) < 0.005 ? 'green': ''}`}>{gridItem}</View>
+                        })
+                      }
+                    </View>
+                  )
+                })
+              }
+              </View>
+            </ScrollView>
+          </Layout>
+          
+        </View>
+      </View>
+      <View className='currentPCR hisFR'>
+        <View className='header'>
+          <View>历史费率</View>
+          <View className='pickerList'>
+            <View className='picker-item'>
+              <View className='picker-title'>币种</View>
+              <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
+                <View className='pickerSelect'>
+                  <View className='selectIcon'>{coinSelected}</View>
+                  <IconFont name='caret-down' />
+                </View>
+              </Picker>
+            </View>
+            <View className='picker-item'>
+              <View className='picker-title'>交易所</View>
+              <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
+                <View className='pickerSelect'>
+                  <View className='selectIcon'>{cexSelected}</View>
+                  <IconFont name='caret-down' />
+                </View>
+              </Picker>
+            </View>
+          </View>
+        </View>
+          
+        <View className='currentChart'>
+          <View className='chart-arrawsalt' onClick={jump2Land}>
+            <IconFont name='arrawsalt' size={30} color='#fff' />
+          </View>
+          <ec-canvas className='chart' canvas-id="mychart-updownbarline" ec={{onInit: initChart}}></ec-canvas>
+        </View>
+      </View>
+    </View>
+  )
+}
+

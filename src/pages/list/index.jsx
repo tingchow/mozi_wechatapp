@@ -23,6 +23,12 @@ export default function List() {
 
 
   useLoad(() => {
+
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+
     const app = Taro.getApp();
     init(app.listParam);
     console.log('app', app);

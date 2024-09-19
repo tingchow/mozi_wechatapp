@@ -1,4 +1,4 @@
-import { View, Text, Input, Button, Image } from '@tarojs/components'
+import { View, Text, Input, Button, Image, ScrollView } from '@tarojs/components'
 import Taro, { useLoad, getCurrentInstance, useRouter, useUnload } from '@tarojs/taro';
 import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
@@ -12,71 +12,15 @@ import { Layout } from '../../components/Layout';
 import { handleOptions } from '../../components/MoziChart/options';
 import { HighlightArea } from '../../components/HighlightArea';
 import { AddCollect } from '../../components/AddCollect';
-import { jump2List } from '../../utils/core';
+import { jump2List, jump2DataPage } from '../../utils/core';
 import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
+// import * as towxml from '../../components/towxml/towxml';
+import towxml from '../../towxml';
 import { isEmpty } from 'lodash';
+// import '~taro-parse/dist/style/main.scss'
+// import TaroParser from 'taro-parse'
 
-
-
-
-const marketData = [{
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}, {
-  title: (<span className='gridText'><img className='girdIcon' src='url' />Binance</span>),
-  newPrice: '$66661.4',
-  dayChange: '+0.54%',
-  dayTradeNum: '0.00001',
-  dayTradeInfo: '0.00001',
-  key: 'Binance'
-}];
 
 const lineData = {
   hour: null,
@@ -84,6 +28,14 @@ const lineData = {
   week: null,
   month: null,
 };
+
+// const aiData = {
+//   hour: null,
+//   day: null,
+//   week: null,
+//   month: null,
+// };
+
 
 export default function Detail() {
 
@@ -102,6 +54,28 @@ export default function Detail() {
   const [coinMarket, setCoinMarket] = useState({
     length: 0,
     data: null
+  });
+  const [ai, setAi] = useState({
+    loading: true,
+    error: false,
+    data: null
+  });
+
+  const [userStatus, setUserStatus] = useState('needAccount');
+
+  const aiData = useRef({
+    hour: null,
+    day: null,
+    week: null,
+    month: null,
+  });
+
+  const chartData = useRef({
+    hour: null,
+    day: null,
+    week: null,
+    month: null,
+    active: 'hour',
   });
 
 
@@ -212,6 +186,10 @@ export default function Detail() {
       type: 1
     });
     // setCoinLine(coin_line1.data);
+    chartData.current.hour = {
+      data: coin_line1.data,
+      type: 'kline'
+    };
     chartRef.current.setOption(handleOptions(coin_line1.data, 'kline'));
     lineData.hour = coin_line1.data;
 
@@ -219,16 +197,28 @@ export default function Detail() {
       symbol,
       type: 2
     });
+    chartData.current.day = {
+      data: coin_line2.data,
+      type: 'kline'
+    };
     lineData.day = coin_line2.data;
     const coin_line3 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 3
     });
+    chartData.current.week = {
+      data: coin_line3.data,
+      type: 'kline'
+    };
     lineData.week = coin_line3.data;
     const coin_line4 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 4
     });
+    chartData.current.month = {
+      data: coin_line4.data,
+      type: 'kline'
+    };
     lineData.month = coin_line4.data;
 
     // 市场
@@ -242,7 +232,7 @@ export default function Detail() {
     if (!isEmpty(marketRes?.data)) {
       const tempData = marketRes.data.map((item) => {
         return {
-          title: <View className='gridText'><Image className='girdIcon' mode='aspectFit' src={item.url} />{item.exchanges}</View>,
+          title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.exchanges}</View>,
           last: item.last,
           price24h: <HighlightArea value={item.price24h} />,
           vol: item.vol,
@@ -256,7 +246,8 @@ export default function Detail() {
       });
     }
 
-
+    console.log('getAi数据');
+    getAiData({});
   });
 
   useUnload(() => {
@@ -269,7 +260,7 @@ export default function Detail() {
       data,
     });
     // setHotIndustry(res.data);
-    console.log('响应信息', res);
+    // console.log('响应信息', res);
     return res;
   };
 
@@ -280,21 +271,29 @@ export default function Detail() {
   const activeClick = async (value) => {
     if ( value ===  activeKey) return;
     console.log(value);
+    chartData.current.active = value;
     setActiveKey(value);
 
     // console.log('coinLine', JSON.stringify(coinLineData));
     console.log('lineData', lineData);
     // setCoinLine(lineData[value]);
     chartRef.current.setOption(handleOptions(lineData[value], 'kline'));
+    getAiData({activeKey: value});
   };
 
   const pageActiveClick = (value) => {
     console.log(value);
     setPageActiveKey(value);
+    // if (value === 'ai') {
+      
+    //   return;
+    // }
     
     let scrollClass = '';
     if (value === 'chart') {
       scrollClass = '.f2Box';
+    } else if (value === 'ai') {
+      scrollClass = '.ai-box';
     } else if (value === 'market') {
       scrollClass = '.marketBox';
     }
@@ -303,7 +302,59 @@ export default function Detail() {
     });
   };
 
+  const getAiData = async ({activeKey = 'hour'}) => {
+    // if (isAccount === true) {
+    //   setUserStatus(null);
+    // } else {
+    //   if (userStatus === 'needAccount') return;
+    // }
+    
+    const typeObj = {
+      hour: 1,
+      day: 2,
+      week: 3,
+      month: 4
+    };
+    console.log('aiData.current', aiData.current);
+    if (aiData.current[activeKey] !== null) {
+      setAi({
+        ...ai,
+        loading: false,
+        data: aiData.current[activeKey]
+      });
+      console.log('切换数据');
+      return;
+    } else {
+      setAi({
+        ...ai,
+        loading: true,
+      });
+    }
+    const aiRes = await cardRequest(Interface.AI_COIN, {
+      symbol,
+      type: typeObj[activeKey]
+    });
+    if (isEmpty(aiRes?.data)) {
+      setAi({
+        ...ai,
+        loading: false,
+        close: true,
+      });
+      return;
+    }
+    let mdRes = towxml(aiRes?.data,'markdown',{});
+    aiData.current[activeKey] = mdRes;
+    console.log('aiData[activeKey]', aiData.current[activeKey]);
+    
+    setAi({
+      loading: false,
+      data: mdRes
+    });
+  };
 
+  const jump2Land = () => {
+    jump2DataPage('landscapechart', 'chartData', chartData.current);
+  };
 
   return (
     <View className='indexBox'>
@@ -420,6 +471,7 @@ export default function Detail() {
       {/* tab选择 */}
       <TabBar className='tabContainer' activeKey={pageActiveKey} onChange={pageActiveClick}>
         <TabBar.Item key='chart' title='图表' />
+        <TabBar.Item key='ai' title='AI' />
         <TabBar.Item key='market' title='市场' />
         {/* <TabBar.Item key='comment' title='评论' /> */}
       </TabBar>
@@ -435,11 +487,35 @@ export default function Detail() {
             <TabBar.Item key='month' title='月' />
           </TabBar>
           <View className='chartBox'>
+            <View className='chart-arrawsalt' onClick={jump2Land}>
+              <IconFont name='arrawsalt' size={30} color='#fff' />
+            </View>
             <ec-canvas canvas-id="mychart-kline" ec={ec}></ec-canvas>
           </View>
           
         </div>
       </div>
+      {/* AI解析 */}
+      <View className='ai-box'>
+        <MoziCard
+          title='AI解析'
+          // sumNum={coinMarket.length}
+          // type='more'
+          // callback={jump2List}
+        >
+        <Layout isLoading={ai.loading} isError={ai.error}>
+          <ScrollView
+            className='scroll-markdown'
+            scrollY
+          >
+            {
+              // @ts-ignore
+              <towxml nodes={ai.data} />
+            }
+          </ScrollView>
+        </Layout>
+        </MoziCard>
+      </View>
       
 
 

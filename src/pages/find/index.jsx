@@ -225,6 +225,12 @@ export default function Find() {
   const exchangeArr = useRef([]);
   
   useLoad(async () => {
+
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+
     const exchangeSpot = await request({
       url: Interface.hot_exchange,
       data: {
@@ -441,7 +447,7 @@ export default function Find() {
   
   const tradeSelect = [];
   useLoad(async () => {
-    for (let i = 0; i < dimArr.length; i++) {
+    for (let i = 0; i < intervalsArr.length; i++) {
       const trade = await request({
         url: Interface.coin_trade,
         data: {

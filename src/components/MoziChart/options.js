@@ -1,4 +1,4 @@
-export const handleOptions = (data, type) => {
+export const handleOptions = (data, type, msg) => {
 
   console.log(data, type)
   if (type === 'kline') {
@@ -55,15 +55,15 @@ export const handleOptions = (data, type) => {
         }
       },
       // 移动端暂不展示tooltip，需要考虑更好的展示方法
-      // tooltip: {
-      //   trigger: 'axis',
-      //   axisPointer: {
-      //     type: 'cross'
-      //   }
-      //   // triggerOn: 'none',
-      //   // transitionDuration: 0,
-      //   // confine: true,
-      // },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross'
+        }
+        // triggerOn: 'none',
+        // transitionDuration: 0,
+        // confine: true,
+      },
       animation: false,
       animationDurationUpdate: 0,
       grid: {
@@ -316,6 +316,19 @@ export const handleOptions = (data, type) => {
             }
           },
           data,
+          itemStyle: {
+            // color: (info) => {
+            //   console.log('color', info.data?.state === 1? '#02c076': '#ff3333');
+            //   return info.data?.state === 1? '#02c076': '#ff3333'
+            // }
+            borderColor: '#fff'
+          },
+          levels: [{
+            itemStyle: {
+              borderWidth: 0,
+              gapWidth: 1
+            }
+          }],
           breadcrumb: {
             show: false //隐藏底部导航条
           }
@@ -327,9 +340,10 @@ export const handleOptions = (data, type) => {
           let value = info.value;
           let valueDisplay = info.data.valueDisplay;
           let name = info.name;
+          console.log('treemap-msg', msg);
           let tip =  `
               ${name}
-              成交量: ${valueDisplay}
+              ${msg}: ${valueDisplay}
           `;
           return tip;
         },
@@ -403,16 +417,32 @@ export const handleOptions = (data, type) => {
         type: 'category',
         data: data.xAxisData
       },
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 50,
+          end: 100
+        },
+        {
+          // 需要展示滑动块，用来辅助
+          show: true,
+          type: 'slider',
+          start: 80,
+          end: 100,
+          top: '87%',
+          height: 20
+        }
+      ],
       
       series: [
         {
           name: '空',
           type: 'bar',
           stack: 'total',
-          label: {
-            show: true,
-            formatter: (params) => params.value *100 + '%'
-          },
+          // label: {
+          //   show: true,
+          //   formatter: (params) => params.value *100 + '%'
+          // },
           color: '#ff3333',
           data: data.shortData
         },
@@ -421,10 +451,10 @@ export const handleOptions = (data, type) => {
           type: 'bar',
           stack: 'total',
           color: '#02c076',
-          label: {
-            show: true,
-            formatter: (params) => params.value* 100 + '%'
-          },
+          // label: {
+          //   show: true,
+          //   formatter: (params) => params.value* 100 + '%'
+          // },
           emphasis: {
             focus: 'series'
           },
@@ -441,6 +471,80 @@ export const handleOptions = (data, type) => {
   }
 
   if (type === 'linebar') {
+    return {
+      tooltip: {
+        trigger: 'axis',
+        formatter: function (info) {
+          console.log('info', info);
+          let valueList = info[0].data.toolTips;
+          let tips = '';
+          valueList.forEach((item) => {
+            tips += `
+              ${item.exchange}${item.value}
+            `
+          });
+          return tips;
+        }
+      },
+      legend: {
+        selectedMode: false
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: data.xAxisData,
+          axisPointer: {
+            type: 'line'
+          }
+        }
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          axisLabel: {
+            formatter: (value) => data.yAxisLeftSlot.replace('{}', value) ?? value
+          }
+        },
+        {
+          type: 'value',
+          axisLabel: {
+            formatter: (value) => data.yAxisRightSlot.replace('{}', value) ?? value
+          }
+        }
+      ],
+      series: [
+        {
+          name: '持仓',
+          type: 'bar',
+          data: data.barData
+        },
+        {
+          name: '价格',
+          type: 'line',
+          yAxisIndex: 1,
+          data: data.lineData
+        }
+      ],
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 50,
+          end: 100
+        },
+        {
+          // 需要展示滑动块，用来辅助
+          show: true,
+          type: 'slider',
+          start: 80,
+          end: 100,
+          top: '87%',
+          height: 20
+        }
+      ],
+    };
+  }
+
+  if (type === 'updownbarline') {
     return {
       tooltip: {
         trigger: 'axis',
@@ -472,29 +576,54 @@ export const handleOptions = (data, type) => {
         {
           type: 'value',
           axisLabel: {
-            formatter: (value) => data.yAxisLeftSlot.replace('{}', value)
+            formatter: (value) => data.yAxisLeftSlot.replace('{}', value) ?? value
           }
         },
         {
           type: 'value',
           axisLabel: {
-            formatter: (value) => data.yAxisRightSlot.replace('{}', value)
+            formatter: (value) => data.yAxisRightSlot.replace('{}', value) ?? value
           }
         }
       ],
       series: [
         {
-          name: '持仓',
+          // name: '',
           type: 'bar',
-          data: data.barData
+          stack: 'one',
+          color: '#02c076',
+          data: data.upData
         },
         {
-          name: '价格',
+          // name: '',
+          type: 'bar',
+          stack: 'one',
+          color: '#ff3333',
+          data: data.downData
+        },
+        {
+          // name: '价格',
           type: 'line',
           yAxisIndex: 1,
-          data: data.lineData
+          data: data.coinFee
         }
-      ]
+      ],
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 50,
+          end: 100
+        },
+        {
+          // 需要展示滑动块，用来辅助
+          show: true,
+          type: 'slider',
+          start: 80,
+          end: 100,
+          top: '87%',
+          height: 20
+        }
+      ],
     };
   }
 };

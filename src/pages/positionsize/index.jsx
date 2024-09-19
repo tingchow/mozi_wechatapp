@@ -14,49 +14,44 @@ import { AddCollect } from '../../components/AddCollect';
 import { HighlightArea } from '../../components/HighlightArea';
 import { MoziPCRColChart } from '../../components/MoziChart/PCRColChart'; 
 // import { Pie } from '../../components/Pie';
-import { jump2Detail, jump2Market, jump2List } from '../../utils/core';
+import { jump2Detail, jump2Market, jump2List, jump2DataPage } from '../../utils/core';
 import { handleOptions } from '../../components/MoziChart/options';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 import './index.less';
 
-const ratioArr = ['人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比', '主动买卖量比'];
-const coinArr = ['BTC', 'BANANE'];
-const exchangesArr = ['binance'];
-
-const hisData = {
-  xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // 横坐标数据，靠近当天的index靠后
-  shortData: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7], // 空比，为0-1的小数
-  longData: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3], // 多比，为0-1的小数
-  longShortData: [0.42, 0.42, 0.42, 0.42, 0.42, 0.42, 0.42], // 多空比
-};
+// const coinArr = ['BTC', 'BANANE'];
+// const exchangesArr = ['binance'];
 
 export default function Positionsize() {
-
-  const [ ratioSelected, setRatioSelected ] = useState(ratioArr[0]);
   
   
 
-  const [exchangeList, setExchangeList] = useState([]);
-  const [ exchangeSelected, setExchangeSelected ] = useState(exchangeList[0]);
-  const [coinList, setCoinList] = useState([]);
-  const [ coinSelected, setCoinSelected ] = useState(coinList[0]);
+  const [cexArr, setCexArr] = useState([]);
+  const [ cexSelected, setCexSelected ] = useState('');
+  const [coinArr, setCoinArr] = useState([]);
+  const [ coinSelected, setCoinSelected ] = useState('');
 
   const [activeKey, setActiveKey] = useState('currentRatio');
-  const [curPCRData, setCurPCRData] = useState({
-    loading: true,
-    close: false,
-    data: null
-  });
-  const [hisPCRData, setHisPCRData] = useState({
-    loading: true,
-    close: false,
-    data: null
-  });
+  // const [curPCRData, setCurPCRData] = useState({
+  //   loading: true,
+  //   close: false,
+  //   data: null
+  // });
+  // const [hisPCRData, setHisPCRData] = useState({
+  //   loading: true,
+  //   close: false,
+  //   data: null
+  // });
 
   
 
   const chartRef = useRef(null)
   const chartRef1 = useRef(null)
+
+  const chartData = useRef({
+    cur: null,
+    his: null
+  });
 
   const initChart = (canvas, width, height, dpr) => {
     const chart = echarts.init(canvas, null, {
@@ -90,7 +85,7 @@ export default function Positionsize() {
     return chart;
   }
 
-  const ec1 = {
+  const ec = {
     onInit: initChart
   }
 
@@ -100,185 +95,139 @@ export default function Positionsize() {
     setActiveKey(value);
   };
 
-  const onRatioChange = (e) => {
-    console.log('e', e);
-    e.preventDefault();
-    e.stopPropagation();
-    setRatioSelected(ratioArr[e.detail.value]);
-  };
-
   const onCoinChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setCoinSelected(coinList[e.detail.value]);
+
+    getData({coin: coinArr[e.detail.value]});
   };
 
   const onExchangeChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setExchangeSelected(exchangesArr[e.detail.value]);
+    setCexSelected(cexArr[e.detail.value]);
+
+    getData({exchange: cexArr[e.detail.value]});
   };
 
-  useLoad(() => {
-    setTimeout(() => {
+  useLoad(async () => {
 
-      setExchangeList(['binance', 'OKX']);
-      setExchangeSelected('binance');
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
 
-      setCoinList(['btc', 'eth']);
-      setCoinSelected('btc');
+    const allCoinData = await request({
+      url: Interface.ALL_COIN,
+    });
 
-      const data = [{
-        name: 'BTC', // 交易所名称
-        value: 20, // 实际数值
-        valueDisplay: '$20', // value实际展示内容，比如$20M
-        itemStyle: {
-          color: '#02c076', // 展示红色还是绿色
-        }
-        
-      }, {
-        name: 'ETH', // 交易所名称
-        value: 10, // 实际数值
-        label: '$10',
-        valueDisplay: '$10', // value实际展示内容，比如$20M
-        itemStyle: {
-          color: '#ff3333', // 展示红色还是绿色
-        }
-      }]
-      chartRef.current.setOption(handleOptions(data, 'treemap'));
+    setCoinArr(allCoinData.data);
+    setCoinSelected(allCoinData.data[0]);
 
+    const allCexData = await request({
+      url: Interface.ALL_CEX,
+    });
 
-      const hisdata = {
-        xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // 横坐标数据，靠近当天的index靠后
-        yAxisLeftSlot: '', // 左侧坐标轴单位，比如${}B，需要替换的内容在{}中替换
-        yAxisRightSlot: '', // 右侧坐标轴单位，比如${}K，需要替换的内容在{}中替换
-        barData: [20,20,20,20,20,20,20],
-        lineData: [20,20,20,20,20,20,20],
-        barData: [{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        },{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        },{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        },{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        },{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        },{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        },{
-         value: 20,
-         toolTips: [{
-           exchange: 'Binance', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-          },{
-           exchange: 'OKX', // 名称
-           url: 'xxxx', // 交易所icon
-           value: 20, // 交易所币种数值
-         }]
-        }]
-      }
-      const lineOption = handleOptions(hisdata, 'linebar');
-      console.log('lineOption', lineOption);
-      chartRef1.current.setOption(lineOption);
-    }, 5000);
+    setCexArr(allCexData.data);
+    setCexSelected(allCexData.data[0]);
+
+    getData({coin: allCoinData.data[0], exchange: allCexData.data[0]});
   });
+
+  const getData = async ({coin = coinSelected, exchange = cexSelected}) => {
+    const psCurData = await request({
+      url: Interface.PS_CUR,
+      data: {
+        exchange
+      }
+    });
+
+    const psTmpData = psCurData?.data.map((item) => {
+      return {
+        ...item,
+        itemStyle: {
+          color: item.state === 1? '#02c076': '#ff3333',
+          // borderColor: '#fff'
+        }
+      };
+    });
+
+    console.log('tremapData', psTmpData);
+    chartData.current.cur = {
+      data: psTmpData,
+      msg: '持仓量',
+      type: 'treemap'
+    };
+    chartRef.current.setOption(handleOptions(psTmpData, 'treemap', '持仓量'));
+
+    const psHisData = await request({
+      url: Interface.PS_HIS,
+      data: {
+        coin,
+        exchange
+      }
+    });
+
+    
+    chartData.current.his = {
+      data: psHisData.data,
+      type: 'linebar'
+    };
+    chartRef1.current.setOption(handleOptions(psHisData.data, 'linebar'));
+  };
+
+  const jump2Land = (type) => {
+    jump2DataPage('landscapechart', 'chartData', chartData.current[type]);
+  };
 
   
 
   return (
     <View className='pcrBox'>
-      <TabBar className='pcrTab' activeKey={activeKey} onChange={activeClick}>
+      {/* <TabBar className='pcrTab' activeKey={activeKey} onChange={activeClick}>
         <TabBar.Item key='currentRatio' title='当前持仓量' />
         <TabBar.Item key='historyRatio' title='历史持仓量' />
-      </TabBar>
-      <View className='currentPCR'>
-        <View className='header'>
-          <View>当前持仓量</View>
-          <View className='pickerList'>
-            <Picker mode='selector' range={exchangeList} onChange={onExchangeChange}>
-              <View className='pickerSelect'>
-                <View className='selectIcon'>{exchangeSelected}</View>
-                <IconFont name='caret-down' />
-              </View>
-            </Picker>
-          </View>
+      </TabBar> */}
+      <View className='pickerList'>
+        <View className='picker-item'>
+          <View className='picker-title'>币种</View>
+          <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
+            <View className='pickerSelect'>
+              <View className='selectIcon'>{coinSelected}</View>
+              <IconFont name='caret-down' />
+            </View>
+          </Picker>
         </View>
+        <View className='picker-item'>
+          <View className='picker-title'>交易所</View>
           
-        <View className='currentPCRChart'>
-          <ec-canvas className='chart' canvas-id="mychart-ps" ec={ec1}></ec-canvas>
+          <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
+            <View className='pickerSelect'>
+              <View className='selectIcon'>{cexSelected}</View>
+              <IconFont name='caret-down' />
+            </View>
+          </Picker>
         </View>
       </View>
       <View className='currentPCR'>
-        <View className='header'>
-          <View>历史持仓量</View>
-          <View className='pickerList'>
-            <Picker mode='selector' range={coinList} onChange={onCoinChange}>
-              <View className='pickerSelect'>
-                <View className='selectIcon'>{coinSelected}</View>
-                <IconFont name='caret-down' />
-              </View>
-            </Picker>
-          </View>
-        </View>
+        <View className='header'>当前持仓量</View>
           
         <View className='currentPCRChart'>
-          <ec-canvas className='chart' canvas-id="mychart-ps" ec={{onInit: initChart1}}></ec-canvas>
+          <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
+            <IconFont name='arrawsalt' size={30} color='#fff' />
+          </View>
+          <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec}></ec-canvas>
+        </View>
+      </View>
+      <View className='currentPCR'>
+        <View className='header'>历史持仓量</View>
+          
+        <View className='currentPCRChart'>
+          <View className='chart-arrawsalt' onClick={() => {jump2Land('his')}}>
+            <IconFont name='arrawsalt' size={30} color='#fff' />
+          </View>
+          <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas>
         </View>
       </View>
     </View>

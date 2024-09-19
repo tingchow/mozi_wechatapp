@@ -24,7 +24,7 @@ export const MoziPCRColChart = (props) => {
             return (
               <View className='pcrItem'>
                 <View className='pcr-item-title'>
-                  <View>{pcrItem.order}</View>
+                  <View>{Number(pcrItem.order) + 1}</View>
                   <Image className='pcr-item-icon' mode='aspectFit' src={pcrItem.url} />
                   <View className='pcrItemName'>{pcrItem.name}</View>
                 </View>

@@ -34,6 +34,8 @@ export const Interface = {
   coin_line: 'https://moziinnovations.com/detail/kline',
   // 市场
   COIN_MARKET: 'https://moziinnovations.com/detail/exchangeprice',
+  // AI建议
+  AI_COIN: 'https://moziinnovations.com/detail/kline/ai',
 
   // 搜索页
   // 币种是否有效
@@ -55,6 +57,28 @@ export const Interface = {
   ADD_OWN: 'https://moziinnovations.com/selfselect/add',
   // 删除自选
   CANCEL_OWN: 'https://moziinnovations.com/selfselect/cancel',
+
+  // 多空比（当前）
+  PCR_CUR: 'https://moziinnovations.com/derivatives/longshort',
+  // 多空比（历史）
+  PCR_HIS: 'https://moziinnovations.com/derivatives/histratio',
+  // 持仓量（当前）
+  PS_CUR: 'https://moziinnovations.com/derivatives/holdusd',
+  // 持仓量（历史）
+  PS_HIS: 'https://moziinnovations.com/derivatives/histUsd',
+  // 成交额（当前）
+  TRA_CUR: 'https://moziinnovations.com/derivatives/tradingval',
+  // 成交额（历史）
+  TRA_HIS: 'https://moziinnovations.com/derivatives/historytradingval',
+  // 资金费率（当前）
+  FR_CUR: 'https://moziinnovations.com/derivatives/foundrate',
+  // 资金费率（历史）
+  FR_HIS: 'https://moziinnovations.com/derivatives/historyfoundrate',
+
+  // 全部币
+  ALL_COIN: 'https://moziinnovations.com/derivatives/allcoin',
+  // 全部交易所
+  ALL_CEX: 'https://moziinnovations.com/derivatives/allcex',
 };
 
 // 邮箱

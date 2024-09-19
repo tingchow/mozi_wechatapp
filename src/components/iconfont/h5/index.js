@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 import React from 'react';
+import IconArrawsalt from './IconArrawsalt';
+import IconClose from './IconClose';
 import IconInfoCircle from './IconInfoCircle';
 import IconPlusSquare from './IconPlusSquare';
 import IconMoneycollect from './IconMoneycollect';
@@ -24,6 +26,8 @@ import IconHeartFill from './IconHeartFill';
 import IconCloseCircleFill from './IconCloseCircleFill';
 import IconSearch from './IconSearch';
 import IconRight from './IconRight';
+export { default as IconArrawsalt } from './IconArrawsalt';
+export { default as IconClose } from './IconClose';
 export { default as IconInfoCircle } from './IconInfoCircle';
 export { default as IconPlusSquare } from './IconPlusSquare';
 export { default as IconMoneycollect } from './IconMoneycollect';
@@ -50,6 +54,10 @@ export { default as IconRight } from './IconRight';
 
 const IconFont = ({ name, ...rest }) => {
   switch (name) {
+    case 'arrawsalt':
+      return <IconArrawsalt {...rest} />;
+    case 'close':
+      return <IconClose {...rest} />;
     case 'info-circle':
       return <IconInfoCircle {...rest} />;
     case 'plus-square':

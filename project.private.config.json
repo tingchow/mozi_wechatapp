@@ -9,6 +9,27 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/landscapechart/index",
+          "pathName": "pages/landscapechart/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/tradevol/index",
+          "pathName": "pages/tradevol/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/fundingrate/index",
+          "pathName": "pages/fundingrate/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/positionsize/index",
           "pathName": "pages/positionsize/index",
           "query": "",
