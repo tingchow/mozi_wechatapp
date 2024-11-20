@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import Taro, { useLoad } from '@tarojs/taro'
+import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 import { SimpleList } from '../../components/ListCom/SimpleList';
 import { Layout } from '../../components/Layout';
@@ -18,8 +18,13 @@ export default function List() {
   const pageSize = useRef(100);
   const pageFinish = useRef(false);
   const [ popVis, setPopVis ] = useState(false);
+  const [ selectedPick, setSelected ] = useState('');
 
-
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
+  });
 
 
   useLoad(() => {
@@ -36,12 +41,18 @@ export default function List() {
       setListParam(app.listParam);
       if (Array.isArray(app.listParam.selectArr) && app.listParam.selectArr.length > 0) {
         setShowHeader(true);
+        setSelected(app.listParam.selectArr[0]);
       }
       delete app.findType;
+      
+      Taro.setNavigationBarTitle({
+        title: app.listParam.rankTitle
+      });
     }
     if (listParam.pageSize) {
       pageSize.current = listParam.pageSize;
     }
+    
     
   });
 
@@ -106,6 +117,8 @@ export default function List() {
   const onChange = async (value) => {
     console.log('已选择');
     console.log('change', value);
+    setSelected(listParam.selectArr[value]);
+
     // e.preventDefault();
     // e.stopPropagation();
     // setSelected(listParam.selectArr[e.detail.value]);
@@ -131,17 +144,19 @@ export default function List() {
   }
 
   return (
-    <Layout isLoading={isLoading}>
-      
+    <Layout>
+      { listParam && 
       <SimpleList
+        isLoading={isLoading}
         // interFace={listParam.interFace} // Interface.hot_coin
         gridTitle={listParam.gridTitle} // ['币种', '24H价格变化(%)']
         // requestData={listParam.requestData}
         rankName={listParam.rankName}
         rankDesc={listParam.rankDesc}
         selectArr={listParam.selectArr}
+        selectedPick={selectedPick}
         enableLoadMore={listParam}
-        renderData={listParam.reponseData? readyData[readyIndex]: data}
+        renderData={listParam.reponseData? readyData[readyIndex]: data.list || data}
         loadMore={loadMore}
         rankTitle={listParam.rankTitle}
         // onChangeCb={(value) => {onChange(value)}}
@@ -149,6 +164,8 @@ export default function List() {
         gridCon={listParam.gridCon} // ['coin', 'priceChangePercent']
         // loginCb={() => {setPopVis(true)}}
       />
+       }
+      
       {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
     </Layout>
   )

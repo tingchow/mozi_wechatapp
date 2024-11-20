@@ -1,5 +1,5 @@
 import { View, Text, Input, Button, Image, ScrollView, Picker } from '@tarojs/components'
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro';
 import ReactDOM, { useState, useEffect, useRef } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -37,6 +37,12 @@ export default function Putcallratio() {
     loading: true,
     close: false,
     data: null
+  });
+
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
   });
 
   

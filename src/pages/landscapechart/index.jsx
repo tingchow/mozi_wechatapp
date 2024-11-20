@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import Taro, { useLoad } from '@tarojs/taro'
+import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 import { TabBar } from 'antd-mobile';
 import { handleOptions } from '../../components/MoziChart/options';
@@ -17,6 +17,11 @@ export default function Landscapechart() {
 
   const chartData = useRef(null);
 
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
+  });
 
   const initChart = (canvas, width, height, dpr) => {
     const chart = echarts.init(canvas, null, {
@@ -55,37 +60,6 @@ export default function Landscapechart() {
     console.log('数据', chartData.current);
     chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
   };
-
-  // useLoad(() => {
-  //   const app = Taro.getApp();
-  //   if (app.chartData.active) {
-  //     // chart.setOption(handleOptions(app.chartData.data, app.chartData.type, app.chartData.msg));
-  //   }
-  // });
-
-  // useLoad(() => {
-
-  //   // Taro.showShareMenu({
-  //   //   withShareTicket: true,
-  //   //   showShareItems: ['wechatFriends', 'wechatMoment']
-  //   // });
-
-  //   const app = Taro.getApp();
-  //   if (app.chartData) {
-
-  //   }
-  //   if (app.listParam) {
-  //     setListParam(app.listParam);
-  //     if (Array.isArray(app.listParam.selectArr) && app.listParam.selectArr.length > 0) {
-  //       setShowHeader(true);
-  //     }
-  //     delete app.findType;
-  //   }
-  //   if (listParam.pageSize) {
-  //     pageSize.current = listParam.pageSize;
-  //   }
-    
-  // });
 
 
   return (

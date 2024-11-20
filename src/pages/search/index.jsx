@@ -1,5 +1,5 @@
 import { View, Text, Input, Button, Image, PageContainer } from '@tarojs/components'
-import { useLoad, getCurrentInstance, useRouter } from '@tarojs/taro';
+import { useLoad, getCurrentInstance, useRouter, useShareAppMessage } from '@tarojs/taro';
 import { useEffect, useState } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -216,6 +216,12 @@ export default function Search() {
     
 
   };
+
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
+  });
 
   const spotColNameList = [
     ['现货交易对', '交易所', '最新价', '24H变化'],

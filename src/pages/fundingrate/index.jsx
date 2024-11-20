@@ -1,5 +1,5 @@
 import { View, Text, Input, Button, Image, ScrollView, Picker } from '@tarojs/components'
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro';
 import ReactDOM, { useState, useEffect, useRef } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -22,23 +22,8 @@ import './index.less';
 
 // const ratioArr = ['人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比', '主动买卖量比'];
 // const coinArr = ['BTC', 'BANANE'];
-const exchangesArr = ['binance'];
-
-const hisData = {
-  xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // 横坐标数据，靠近当天的index靠后
-  shortData: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7], // 空比，为0-1的小数
-  longData: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3], // 多比，为0-1的小数
-  longShortData: [0.42, 0.42, 0.42, 0.42, 0.42, 0.42, 0.42], // 多空比
-};
 
 export default function Fundingrate() {
-
-  // const [ ratioSelected, setRatioSelected ] = useState(ratioArr[0]);
-  
-  
-
-  // const [exchangeList, setExchangeList] = useState([]);
-  // const [ exchangeSelected, setExchangeSelected ] = useState(exchangeList[0]);
   const [coinList, setCoinList] = useState([]);
 
   const [cexArr, setCexArr] = useState([]);
@@ -52,6 +37,8 @@ export default function Fundingrate() {
     close: false,
     data: null
   });
+
+  const [showMore, setShowMore] = useState(false);
   // const [hisPCRData, setHisPCRData] = useState({
   //   loading: true,
   //   close: false,
@@ -62,6 +49,12 @@ export default function Fundingrate() {
 
   const chartRef = useRef(null)
   const chartData = useRef(null)
+
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
+  });
 
   const initChart = (canvas, width, height, dpr) => {
     console.log('初始化');
@@ -241,7 +234,7 @@ export default function Fundingrate() {
                   })
                 }
               </View>
-              <View>
+              <View className={`fund-detail-box show-more-${showMore}`}>
               {
                 curFundData.data?.list.map((listItem, listIdx) => {
                   return (
@@ -265,6 +258,12 @@ export default function Fundingrate() {
               }
               </View>
             </ScrollView>
+            {
+              !showMore && <View className='show-more-btn' onClick={() => {setShowMore(true)}}>
+                <View className='more'>查看更多</View>
+                <IconFont name='caret-down' />
+              </View>
+            }
           </Layout>
           
         </View>

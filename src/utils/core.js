@@ -4,7 +4,7 @@ import Taro from '@tarojs/taro';
 export const jump2Detail = (symbol) => {
   console.log(symbol)
   Taro.navigateTo({
-      url: `/pages/detail/index?symbol=${symbol}`,
+    url: `/pages/detail/index?symbol=${symbol}`,
   });
 }
 

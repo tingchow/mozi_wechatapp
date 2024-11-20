@@ -1,5 +1,5 @@
-import { View, Text, Input, Button, Image, ScrollView } from '@tarojs/components'
-import Taro, { useLoad, getCurrentInstance, useRouter, useUnload } from '@tarojs/taro';
+import { View, Text, Input, Button, Image, ScrollView, Canvas } from '@tarojs/components'
+import Taro, { useLoad, getCurrentInstance, useRouter, useUnload, useShareAppMessage } from '@tarojs/taro';
 import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -13,6 +13,7 @@ import { handleOptions } from '../../components/MoziChart/options';
 import { HighlightArea } from '../../components/HighlightArea';
 import { AddCollect } from '../../components/AddCollect';
 import { jump2List, jump2DataPage } from '../../utils/core';
+import { getToken } from '../../utils/request';
 import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
@@ -43,6 +44,7 @@ export default function Detail() {
   const [pageActiveKey, setPageActiveKey] = useState('chart');
 
   const [coinInfo, setCoinInfo] = useState(null);
+  const [ needLogin, setLogin ] = useState(false);
   // const [coinLine, setCoinLine] = useState([]);
   // const [infoShowLeft, setInfoShowLeft] = useState([]);
   // const [infoShowRight, setInfoShowRight] = useState([]);
@@ -179,7 +181,7 @@ export default function Detail() {
     setCoinInfo(coin_info.data);
 
     console.log('coin_info', coin_info);
-
+    getAiData({});
     // k线图
     const coin_line1 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -187,40 +189,42 @@ export default function Detail() {
     });
     // setCoinLine(coin_line1.data);
     chartData.current.hour = {
-      data: coin_line1.data,
+      data: coin_line1?.data,
       type: 'kline'
     };
     chartRef.current.setOption(handleOptions(coin_line1.data, 'kline'));
-    lineData.hour = coin_line1.data;
+    lineData.hour = coin_line1?.data;
 
     const coin_line2 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 2
     });
     chartData.current.day = {
-      data: coin_line2.data,
+      data: coin_line2?.data,
       type: 'kline'
     };
-    lineData.day = coin_line2.data;
+    lineData.day = coin_line2?.data;
     const coin_line3 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 3
     });
     chartData.current.week = {
-      data: coin_line3.data,
+      data: coin_line3?.data,
       type: 'kline'
     };
-    lineData.week = coin_line3.data;
+    lineData.week = coin_line3?.data;
     const coin_line4 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 4
     });
     chartData.current.month = {
-      data: coin_line4.data,
+      data: coin_line4?.data,
       type: 'kline'
     };
-    lineData.month = coin_line4.data;
+    lineData.month = coin_line4?.data;
 
+
+   
     // 市场
     const marketRes = await request({
       url: Interface.COIN_MARKET,
@@ -230,7 +234,7 @@ export default function Detail() {
     });
 
     if (!isEmpty(marketRes?.data)) {
-      const tempData = marketRes.data.map((item) => {
+      const tempData = marketRes?.data.map((item) => {
         return {
           title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.exchanges}</View>,
           last: item.last,
@@ -247,7 +251,13 @@ export default function Detail() {
     }
 
     console.log('getAi数据');
-    getAiData({});
+    
+  });
+
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
   });
 
   useUnload(() => {
@@ -330,6 +340,28 @@ export default function Detail() {
         loading: true,
       });
     }
+
+    // try {
+    //   const token = await getToken();
+    //   if (isEmpty(token)) {
+    //     setLogin(true);
+    //     setAi({
+    //       ...ai,
+    //       loading: false,
+    //     });
+    //     return;
+    //   } else {
+    //     setLogin(false);
+    //   }
+    // } catch (err) {
+    //   setLogin(true);
+    //   setAi({
+    //     ...ai,
+    //     loading: false,
+    //   });
+    //   return;
+    // }
+
     const aiRes = await cardRequest(Interface.AI_COIN, {
       symbol,
       type: typeObj[activeKey]
@@ -338,7 +370,15 @@ export default function Detail() {
       setAi({
         ...ai,
         loading: false,
-        close: true,
+        error: true,
+      });
+      return;
+    }
+    if (aiRes?.data?.isLogin === false) {
+      setLogin(true);
+      setAi({
+        ...ai,
+        loading: false,
       });
       return;
     }
@@ -355,6 +395,69 @@ export default function Detail() {
   const jump2Land = () => {
     jump2DataPage('landscapechart', 'chartData', chartData.current);
   };
+
+  // const drawScreenshot = async () => {
+  //   const query = Taro.createSelectorQuery();
+    
+  //      const pageRect = await new Promise((resolve) => {
+  //        query.select('.indexBox').boundingClientRect(resolve).exec();
+  //      });
+
+  //      const canvas = Taro.createCanvasContext('screenshotCanvas');
+  //      const { top, height, width } = pageRect;
+
+  //      // 设置画布大小
+  //      canvas.setFillStyle('#fff');
+  //      canvas.fillRect(0, 0, width, height);
+
+  //      // 绘制页面内容到画布
+  //      canvas.drawImage(`index?pageRect=${JSON.stringify(pageRect)}`, 0, 0, width, height);
+
+  //      // 将画布内容转换为图片并保存或分享
+  //      const imgData = await new Promise((resolve) => {
+  //       //  canvas.draw(false, () => {
+  //         console.log('绘制完成');
+  //          Taro.canvasToTempFilePath({
+  //            canvasId: 'screenshotCanvas',
+  //            success: resolve,
+  //          });
+  //       //  });
+  //      });
+
+  //      // 可以在这里进行分享或保存图片的操作
+  //      console.log('截图数据：', imgData);
+  //      Taro.downloadFile({
+  //       url: imgData.tempFilePath,
+  //       success: function (res) {
+  //         if (res.statusCode === 200) {
+  //           // 保存图片到本地
+  //           Taro.saveImageToPhotosAlbum({
+  //             filePath: res.tempFilePath,
+  //             success: function () {
+  //               Taro.showToast({
+  //                 title: '图片保存成功',
+  //                 icon: 'success',
+  //               });
+  //             },
+  //             fail: function (err) {
+  //               Taro.showToast({
+  //                 title: '图片保存失败',
+  //                 icon: 'none',
+  //               });
+  //               console.error(err);
+  //             },
+  //           });
+  //         }
+  //       },
+  //       fail: function (err) {
+  //         Taro.showToast({
+  //           title: '图片下载失败',
+  //           icon: 'none',
+  //         });
+  //         console.error(err);
+  //       },
+  //     });
+  // }
 
   return (
     <View className='indexBox'>
@@ -471,7 +574,7 @@ export default function Detail() {
       {/* tab选择 */}
       <TabBar className='tabContainer' activeKey={pageActiveKey} onChange={pageActiveClick}>
         <TabBar.Item key='chart' title='图表' />
-        <TabBar.Item key='ai' title='AI' />
+        <TabBar.Item key='ai' title='AI解读' />
         <TabBar.Item key='market' title='市场' />
         {/* <TabBar.Item key='comment' title='评论' /> */}
       </TabBar>
@@ -498,12 +601,12 @@ export default function Detail() {
       {/* AI解析 */}
       <View className='ai-box'>
         <MoziCard
-          title='AI解析'
+          title='AI解读'
           // sumNum={coinMarket.length}
           // type='more'
           // callback={jump2List}
         >
-        <Layout isLoading={ai.loading} isError={ai.error}>
+        <Layout isLoading={ai.loading} isError={ai.error}  needLogin={needLogin} loginCallback={() => getAiData({activeKey})}>
           <ScrollView
             className='scroll-markdown'
             scrollY
@@ -569,9 +672,13 @@ export default function Detail() {
               <View>分享</View>
             </Button>
           {/* </View> */}
+          {/* <Button className='footer-item' onClick={drawScreenshot}>
+              <IconFont name='share' size={40} />
+              <View>测试</View>
+            </Button> */}
         </View>
       )}
-      
+      {/* <Canvas canvasId="screenshotCanvas"/> */}
       {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
     </View>
   )

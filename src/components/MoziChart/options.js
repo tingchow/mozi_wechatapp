@@ -514,7 +514,7 @@ export const handleOptions = (data, type, msg) => {
       ],
       series: [
         {
-          name: '持仓',
+          name: msg,
           type: 'bar',
           data: data.barData
         },

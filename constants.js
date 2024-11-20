@@ -1,6 +1,3 @@
-// 通用兜底提示语
-export const COMMON_MSG = '网络繁忙，请稍后再试';
-
 export const INTERFACE_URL = 'https://moziinnovations.com';
 
 // 接口内容
@@ -87,14 +84,4 @@ export const Interface = {
   ALL_COIN: '/derivatives/allcoin',
   // 全部交易所
   ALL_CEX: '/derivatives/allcex',
-};
-
-// 邮箱
-export const EMAIL = 'contact@moziinnovations.com';
-
-// 私钥
-export const COINKEY = {
-  BTC: 'bc1p3pdyjgxcyhw7x24dr4fe8ral5p8w02tjfetfjc4h08v02lrrl5mqhv2val',
-  ETH: '0xbD2858bC9F46fad5892174893c99924A6eF169C3',
-  TRON: 'TXBGXsZN8GBjY6v1mtJN8gDqD2BxUxk2Xw',
 };

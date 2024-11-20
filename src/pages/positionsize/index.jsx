@@ -1,5 +1,5 @@
 import { View, Text, Input, Button, Image, ScrollView, Picker } from '@tarojs/components'
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro';
 import ReactDOM, { useState, useEffect, useRef } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -43,7 +43,11 @@ export default function Positionsize() {
   //   data: null
   // });
 
-  
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
+  });
 
   const chartRef = useRef(null)
   const chartRef1 = useRef(null)
@@ -98,7 +102,7 @@ export default function Positionsize() {
   const onCoinChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setCoinSelected(coinList[e.detail.value]);
+    setCoinSelected(coinArr[e.detail.value]);
 
     getData({coin: coinArr[e.detail.value]});
   };
@@ -174,7 +178,7 @@ export default function Positionsize() {
       data: psHisData.data,
       type: 'linebar'
     };
-    chartRef1.current.setOption(handleOptions(psHisData.data, 'linebar'));
+    chartRef1.current.setOption(handleOptions(psHisData.data, 'linebar', '持仓'));
   };
 
   const jump2Land = (type) => {

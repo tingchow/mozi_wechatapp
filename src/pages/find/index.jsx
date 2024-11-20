@@ -1,6 +1,6 @@
 import { View, Image, Button } from '@tarojs/components';
 import { useState, useRef, useCallback, useEffect } from 'react';
-import Taro, { useDidShow, useLoad } from '@tarojs/taro';
+import Taro, { useDidShow, useLoad, useShareAppMessage } from '@tarojs/taro';
 import { Grid } from 'antd-mobile';
 import { Layout } from '../../components/Layout';
 import { Login } from '../../components/Login';
@@ -44,8 +44,12 @@ export default function Find() {
   const [pageActiveKey, setPageActiveKey] = useState('market');
   const [marketLoading, setMarketLoading] = useState(true);
   const [ needLogin, setLogin ] = useState(false);
-  // const [market]
 
+  useShareAppMessage(() => {
+    return {
+      title: '你能用微信盯盘啦！'
+    };
+  });
 
   useDidShow(() => {
     const app = Taro.getApp();
@@ -298,7 +302,7 @@ export default function Find() {
     });
   };
 
-  // 涨跌幅排行
+  // 涨幅排行
   const dimArr = ['1_day', '3_day', '5_day', '7_day', '15_day', '1_month', '3_month', '6_month', '1_year'];
   const dimRequestData = () => {
     return dimArr.map((item) => {
@@ -364,6 +368,75 @@ export default function Find() {
     setPriceData({
       ...priceData,
       priceArr: priceArr.current[idx],
+    });
+  };
+
+  // 跌幅排行
+  const downDimArr = ['1_day', '3_day', '5_day', '7_day', '15_day', '1_month', '3_month', '6_month', '1_year'];
+  const downDimRequestData = () => {
+    return downDimArr.map((item) => {
+      return {
+        dim: item
+      }
+    });
+  };
+  const downPickArr = ['1天', '3天', '5天', '7天', '15天', '1个月', '3个月', '6个月', '1年']
+  // 涨幅详情
+  const [downData, setDownData] = useState({
+    downSelect: [],
+    downArr: []
+  });
+  const [isDownError, setDownError] = useState(false);
+  const [isDownLoading, setDownLoading] = useState(true);
+  const downArr = useRef([]);
+
+  
+  const downSelect = [];
+  useLoad(async () => {
+    for (let i = 0; i < dimArr.length; i++) {
+      const price = await request({
+        url: Interface.PRICE_DOWNCHANGE,
+        data: {
+          dim: dimArr[i]
+        }
+      });
+
+      let tempPrice = null;
+      
+      if (!isEmpty(price.data)) {
+        tempPrice = price.data.slice(0, 3).map((item) => {
+          return {
+            symbol: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+            priceRange: item.priceRange,
+            img: item.url,
+            key: item.symbol
+          };
+        });
+      }
+      if (tempPrice) {
+        downArr.current.push(tempPrice);
+        downSelect.push(pickArr[i]);
+      }
+      
+    }
+    if (downArr.current.length === 0) {
+      setDownError(true);
+      return;
+    }
+    setDownData({
+      downArr: downArr.current[0],
+      downSelect,
+    });
+    setDownLoading(false);
+  });
+
+  const downPickChange = (idx) => {
+    // console.log('pick', e);
+    // setExchangeIndex(idx);
+    // console.log('priceArr', priceArr);
+    setDownData({
+      ...downData,
+      downArr: downArr.current[idx],
     });
   };
 
@@ -491,6 +564,119 @@ export default function Find() {
     setTradeData({
       ...tradeData,
       tradeArr: tradeArr.current[idx],
+    });
+  };
+
+  // 新币榜
+  // const tradePickArr = ['今日', '3天', '7天', '15天', '1个月'];
+  const [xinbiData, setXinbiData] = useState({
+    xinbiSelect: [],
+    xinbiArr: []
+  });
+  const [isXinbiError, setXinbiError] = useState(false);
+  const [isXinbiLoading, setXinbiLoading] = useState(true);
+  const xinbiArr = useRef([]);
+
+  
+  const xinbiSelect = [];
+  useLoad(async () => {
+    const xinbi = await request({
+      url: Interface.NEW_COIN,
+      data: {}
+    });
+
+    let tempXinbi = null;
+    
+    if (!isEmpty(xinbi.data)) {
+      tempXinbi = xinbi.data.slice(0, 3).map((item) => {
+        return {
+          symbol: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+          volume_24h: item.volume_24h,
+          img: item.url,
+          key: item.symbol
+        };
+      });
+    }
+    if (tempXinbi) {
+      xinbiArr.current = tempXinbi;
+    }
+    if (xinbiArr.current.length === 0) {
+      setXinbiError(true);
+      return;
+    }
+    setXinbiData({
+      xinbiArr: xinbiArr.current,
+    });
+    setXinbiLoading(false);
+    console.log('新币展示');
+  });
+
+  // const tradePickChange = (idx) => {
+  //   // console.log('pick', e);
+  //   // setExchangeIndex(idx);
+  //   console.log('tradeArr', tradeArr);
+  //   setTradeData({
+  //     ...tradeData,
+  //     tradeArr: tradeArr.current[idx],
+  //   });
+  // };
+
+  // 飙升榜详情
+  const [upTradeData, setUpTradeData] = useState({
+    upTradeSelect: [],
+    upTradeArr: []
+  });
+  const [isUpTradeError, setUpTradeError] = useState(false);
+  const [isUpTradeLoading, setUpTradeLoading] = useState(true);
+  const upTradeArr = useRef([]);
+
+  
+  const upTradeSelect = [];
+  useLoad(async () => {
+    for (let i = 0; i < dimArr.length; i++) {
+      const wave = await request({
+        url: Interface.PRICE_UPTRADE,
+        data: {
+          intervals: intervalsArr[i]
+        }
+      });
+
+      let tempWave = null;
+      
+      if (!isEmpty(wave.data)) {
+        tempWave = wave.data.slice(0, 3).map((item) => {
+          return {
+            symbol: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+            priceRange: item.movers,
+            img: item.url,
+            key: item.symbol
+          };
+        });
+      }
+      if (tempWave) {
+        upTradeArr.current.push(tempWave);
+        upTradeSelect.push(tradePickArr[i]);
+      }
+      
+    }
+    if (upTradeArr.current.length === 0) {
+      setUpTradeError(true);
+      return;
+    }
+    setUpTradeData({
+      upTradeArr: upTradeArr.current[0],
+      upTradeSelect,
+    });
+    setUpTradeLoading(false);
+  });
+
+  const upTradePickChange = (idx) => {
+    // console.log('pick', e);
+    // setExchangeIndex(idx);
+    // console.log('waveArr', waveArr);
+    setUpTradeData({
+      ...upTradeData,
+      upTradeArr: upTradeArr.current[idx],
     });
   };
 
@@ -656,13 +842,19 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_change,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '涨幅'],
+                  gridTitle: ['币种', '最新价','涨幅', '加自选'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
                   }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
                     type: 'HighlightArea',
                     data: 'priceRange'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
                   }, {
                     type: 'key',
                     data: 'symbol'
@@ -682,13 +874,19 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_change,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '涨幅'],
+                  gridTitle: ['币种', '最新价','涨幅', '加自选'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
                   }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
                     type: 'HighlightArea',
                     data: 'priceRange'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
                   }, {
                     type: 'key',
                     data: 'symbol'
@@ -712,6 +910,84 @@ export default function Find() {
             </MoziCard>
           </Layout>
 
+          {/* 跌幅榜 */}
+          <Layout isLoading={isDownLoading} isError={isDownError}>
+            <MoziCard
+              title={<View className='rank-title'><View>跌幅榜</View><View className='rank-title-time'>实时更新</View></View>}
+              type='select'
+              selectArr={downData.downSelect}
+              callback={() => {
+                jump2List({
+                  interFace: Interface.PRICE_DOWNCHANGE,
+                  requestData: dimRequestData(),
+                  gridTitle: ['币种', '最新价', '跌幅', '加自选'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'priceRange'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '跌幅排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: downData.downSelect
+                });
+              }}
+              pickChange={downPickChange}
+            >
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.PRICE_DOWNCHANGE,
+                  requestData: dimRequestData(),
+                  gridTitle: ['币种', '最新价', '跌幅', '加自选'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'priceRange'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '跌幅排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '实时更新',
+                  selectArr: downData.downSelect
+                });
+              }}>
+                <RankGrid
+                  length={2}
+                  colName={['币种', '跌幅']}
+                  gridContent={downData.downArr}
+                />
+              </View>
+              
+            </MoziCard>
+          </Layout>
+
           {/* 波幅榜 */}
           <Layout isLoading={isWaveLoading} isError={isWaveError}>
             <MoziCard
@@ -722,13 +998,19 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_wave,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '波幅'],
+                  gridTitle: ['币种', '最新价', '波幅', '加自选'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
                   }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
                     type: 'HighlightArea',
                     data: 'priceRange'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
                   }, {
                     type: 'key',
                     data: 'symbol'
@@ -748,13 +1030,19 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_wave,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '波幅'],
+                  gridTitle: ['币种', '最新价', '波幅', '加自选'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
                   }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
                     type: 'HighlightArea',
                     data: 'priceRange'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
                   }, {
                     type: 'key',
                     data: 'symbol'
@@ -837,6 +1125,160 @@ export default function Find() {
                   length={2}
                   colName={['币种', '成交额']}
                   gridContent={tradeData.tradeArr}
+                />
+              </View>
+            </MoziCard>
+          </Layout>
+
+          {/* 新币榜 */}
+          <Layout isLoading={isXinbiLoading} isError={isXinbiError}>
+            <MoziCard
+              title={<View className='rank-title'><View>新币榜</View><View className='rank-title-time'>每天更新</View></View>}
+              // type='select'
+              // selectArr={xinbiData.xinbiSelect}
+              callback={() => {
+                jump2List({
+                  interFace: Interface.NEW_COIN,
+                  requestData: {},
+                  gridTitle: ['币种', '最新价', '幅度', '加自选'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'volume_24h'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'price_24h'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '新币排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '每天更新',
+                  // selectArr: xinbiData.tradeSelect
+                });
+              }}
+              // pickChange={tradePickChange}
+            >
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.NEW_COIN,
+                  requestData: {},
+                  gridTitle: ['币种', '最新价', '幅度', '加自选'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'volume_24h'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'price_24h'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '新币排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '每天更新',
+                  // selectArr: tradeData.tradeSelect
+                });
+              }}>
+                <RankGrid
+                  length={2}
+                  colName={['币种', '最新价']}
+                  gridContent={xinbiData.xinbiArr}
+                />
+              </View>
+            </MoziCard>
+          </Layout>
+
+          {/* 飙升榜 */}
+          <Layout isLoading={isUpTradeLoading} isError={isUpTradeError}>
+            <MoziCard
+              title={<View className='rank-title'><View>飙升榜</View><View className='rank-title-time'>每天更新</View></View>}
+              type='select'
+              selectArr={upTradeData.upTradeSelect}
+              callback={() => {
+                jump2List({
+                  interFace: Interface.PRICE_UPTRADE,
+                  requestData: tradeRequestData(),
+                  gridTitle: ['币种', '最新价', '增长值', '加自选'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'movers'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '飙升榜排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '每天更新',
+                  selectArr: upTradeData.upTradeSelect
+                });
+              }}
+              pickChange={upTradePickChange}
+            >
+              <View onClick={() => {
+                jump2List({
+                  interFace: Interface.PRICE_UPTRADE,
+                  requestData: tradeRequestData(),
+                  gridTitle: ['币种', '最新价', '增长值', '加自选'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'movers'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'key',
+                    data: 'symbol'
+                  }, {
+                    type: 'img',
+                    data: 'url'
+                  }],
+                  rankTitle: '飙升榜排行榜',
+                  rankName: 'Top100',
+                  rankDesc: '每天更新',
+                  selectArr: upTradeData.upTradeSelect
+                });
+              }}>
+                <RankGrid
+                  length={2}
+                  colName={['币种', '成交额']}
+                  gridContent={upTradeData.upTradeArr}
                 />
               </View>
             </MoziCard>

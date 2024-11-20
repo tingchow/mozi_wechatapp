@@ -1,6 +1,6 @@
 import { View, Image, ScrollView } from '@tarojs/components';
 import { memo, useState, useEffect, useRef } from 'react';
-import Taro, { useLoad, getCurrentInstance, useDidShow, useReady } from '@tarojs/taro'
+import Taro, { useLoad, getCurrentInstance, useDidShow, useReady, useReachBottom } from '@tarojs/taro'
 import { MoziGrid } from '../../MoziGrid';
 import { jump2Detail } from '../../../utils/core';
 import { HighlightArea } from '../../HighlightArea';
@@ -21,9 +21,14 @@ export const ComplexList = memo(({data, gridTitle, loadMore, isFinish, hideTitle
     isLoadMore.current = false;
   };
 
+  useReachBottom(() => {
+    console.log('滑动到底部')
+    getMore();
+  })
+
   if (data) {
     return (
-      <ScrollView
+      <View
         className='scroll'
         scrollY
         enablePassive={true}
@@ -44,7 +49,7 @@ export const ComplexList = memo(({data, gridTitle, loadMore, isFinish, hideTitle
           <GardenLoading />
         }
         
-      </ScrollView>
+      </View>
     )
   }
 });

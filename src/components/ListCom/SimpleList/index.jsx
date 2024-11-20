@@ -1,6 +1,6 @@
 import { View, Image, ScrollView, Text, Picker } from '@tarojs/components';
 import { useState, useEffect, useRef } from 'react';
-import Taro, { useLoad, getCurrentInstance, useDidShow, useReady } from '@tarojs/taro'
+import Taro, { useLoad, getCurrentInstance, useDidShow, useReady, useReachBottom } from '@tarojs/taro'
 import { Grid } from 'antd-mobile';
 import { MoziGrid } from '../../MoziGrid';
 import IconFont from '../../iconfont';
@@ -9,6 +9,7 @@ import './index.less';
 import { request } from '../../../utils/request';
 import { jump2Detail } from '../../../utils/core';
 import { AddCollect } from '../../AddCollect';
+import { GardenLoading } from '../../Loading';
 // import { url } from 'inspector';
 
 export const SimpleList = ({ 
@@ -22,23 +23,29 @@ export const SimpleList = ({
   rankName='',
   rankDesc='',
   selectArr=[],
+  selectedPick,
   renderData=[],
   loadMore,
   onChangeCb,
+  isLoading,
   // loginCb,
   // showHeader
 }) => {
   console.log('进入列表');
 
   const [data, setData] = useState([]);
+  const [ selected, setSelected ] = useState(selectArr[0]);
   // const [showHeader, setShowHeader] = useState(selectArr.length > 0);
 
-  const pageNo = useRef(1);
-  const pageSize = useRef(defaultpageSize);
-  const pageFinish = useRef(false);
+  // const pageNo = useRef(1);
+  // const pageSize = useRef(defaultpageSize);
+  // const pageFinish = useRef(false);
+
+  console.log('选择的列表', selectArr);
 
   useEffect(() => {
     // init();
+    // setSelected(selectArr[0]);
     console.log('renderData', renderData);
     const tempFindCoin = renderData.map((item) => {
       const itemObj = {};
@@ -78,38 +85,29 @@ export const SimpleList = ({
     }
   };
 
-  const init = async () => {
-    const coinData = await request({
-      url: interFace[0],
-      data: {
-        ...requestData[0],
-        pageNo: pageNo.current,
-        pageSize: pageSize.current
-      }
-    });
-    console.log('coinData', coinData);
-    const tempFindCoin = coinData.data.map((item) => {
-      const itemObj = {};
-      gridCon.forEach((value, index) => {
-        if (value.type === 'key' || value.type === 'img') {
-          itemObj[value.type] = item[value.data]
-        } else {
-          itemObj[`key${index + 1}`] = matchDom(value.type, item, value.data)
-        }
-      });
-      return itemObj;
-    });
-    setData(tempFindCoin);
-  };
-
-  const cardRequest = async (url, data) => {
-    const res = await request({
-      url,
-      data
-    });
-    console.log('响应信息', res);
-    return res;
-  };
+  // const init = async () => {
+  //   const coinData = await request({
+  //     url: interFace[0],
+  //     data: {
+  //       ...requestData[0],
+  //       pageNo: pageNo.current,
+  //       pageSize: pageSize.current
+  //     }
+  //   });
+  //   console.log('coinData', coinData);
+  //   const tempFindCoin = coinData.data.map((item) => {
+  //     const itemObj = {};
+  //     gridCon.forEach((value, index) => {
+  //       if (value.type === 'key' || value.type === 'img') {
+  //         itemObj[value.type] = item[value.data]
+  //       } else {
+  //         itemObj[`key${index + 1}`] = matchDom(value.type, item, value.data)
+  //       }
+  //     });
+  //     return itemObj;
+  //   });
+  //   setData(tempFindCoin);
+  // };
 
   
 
@@ -145,7 +143,9 @@ export const SimpleList = ({
     
   // };
 
-  const [ selected, setSelected ] = useState(selectArr[0]);
+  
+
+  console.log('当前选项', selected);
   const onChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -153,11 +153,16 @@ export const SimpleList = ({
     if (onChangeCb) onChangeCb(e.detail.value);
   }
 
+  // useReachBottom(() => {
+  //   console.log('滑动到底部')
+  //   loadMore();
+  // })
 
+  if (isLoading) {
+    return <GardenLoading />
+  }
 
   if (data.length > 0) {
-    console.log('data', data)
-    console.log('data[0]', data[0]);
     return (
       <View className='scroll-list'>
         {
@@ -168,13 +173,17 @@ export const SimpleList = ({
                 <View>{rankName}</View>
                 <View className='desc'>
                   {rankDesc && <Text className='desc-con'>{rankDesc}</Text>}
+                  {
+                    selectArr && selectedPick && (
+                      <Picker mode='selector' range={selectArr} onChange={onChange}>
+                        <View className='picker-select'>
+                          <View className='select-icon'>{selectedPick}</View>
+                          <IconFont name='caret-down' />
+                        </View>
+                      </Picker>
+                    )
+                  }
                   
-                  <Picker mode='selector' range={selectArr} onChange={onChange}>
-                    <View className='picker-select'>
-                      <View className='select-icon'>{selected}</View>
-                      <IconFont name='caret-down' />
-                    </View>
-                  </Picker>
                 </View>
               </View>
               <View className='right'>
