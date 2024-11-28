@@ -221,9 +221,9 @@ export default function Index() {
       complete: async (res) => {
         if (res.code) {
           const openIdCode = res.code;
-
+          console.log('openIdCode', openIdCode);
           const tokenInfo = await request({
-            url: 'https://moziinnovations.com/user/login',
+            url: Interface.MOZI_LOGIN,
             data: {
               phoneCode,
               loginCode: openIdCode,

@@ -36,6 +36,22 @@ export default defineAppConfig({
     'pages/community/index',
     
   ],
+  // subpackages: [
+  //   {
+  //     root: "packages",
+  //     name: "detail",
+  //     pages: [
+  //       "detail/index"
+  //     ],
+  //     // entry: "index.js"
+  //   }
+  // ],
+  // preloadRule: {
+  //   "pages/index/index": {
+  //     network: "all",
+  //     packages: ["detail"]
+  //   },
+  // },
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

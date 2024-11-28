@@ -13,7 +13,6 @@ import { handleOptions } from '../../components/MoziChart/options';
 import { HighlightArea } from '../../components/HighlightArea';
 import { AddCollect } from '../../components/AddCollect';
 import { jump2List, jump2DataPage } from '../../utils/core';
-import { getToken } from '../../utils/request';
 import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
@@ -285,9 +284,9 @@ export default function Detail() {
     setActiveKey(value);
 
     // console.log('coinLine', JSON.stringify(coinLineData));
-    console.log('lineData', lineData);
+    console.log('lineData', chartData.current);
     // setCoinLine(lineData[value]);
-    chartRef.current.setOption(handleOptions(lineData[value], 'kline'));
+    chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
     getAiData({activeKey: value});
   };
 

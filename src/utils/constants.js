@@ -58,6 +58,8 @@ export const Interface = {
   COIN_SPOT: '/search/symbolprice',
 
   // 我的
+  // 登录
+  MOZI_LOGIN: '/user/login',
   // 评分
   MOZI_COMMENT: '/feedback/add',
 

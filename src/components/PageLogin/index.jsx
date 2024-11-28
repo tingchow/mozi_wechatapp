@@ -1,6 +1,7 @@
 import { PageContainer, View, Button } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useState } from "react";
+import { Interface } from "../../utils/constants";
 import { request } from "../../utils/request";
 
 export const PageLogin = ({show = false, hideCb}) => {
@@ -17,7 +18,7 @@ export const PageLogin = ({show = false, hideCb}) => {
           const openIdCode = res.code;
 
           const tokenInfo = await request({
-            url: 'https://moziinnovations.com/user/login',
+            url: Interface.MOZI_LOGIN,
             data: {
               phoneCode,
               loginCode: openIdCode,

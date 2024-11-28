@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text, Input, Button } from '@tarojs/components'
+import { Interface } from '../../utils/constants'
 import { request } from '../../utils/request'
 
 import './index.less'
@@ -24,7 +25,7 @@ export const PopLogin = ({ show = false, hideCb }) => {
               const openIdCode = res.code;
     
               const tokenInfo = await request({
-                url: 'https://moziinnovations.com/user/login',
+                url: Interface.MOZI_LOGIN,
                 data: {
                   phoneCode,
                   loginCode: openIdCode,

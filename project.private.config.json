@@ -63,13 +63,6 @@
           "query": "",
           "launchMode": "default",
           "scene": null
-        },
-        {
-          "name": "detail/index",
-          "pathName": "pages/detail/index",
-          "query": "symbol=BTC",
-          "launchMode": "default",
-          "scene": null
         }
       ]
     }

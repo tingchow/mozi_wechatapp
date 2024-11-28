@@ -1,6 +1,7 @@
 import { Button, View } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { request } from '../../utils/request';
+import { Interface } from '../../utils/constants';
 import './index.less';
 
 export const Login = (props) => {
@@ -13,7 +14,7 @@ export const Login = (props) => {
           const openIdCode = res.code;
 
           const userInfo = await request({
-            url: 'https://moziinnovations.com/user/login',
+            url: Interface.MOZI_LOGIN,
             data: {
               phoneCode,
               loginCode: openIdCode,

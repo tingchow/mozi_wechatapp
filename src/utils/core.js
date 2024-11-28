@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro';
+import { isEmpty } from 'lodash';
 
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {
@@ -41,9 +42,15 @@ const queryString = (params) => {
 
 // 跳转非Tab页面
 export const jump2NoTab = (pageName, params = {}) => {
-  Taro.navigateTo({
-    url: `/pages/${pageName}/index?${queryString(params)}`,
-  });
+  if (isEmpty(params)) {
+    Taro.navigateTo({
+      url: `/pages/${pageName}/index`,
+    });
+  } else {
+    Taro.navigateTo({
+      url: `/pages/${pageName}/index?${queryString(params)}`,
+    });
+  }
 };
 
 // 跳转非Tab页面
@@ -53,6 +60,11 @@ export const jump2DataPage = (pageName, dataName, data = {}) => {
   Taro.navigateTo({
     url: `/pages/${pageName}/index`,
   });
+};
+
+// 返回当前类型
+export const appType = () => {
+  return process.env.TARO_ENV;
 };
 
 

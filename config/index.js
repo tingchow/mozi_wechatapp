@@ -65,6 +65,10 @@ export default defineConfig(async (merge, { command, mode }) => {
       optimizeMainPackage: {
         enable: true,
       },
+      // webpackChain (chain, webpack) {
+      //   chain.plugin('analyzer')
+      //     .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin, [])
+      // }
     },
     h5: {
       publicPath: '/',
