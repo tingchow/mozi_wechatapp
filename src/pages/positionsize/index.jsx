@@ -19,13 +19,23 @@ import { handleOptions } from '../../components/MoziChart/options';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 import './index.less';
 
-// const coinArr = ['BTC', 'BANANE'];
-// const exchangesArr = ['binance'];
+
+import * as h5echartscore from 'echarts/core';
+// 引入柱状图图表，图表后缀都为 Chart
+import { BarChart, LineChart, TreemapChart } from 'echarts/charts';
+// 引入标题，提示框，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
+import {
+  LegendComponent,
+  TooltipComponent,
+  GridComponent,
+  // DatasetComponent,
+  DataZoomComponent,
+} from 'echarts/components';
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from 'echarts/renderers';
+
 
 export default function Positionsize() {
-  
-  
-
   const [cexArr, setCexArr] = useState([]);
   const [ cexSelected, setCexSelected ] = useState('');
   const [coinArr, setCoinArr] = useState([]);
@@ -51,6 +61,8 @@ export default function Positionsize() {
 
   const chartRef = useRef(null)
   const chartRef1 = useRef(null)
+  const h5chartNode = useRef(null);
+  const h5chartNode1 = useRef(null);
 
   const chartData = useRef({
     cur: null,
@@ -116,6 +128,24 @@ export default function Positionsize() {
   };
 
   useLoad(async () => {
+
+    if (process.env.TARO_ENV === 'h5') {
+      h5echartscore.use([
+        BarChart,
+        LineChart,
+        TreemapChart,
+        LegendComponent,
+        TooltipComponent,
+        GridComponent,
+        // GridComponent,
+        // DatasetComponent,
+        DataZoomComponent,
+        CanvasRenderer
+      ]);
+
+      chartRef.current = h5echartscore.init(h5chartNode.current);
+      chartRef1.current = h5echartscore.init(h5chartNode1.current);
+    }
 
     Taro.showShareMenu({
       withShareTicket: true,
@@ -221,7 +251,8 @@ export default function Positionsize() {
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
-          <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec}></ec-canvas>
+          { process.env.TARO_ENV === 'weapp' && <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec}></ec-canvas> }
+          { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode} id="chart"></div> }
         </View>
       </View>
       <View className='currentPCR'>
@@ -231,7 +262,9 @@ export default function Positionsize() {
           <View className='chart-arrawsalt' onClick={() => {jump2Land('his')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
-          <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas>
+          
+          { process.env.TARO_ENV === 'weapp' && <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas> }
+          { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode1} id="chart1"></div> }
         </View>
       </View>
     </View>

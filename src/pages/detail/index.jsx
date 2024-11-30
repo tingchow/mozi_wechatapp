@@ -15,26 +15,24 @@ import { AddCollect } from '../../components/AddCollect';
 import { jump2List, jump2DataPage } from '../../utils/core';
 import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
-// import * as towxml from '../../components/towxml/towxml';
 import towxml from '../../towxml';
 import { isEmpty } from 'lodash';
-// import '~taro-parse/dist/style/main.scss'
-// import TaroParser from 'taro-parse'
 
 
-const lineData = {
-  hour: null,
-  day: null,
-  week: null,
-  month: null,
-};
-
-// const aiData = {
-//   hour: null,
-//   day: null,
-//   week: null,
-//   month: null,
-// };
+import * as h5echartscore from 'echarts/core';
+// 引入柱状图图表，图表后缀都为 Chart
+import { CandlestickChart, LineChart } from 'echarts/charts';
+// 引入标题，提示框，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
+import {
+  LegendComponent,
+  TooltipComponent,
+  GridComponent,
+  // DatasetComponent,
+  DataZoomComponent,
+} from 'echarts/components';
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from 'echarts/renderers';
+import Markdown from 'react-markdown';
 
 
 export default function Detail() {
@@ -85,6 +83,7 @@ export default function Detail() {
   const [ popVis, setPopVis ] = useState(false);
 
   const chartRef = useRef(null)
+  const h5chartNode = useRef(null);
 
   const initChart = (canvas, width, height, dpr) => {
     const chart = echarts.init(canvas, null, {
@@ -103,14 +102,26 @@ export default function Detail() {
   const ec = {
     onInit: initChart
   }
-  
-
 
   
   console.log('useRouter().params.symbol', useRouter().params);
   const symbol = useRouter().params.symbol;
 
   useLoad(async () => {
+    if (process.env.TARO_ENV === 'h5') {
+      h5echartscore.use([
+        CandlestickChart,
+        LineChart,
+        LegendComponent,
+        TooltipComponent,
+        GridComponent,
+        // DatasetComponent,
+        DataZoomComponent,
+        CanvasRenderer
+      ]);
+
+      chartRef.current = h5echartscore.init(h5chartNode.current);
+    }
     console.log('Page loaded.');
     Taro.showShareMenu({
       withShareTicket: true,
@@ -192,7 +203,6 @@ export default function Detail() {
       type: 'kline'
     };
     chartRef.current.setOption(handleOptions(coin_line1.data, 'kline'));
-    lineData.hour = coin_line1?.data;
 
     const coin_line2 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -202,7 +212,6 @@ export default function Detail() {
       data: coin_line2?.data,
       type: 'kline'
     };
-    lineData.day = coin_line2?.data;
     const coin_line3 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 3
@@ -211,7 +220,6 @@ export default function Detail() {
       data: coin_line3?.data,
       type: 'kline'
     };
-    lineData.week = coin_line3?.data;
     const coin_line4 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 4
@@ -220,7 +228,6 @@ export default function Detail() {
       data: coin_line4?.data,
       type: 'kline'
     };
-    lineData.month = coin_line4?.data;
 
 
    
@@ -283,9 +290,7 @@ export default function Detail() {
     chartData.current.active = value;
     setActiveKey(value);
 
-    // console.log('coinLine', JSON.stringify(coinLineData));
     console.log('lineData', chartData.current);
-    // setCoinLine(lineData[value]);
     chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
     getAiData({activeKey: value});
   };
@@ -381,14 +386,25 @@ export default function Detail() {
       });
       return;
     }
-    let mdRes = towxml(aiRes?.data,'markdown',{});
-    aiData.current[activeKey] = mdRes;
-    console.log('aiData[activeKey]', aiData.current[activeKey]);
-    
-    setAi({
-      loading: false,
-      data: mdRes
-    });
+    if (process.env.TARO_ENV === 'weapp') {
+      let mdRes = towxml(aiRes?.data,'markdown',{});
+      aiData.current[activeKey] = mdRes;
+      console.log('aiData[activeKey]', aiData.current[activeKey]);
+      
+      setAi({
+        loading: false,
+        data: mdRes
+      });
+    } else if (process.env.TARO_ENV === 'h5') {
+      let mdRes = towxml(aiRes?.data,'markdown',{});
+      aiData.current[activeKey] = aiRes?.data;
+      console.log('aiData[activeKey]', aiData.current[activeKey]);
+      
+      setAi({
+        loading: false,
+        data: aiRes?.data
+      });
+    }
   };
 
   const jump2Land = () => {
@@ -592,7 +608,8 @@ export default function Detail() {
             <View className='chart-arrawsalt' onClick={jump2Land}>
               <IconFont name='arrawsalt' size={30} color='#fff' />
             </View>
-            <ec-canvas canvas-id="mychart-kline" ec={ec}></ec-canvas>
+            { process.env.TARO_ENV === 'weapp' && <ec-canvas canvas-id="mychart-kline" ec={ec}></ec-canvas> }
+            { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode} id="chart"></div> }
           </View>
           
         </div>
@@ -612,7 +629,10 @@ export default function Detail() {
           >
             {
               // @ts-ignore
-              <towxml nodes={ai.data} />
+              process.env.TARO_ENV === 'weapp' && <towxml nodes={ai.data} />
+            }
+            {
+              process.env.TARO_ENV === 'h5' && <Markdown>{ai.data}</Markdown>
             }
           </ScrollView>
         </Layout>
@@ -665,16 +685,14 @@ export default function Detail() {
             <AddCollect isOwn={coinInfo.isSelfSelected} symbol={coinInfo.symbol} />
             <View>加自选</View>
           </View>
-          {/* <View className='footer-item'> */}
-            <Button className='footer-item' openType='share'>
-              <IconFont name='share' size={40} />
-              <View>分享</View>
-            </Button>
-          {/* </View> */}
-          {/* <Button className='footer-item' onClick={drawScreenshot}>
-              <IconFont name='share' size={40} />
-              <View>测试</View>
-            </Button> */}
+          {
+            process.env.TARO_ENV === 'weapp' && (
+              <Button className='footer-item' openType='share'>
+                <IconFont name='share' size={40} />
+                <View>分享</View>
+              </Button>
+            )
+          }
         </View>
       )}
       {/* <Canvas canvasId="screenshotCanvas"/> */}

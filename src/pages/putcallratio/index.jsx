@@ -20,6 +20,22 @@ import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 import { isEmpty } from 'lodash';
 import './index.less';
 
+import * as h5echartscore from 'echarts/core';
+// 引入柱状图图表，图表后缀都为 Chart
+import { BarChart, LineChart } from 'echarts/charts';
+// 引入标题，提示框，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
+import {
+  LegendComponent,
+  TooltipComponent,
+  GridComponent,
+  // DatasetComponent,
+  DataZoomComponent,
+} from 'echarts/components';
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from 'echarts/renderers';
+
+
+
 const ratioArr = ['主动买卖量比', '人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比'];
 const ratioTypeArr = ['but_sell_ratio', 'global_account_ratio', 'top_account_ratio', 'global_hold_ratio', 'top_hold_ratio'];
 
@@ -48,6 +64,7 @@ export default function Putcallratio() {
   
 
   const chartRef = useRef(null)
+  const h5chartNode = useRef(null);
   const chartData = useRef(null);
 
   const initChart = (canvas, width, height, dpr) => {
@@ -105,6 +122,21 @@ export default function Putcallratio() {
   };
 
   useLoad(async () => {
+
+    if (process.env.TARO_ENV === 'h5') {
+      h5echartscore.use([
+        BarChart,
+        LineChart,
+        LegendComponent,
+        TooltipComponent,
+        GridComponent,
+        // DatasetComponent,
+        DataZoomComponent,
+        CanvasRenderer
+      ]);
+
+      chartRef.current = h5echartscore.init(h5chartNode.current);
+    }
 
     Taro.showShareMenu({
       withShareTicket: true,
@@ -253,7 +285,8 @@ export default function Putcallratio() {
             <View className='chart-arrawsalt' onClick={jump2Land}>
               <IconFont name='arrawsalt' size={30} color='#fff' />
             </View>
-            <ec-canvas className='chart' canvas-id="mychart-pcr" ec={ec}></ec-canvas>
+            { process.env.TARO_ENV === 'weapp' && <ec-canvas className='chart' canvas-id="mychart-pcr" ec={ec}></ec-canvas>}
+            { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode} id="chart"></div> }
           </View>
         </View>
       {/* </Layout> */}

@@ -19,6 +19,20 @@ import { handleOptions } from '../../components/MoziChart/options';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 import './index.less';
 
+import * as h5echartscore from 'echarts/core';
+// 引入柱状图图表，图表后缀都为 Chart
+import { BarChart, LineChart, TreemapChart } from 'echarts/charts';
+// 引入标题，提示框，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
+import {
+  LegendComponent,
+  TooltipComponent,
+  GridComponent,
+  // DatasetComponent,
+  DataZoomComponent,
+} from 'echarts/components';
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from 'echarts/renderers';
+
 export default function Tradevol() {
   const [ cexArr, setCexArr ] = useState([]);
   const [ cexSelected, setCexSelected ] = useState('');
@@ -26,16 +40,6 @@ export default function Tradevol() {
   const [ coinSelected, setCoinSelected ] = useState('');
 
   const [activeKey, setActiveKey] = useState('currentRatio');
-  // const [curPCRData, setCurPCRData] = useState({
-  //   loading: true,
-  //   close: false,
-  //   data: null
-  // });
-  // const [hisPCRData, setHisPCRData] = useState({
-  //   loading: true,
-  //   close: false,
-  //   data: null
-  // });
 
   useShareAppMessage(() => {
     return {
@@ -45,6 +49,9 @@ export default function Tradevol() {
 
   const chartRef = useRef(null)
   const chartRef1 = useRef(null)
+  const h5chartNode = useRef(null);
+  const h5chartNode1 = useRef(null);
+
   const chartData = useRef({
     cur: null,
     his: null
@@ -83,7 +90,7 @@ export default function Tradevol() {
     return chart;
   }
 
-  const ec1 = {
+  const ec = {
     onInit: initChart
   }
 
@@ -112,6 +119,24 @@ export default function Tradevol() {
   };
 
   useLoad(async () => {
+
+    if (process.env.TARO_ENV === 'h5') {
+      h5echartscore.use([
+        BarChart,
+        LineChart,
+        TreemapChart,
+        LegendComponent,
+        TooltipComponent,
+        GridComponent,
+        // GridComponent,
+        // DatasetComponent,
+        DataZoomComponent,
+        CanvasRenderer
+      ]);
+
+      chartRef.current = h5echartscore.init(h5chartNode.current);
+      chartRef1.current = h5echartscore.init(h5chartNode1.current);
+    }
 
     Taro.showShareMenu({
       withShareTicket: true,
@@ -215,28 +240,22 @@ export default function Tradevol() {
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
-          <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec1}></ec-canvas>
+          {/* <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec}></ec-canvas> */}
+          { process.env.TARO_ENV === 'weapp' && <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec}></ec-canvas> }
+          { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode} id="chart"></div> }
         </View>
       </View>
       <View className='currentPCR'>
         <View className='header'>历史成交额
-          {/* <View></View> */}
-          {/* <View className='pickerList'> */}
-            
-            {/* <Picker mode='selector' range={coinList} onChange={onCoinChange}>
-              <View className='pickerSelect'>
-                <View className='selectIcon'>{coinSelected}</View>
-                <IconFont name='caret-down' />
-              </View>
-            </Picker> */}
-          {/* </View> */}
         </View>
           
         <View className='currentPCRChart'>
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
-          <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas>
+          {/* <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas> */}
+          { process.env.TARO_ENV === 'weapp' && <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas> }
+          { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode1} id="chart1"></div> }
         </View>
       </View>
     </View>

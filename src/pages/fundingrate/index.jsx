@@ -20,8 +20,18 @@ import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 import { isEmpty } from 'lodash';
 import './index.less';
 
-// const ratioArr = ['人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比', '主动买卖量比'];
-// const coinArr = ['BTC', 'BANANE'];
+import * as h5echartscore from 'echarts/core';
+// 引入柱状图图表，图表后缀都为 Chart
+import { BarChart, LineChart } from 'echarts/charts';
+// 引入标题，提示框，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
+import {
+  LegendComponent,
+  TooltipComponent,
+  GridComponent,
+  DataZoomComponent,
+} from 'echarts/components';
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from 'echarts/renderers';
 
 export default function Fundingrate() {
   const [coinList, setCoinList] = useState([]);
@@ -49,6 +59,7 @@ export default function Fundingrate() {
 
   const chartRef = useRef(null)
   const chartData = useRef(null)
+  const h5chartNode = useRef(null);
 
   useShareAppMessage(() => {
     return {
@@ -112,6 +123,20 @@ export default function Fundingrate() {
   };
 
   useLoad(async () => {
+
+    if (process.env.TARO_ENV === 'h5') {
+      h5echartscore.use([
+        BarChart,
+        LineChart,
+        LegendComponent,
+        TooltipComponent,
+        GridComponent,
+        DataZoomComponent,
+        CanvasRenderer
+      ]);
+
+      chartRef.current = h5echartscore.init(h5chartNode.current);
+    }
 
     Taro.showShareMenu({
       withShareTicket: true,
@@ -297,7 +322,8 @@ export default function Fundingrate() {
           <View className='chart-arrawsalt' onClick={jump2Land}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
-          <ec-canvas className='chart' canvas-id="mychart-updownbarline" ec={{onInit: initChart}}></ec-canvas>
+          { process.env.TARO_ENV === 'weapp' && <ec-canvas className='chart' canvas-id="mychart-updownbarline" ec={{onInit: initChart}}></ec-canvas> }
+          { process.env.TARO_ENV === 'h5' && <div ref={h5chartNode} id="chart"></div> }
         </View>
       </View>
     </View>
