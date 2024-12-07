@@ -624,7 +624,7 @@ export default function Detail() {
         >
         <Layout isLoading={ai.loading} isError={ai.error}  needLogin={needLogin} loginCallback={() => getAiData({activeKey})}>
           <ScrollView
-            className='scroll-markdown'
+            className={`scroll-markdown md-${process.env.TARO_ENV}`}
             scrollY
           >
             {
