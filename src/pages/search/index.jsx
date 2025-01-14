@@ -9,7 +9,8 @@ import { Layout } from '../../components/Layout';
 import { MoziCard } from '../../components/MoziCard';
 import { MoziGrid } from '../../components/MoziGrid';
 import { SearchInput } from '../../components/SearchInput';
-import { AddCollect } from '../../components/AddCollect'; 
+import { AddCollect } from '../../components/AddCollect';
+import { AddMonitor } from '../../components/AddMonitor';
 import { jump2Detail, jump2List } from '../../utils/core';
 import { GardenLoading } from '../../components/Loading';
 import { HighlightArea } from '../../components/HighlightArea';
@@ -86,7 +87,8 @@ export default function Search() {
               title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
               last: item.last,
               price24h: (<HighlightArea value={item.price24h} />),
-              isOwn: (<AddCollect isOwn={item.isOwn} symbol={item.symbol} />),
+              isOwn: (<AddCollect isOwn={item.favorite} symbol={item.symbol} />),
+              monitor: <AddMonitor symbol={item.symbol} />,
               key: item.symbol
             };
           });
@@ -257,7 +259,7 @@ export default function Search() {
                     requestData: {
                       coin: searchValue
                     },
-                    gridTitle: ['名称', '最新价', '24H涨幅', '加自选'],
+                    gridTitle: ['名称', '最新价', '24H涨幅', '加自选', '加监控'],
                     gridCon: [{
                       type: 'Img+Text',
                       data: ['url', 'symbol']
@@ -269,8 +271,11 @@ export default function Search() {
                       data: 'price24h'
                     }, {
                       type: 'AddCollect',
-                      data: ['isOwn', 'symbol']
+                      data: ['favorite', 'symbol']
                     }, {
+                      type: 'AddMonitor',
+                      data: 'symbol'
+                    },{
                       type: 'key',
                       data: 'symbol'
                     }],
@@ -278,8 +283,8 @@ export default function Search() {
                 }}
               >
                 <MoziGrid
-                  length={4}
-                  colName={['名称', '最新价', '24H涨幅', '加自选']}
+                  length={5}
+                  colName={['名称', '最新价', '24H涨幅', '加自选', '加监控']}
                   gridContent={infoData.data}
                   callback={(gridCon) => {jump2Detail(gridCon.key)}}
                 >

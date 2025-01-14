@@ -34,6 +34,10 @@ export default defineAppConfig({
     'pages/landscapechart/index',
     // 社区
     'pages/community/index',
+    // 配置告警页
+    'pages/addwarn/index',
+    // 我的告警页
+    'pages/mywarn/index',
     
   ],
   // subpackages: [

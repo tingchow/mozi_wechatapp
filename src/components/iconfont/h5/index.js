@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import React from 'react';
+import IconBellFill from './IconBellFill';
 import IconArrawsalt from './IconArrawsalt';
 import IconClose from './IconClose';
 import IconInfoCircle from './IconInfoCircle';
@@ -26,6 +27,7 @@ import IconHeartFill from './IconHeartFill';
 import IconCloseCircleFill from './IconCloseCircleFill';
 import IconSearch from './IconSearch';
 import IconRight from './IconRight';
+export { default as IconBellFill } from './IconBellFill';
 export { default as IconArrawsalt } from './IconArrawsalt';
 export { default as IconClose } from './IconClose';
 export { default as IconInfoCircle } from './IconInfoCircle';
@@ -54,6 +56,8 @@ export { default as IconRight } from './IconRight';
 
 const IconFont = ({ name, ...rest }) => {
   switch (name) {
+    case 'bell-fill':
+      return <IconBellFill {...rest} />;
     case 'arrawsalt':
       return <IconArrawsalt {...rest} />;
     case 'close':

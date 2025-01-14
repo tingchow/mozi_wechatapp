@@ -11,9 +11,8 @@ let isClick = false;
 
 export const AddCollect = (props) => {
 
-  const [ isOwn, setOwn ] = useState(props.isOwn);
+  const [ isOwn, setOwn ] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
-
 
   const changeOwn = async (e) => {
     e.stopPropagation();
@@ -23,7 +22,7 @@ export const AddCollect = (props) => {
     Taro.showLoading({
       title: '',
     });
-    let url = isOwn? Interface.CANCEL_OWN: Interface.ADD_OWN;
+    let url = curOwn? Interface.CANCEL_OWN: Interface.ADD_OWN;
     const changeOwnRes = await request({
       url,
       data: {
@@ -42,11 +41,11 @@ export const AddCollect = (props) => {
     if (changeOwnRes?.data) {
       // 修改成功
       Taro.showToast({
-        title: isOwn? '移除自选成功': '加入自选成功',
+        title: curOwn? '移除自选成功': '加入自选成功',
         icon: 'success',
         duration: 2000
       });
-      setOwn(!isOwn);
+      setOwn(!curOwn);
     }
     isClick = false;
   };
@@ -94,11 +93,14 @@ export const AddCollect = (props) => {
   //   })
   // };
 
+  console.log(props.symbol, isOwn, props.isOwn)
+
+  const curOwn = isOwn !== null? isOwn: props.isOwn;
 
   return (
     <View>
       <View className='collect' onClick={changeOwn} catchMove={true}>
-        <IconFont name='heart-fill' color={isOwn? 'red': ''} size={40} />
+        <IconFont name='heart-fill' color={curOwn? 'red': ''} size={40} />
       </View>
       { showLogin && <PopLogin hideCb={() => {setShowLogin(false)}} /> }
     </View>

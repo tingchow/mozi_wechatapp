@@ -9,6 +9,7 @@ import './index.less';
 import { request } from '../../../utils/request';
 import { jump2Detail } from '../../../utils/core';
 import { AddCollect } from '../../AddCollect';
+import { AddMonitor } from '../../AddMonitor';
 import { GardenLoading } from '../../Loading';
 // import { url } from 'inspector';
 
@@ -79,6 +80,9 @@ export const SimpleList = ({
     }
     if (type === 'AddCollect') {
       return <AddCollect isOwn={data[dataKey[0]]} symbol={data[dataKey[1]]} />
+    }
+    if (type === 'AddMonitor') {
+      return <AddMonitor symbol={data[dataKey]} />
     }
     if (type === 'Text') {
       return data[dataKey]

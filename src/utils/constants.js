@@ -89,6 +89,15 @@ export const Interface = {
   ALL_COIN: '/derivatives/allcoin',
   // 全部交易所
   ALL_CEX: '/derivatives/allcex',
+
+  // 添加告警
+  ADD_WARN: '/alarm/add',
+  // 我的告警
+  MY_WARN: '/alarm/info',
+  // 打开告警
+  OPEN_WARN: '/alarm/on',
+  // 关闭告警
+  CLOSE_WARN: '/alarm/off',
 };
 
 // 邮箱
@@ -100,3 +109,7 @@ export const COINKEY = {
   ETH: '0xbD2858bC9F46fad5892174893c99924A6eF169C3',
   TRON: 'TXBGXsZN8GBjY6v1mtJN8gDqD2BxUxk2Xw',
 };
+
+// 轮循时间间隔(6分钟)
+export const LOOPTIME = 6*60*1000;
+// export const LOOPTIME = 5000;

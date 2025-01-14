@@ -65,7 +65,7 @@ export const Layout = (props) => {
   if (props.isError) {
     return (
       <View className='errorBox'>
-        <Error />
+        <Error errMsg={props.errMsg} />
       </View>
     )
   }

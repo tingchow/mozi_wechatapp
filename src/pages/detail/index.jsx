@@ -1,8 +1,8 @@
 import { View, Text, Input, Button, Image, ScrollView, Canvas } from '@tarojs/components'
-import Taro, { useLoad, getCurrentInstance, useRouter, useUnload, useShareAppMessage } from '@tarojs/taro';
+import Taro, { useLoad, getCurrentInstance, useRouter, useUnload, useShareAppMessage, useDidShow, useDidHide } from '@tarojs/taro';
 import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
-import { Interface } from '../../utils/constants';
+import { Interface, LOOPTIME } from '../../utils/constants';
 import { PageLogin } from '../../components/PageLogin';
 import { Card, List, Grid, CapsuleTabs, Tabs, TabBar } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
@@ -12,7 +12,7 @@ import { Layout } from '../../components/Layout';
 import { handleOptions } from '../../components/MoziChart/options';
 import { HighlightArea } from '../../components/HighlightArea';
 import { AddCollect } from '../../components/AddCollect';
-import { jump2List, jump2DataPage } from '../../utils/core';
+import { jump2List, jump2DataPage, jump2NoTab } from '../../utils/core';
 import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
@@ -20,14 +20,6 @@ import towxml from '../../towxml';
 import { isEmpty } from 'lodash';
 // import '~taro-parse/dist/style/main.scss'
 // import TaroParser from 'taro-parse'
-
-
-const lineData = {
-  hour: null,
-  day: null,
-  week: null,
-  month: null,
-};
 
 // const aiData = {
 //   hour: null,
@@ -62,8 +54,6 @@ export default function Detail() {
     data: null
   });
 
-  const [userStatus, setUserStatus] = useState('needAccount');
-
   const aiData = useRef({
     hour: null,
     day: null,
@@ -79,10 +69,11 @@ export default function Detail() {
     active: 'hour',
   });
 
+  const needLoop = useRef(true);
+
 
   // 控制展开收起
   const [infoShow, setInfoShow] = useState(false);
-  const [ popVis, setPopVis ] = useState(false);
 
   const chartRef = useRef(null)
 
@@ -104,28 +95,35 @@ export default function Detail() {
     onInit: initChart
   }
   
-
-
-  
   console.log('useRouter().params.symbol', useRouter().params);
   const symbol = useRouter().params.symbol;
 
-  useLoad(async () => {
-    console.log('Page loaded.');
-    Taro.showShareMenu({
-      withShareTicket: true,
-      showShareItems: ['wechatFriends', 'wechatMoment']
-    });
+  useDidShow(() => {
+    needLoop.current = true;
+    headRequest();
+    kLineRequest();
+    marketRequest();
+  });
+
+  useDidHide(() => {
+    needLoop.current = false;
+  });
+
+  // 头部
+  const headRequest = async () => {
     // 头部信息
     const coin_info = await cardRequest(Interface.coin_info, {
       symbol
     });
 
     const coin_info_data = coin_info.data;
+    if (isEmpty(coin_info_data)) {
+      return;
+    }
 
     // 动态设置标题
     Taro.setNavigationBarTitle({
-      title: coin_info_data.name
+      title: coin_info_data?.name || ''
     });
 
     const headerInfoLeft = [{
@@ -179,8 +177,12 @@ export default function Detail() {
 
     setCoinInfo(coin_info.data);
 
-    console.log('coin_info', coin_info);
-    getAiData({});
+    setTimeout(() => {
+      if (needLoop.current) headRequest();
+    }, LOOPTIME);
+  };
+  // K线
+  const kLineRequest = async () => {
     // k线图
     const coin_line1 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -192,7 +194,6 @@ export default function Detail() {
       type: 'kline'
     };
     chartRef.current.setOption(handleOptions(coin_line1.data, 'kline'));
-    lineData.hour = coin_line1?.data;
 
     const coin_line2 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -202,7 +203,6 @@ export default function Detail() {
       data: coin_line2?.data,
       type: 'kline'
     };
-    lineData.day = coin_line2?.data;
     const coin_line3 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 3
@@ -211,7 +211,6 @@ export default function Detail() {
       data: coin_line3?.data,
       type: 'kline'
     };
-    lineData.week = coin_line3?.data;
     const coin_line4 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 4
@@ -220,11 +219,14 @@ export default function Detail() {
       data: coin_line4?.data,
       type: 'kline'
     };
-    lineData.month = coin_line4?.data;
 
+    setTimeout(() => {
+      if (needLoop.current) kLineRequest();
+    }, LOOPTIME);
+  };
 
-   
-    // 市场
+  // 市场
+  const marketRequest = async () => {
     const marketRes = await request({
       url: Interface.COIN_MARKET,
       data: {
@@ -249,8 +251,16 @@ export default function Detail() {
       });
     }
 
-    console.log('getAi数据');
-    
+    setTimeout(() => {
+      if (needLoop.current) marketRequest();
+    }, LOOPTIME);
+  };
+  useLoad(async () => {
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+    getAiData({});
   });
 
   useShareAppMessage(() => {
@@ -283,9 +293,6 @@ export default function Detail() {
     chartData.current.active = value;
     setActiveKey(value);
 
-    // console.log('coinLine', JSON.stringify(coinLineData));
-    console.log('lineData', chartData.current);
-    // setCoinLine(lineData[value]);
     chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
     getAiData({activeKey: value});
   };
@@ -340,27 +347,6 @@ export default function Detail() {
       });
     }
 
-    // try {
-    //   const token = await getToken();
-    //   if (isEmpty(token)) {
-    //     setLogin(true);
-    //     setAi({
-    //       ...ai,
-    //       loading: false,
-    //     });
-    //     return;
-    //   } else {
-    //     setLogin(false);
-    //   }
-    // } catch (err) {
-    //   setLogin(true);
-    //   setAi({
-    //     ...ai,
-    //     loading: false,
-    //   });
-    //   return;
-    // }
-
     const aiRes = await cardRequest(Interface.AI_COIN, {
       symbol,
       type: typeObj[activeKey]
@@ -394,69 +380,6 @@ export default function Detail() {
   const jump2Land = () => {
     jump2DataPage('landscapechart', 'chartData', chartData.current);
   };
-
-  // const drawScreenshot = async () => {
-  //   const query = Taro.createSelectorQuery();
-    
-  //      const pageRect = await new Promise((resolve) => {
-  //        query.select('.indexBox').boundingClientRect(resolve).exec();
-  //      });
-
-  //      const canvas = Taro.createCanvasContext('screenshotCanvas');
-  //      const { top, height, width } = pageRect;
-
-  //      // 设置画布大小
-  //      canvas.setFillStyle('#fff');
-  //      canvas.fillRect(0, 0, width, height);
-
-  //      // 绘制页面内容到画布
-  //      canvas.drawImage(`index?pageRect=${JSON.stringify(pageRect)}`, 0, 0, width, height);
-
-  //      // 将画布内容转换为图片并保存或分享
-  //      const imgData = await new Promise((resolve) => {
-  //       //  canvas.draw(false, () => {
-  //         console.log('绘制完成');
-  //          Taro.canvasToTempFilePath({
-  //            canvasId: 'screenshotCanvas',
-  //            success: resolve,
-  //          });
-  //       //  });
-  //      });
-
-  //      // 可以在这里进行分享或保存图片的操作
-  //      console.log('截图数据：', imgData);
-  //      Taro.downloadFile({
-  //       url: imgData.tempFilePath,
-  //       success: function (res) {
-  //         if (res.statusCode === 200) {
-  //           // 保存图片到本地
-  //           Taro.saveImageToPhotosAlbum({
-  //             filePath: res.tempFilePath,
-  //             success: function () {
-  //               Taro.showToast({
-  //                 title: '图片保存成功',
-  //                 icon: 'success',
-  //               });
-  //             },
-  //             fail: function (err) {
-  //               Taro.showToast({
-  //                 title: '图片保存失败',
-  //                 icon: 'none',
-  //               });
-  //               console.error(err);
-  //             },
-  //           });
-  //         }
-  //       },
-  //       fail: function (err) {
-  //         Taro.showToast({
-  //           title: '图片下载失败',
-  //           icon: 'none',
-  //         });
-  //         console.error(err);
-  //       },
-  //     });
-  // }
 
   return (
     <View className='indexBox'>
@@ -659,24 +582,22 @@ export default function Detail() {
         </MoziCard>
       </div> */}
       {/* 评论 */}
-      {coinInfo?.symbol && (
+      {/* {coinInfo?.symbol && ( */}
         <View className='footer-list'>
           <View className='footer-item'>
-            <AddCollect isOwn={coinInfo.isSelfSelected} symbol={coinInfo.symbol} />
+            <AddCollect isOwn={coinInfo?.isSelfSelected || false} symbol={symbol} />
             <View>加自选</View>
           </View>
-          {/* <View className='footer-item'> */}
-            <Button className='footer-item' openType='share'>
-              <IconFont name='share' size={40} />
-              <View>分享</View>
-            </Button>
-          {/* </View> */}
-          {/* <Button className='footer-item' onClick={drawScreenshot}>
-              <IconFont name='share' size={40} />
-              <View>测试</View>
-            </Button> */}
+          <Button className='footer-item' openType='share'>
+            <IconFont name='share' size={40} />
+            <View>分享</View>
+          </Button>
+          <View className='footer-item' onClick={() => {jump2NoTab('addwarn', {symbol})}}>
+            <IconFont name='bell-fill' size={40} />
+            <View>告警</View>
+          </View>
         </View>
-      )}
+      {/* )} */}
       {/* <Canvas canvasId="screenshotCanvas"/> */}
       {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
     </View>

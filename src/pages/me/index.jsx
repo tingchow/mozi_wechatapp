@@ -298,10 +298,10 @@ export default function Index() {
              <IconFont name='plus-square' size={60} />
              <View className='headerSelectText'>我的自选</View>
           </View>
-          {/* <View className='headerSelectItem'>
-             <IconFont name='heart-fill' color='red' size={60} />
-             <View className='headerSelectText'>我的报警</View>
-          </View> */}
+          <View className='headerSelectItem' onClick={() => jump2NoTab('mywarn')}>
+            <IconFont name='bell-fill' size={60} />
+            <View className='headerSelectText'>我的报警</View>
+          </View>
           
           <View className='headerSelectItem' onClick={attendUs}>
             <IconFont name='wechat-fill' color='#04be02' size={60} />

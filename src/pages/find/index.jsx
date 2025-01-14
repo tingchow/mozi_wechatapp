@@ -1,6 +1,6 @@
 import { View, Image, Button } from '@tarojs/components';
 import { useState, useRef, useCallback, useEffect } from 'react';
-import Taro, { useDidShow, useLoad, useShareAppMessage } from '@tarojs/taro';
+import Taro, { useDidShow, useDidHide, useLoad, useShareAppMessage } from '@tarojs/taro';
 import { Grid } from 'antd-mobile';
 import { Layout } from '../../components/Layout';
 import { Login } from '../../components/Login';
@@ -12,9 +12,10 @@ import { ComplexList } from '../../components/ListCom/ComplexList';
 import { HighlightArea } from '../../components/HighlightArea';
 import './index.less';
 import { jump2List, jump2NoTab } from '../../utils/core';
-import { Interface } from '../../utils/constants';
+import { Interface, LOOPTIME } from '../../utils/constants';
 import { request } from '../../utils/request';
 import { AddCollect } from '../../components/AddCollect';
+import { AddMonitor } from '../../components/AddMonitor';
 import { isEmpty } from 'lodash';
 
 
@@ -41,6 +42,8 @@ const MarketDesc = ({currentPrice, priceChange24h}) => {
 
 export default function Find() {
 
+  const needLoop = useRef(true);
+
   const [pageActiveKey, setPageActiveKey] = useState('market');
   const [marketLoading, setMarketLoading] = useState(true);
   const [ needLogin, setLogin ] = useState(false);
@@ -53,12 +56,15 @@ export default function Find() {
 
   useDidShow(() => {
     const app = Taro.getApp();
-    console.log('app', app);
     if (app.findType) {
       setPageActiveKey(app.findType);
       delete app.findType;
     }
-    
+    needLoop.current = true;
+  });
+
+  useDidHide(() => {
+    needLoop.current = false;
   });
 
   const pageActiveClick = useCallback((key) => {
@@ -70,9 +76,8 @@ export default function Find() {
   const [ my_own, setOwn ] = useState([]);
   const [ ownLoading, setOwnLoading] = useState(true);
   const [isOwnError, setOwnError] = useState(false);
-  useDidShow(async () => {
-    // const self_select = await cardRequest(Interface.self_select);
 
+  const selectRequest = async () => {
     const coinSelectRes = await request({
       url: Interface.COIN_SELF
     });
@@ -83,7 +88,7 @@ export default function Find() {
       return;
     }
 
-    if (!coinSelectRes?.data) {
+    if (isEmpty(coinSelectRes?.data)) {
       setOwnError(true);
       return;
     }
@@ -104,42 +109,21 @@ export default function Find() {
         last: item.last,
         price24h: <HighlightArea value={item.price24h}></HighlightArea>,
         own: <AddCollect symbol={item.symbol} isOwn={true} />,
+        monitor: <AddMonitor symbol={item.symbol} />,
         key: item.symbol
       };
     });
     setOwn(temp_self_select);
     setOwnLoading(false);
     // setLogin(false);
-  });
 
-  const uploadOwn = async () => {
-    const coinSelectRes = await request({
-      url: Interface.COIN_SELF
-    });
-
-    if (isEmpty(coinSelectRes?.data)) {
-      setOwnError(true);
-      return;
-    }
-
-    // if (!coinSelectRes.data.isLogin) {
-    //   setLogin(true);
-    // }
-
-    console.log('self_select', coinSelectRes);
-    const temp_self_select = coinSelectRes.data.map((item) => {
-      return {
-        symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
-        last: item.last,
-        price24h: <HighlightArea value={item.price24h}></HighlightArea>,
-        own: <AddCollect symbol={item.symbol} isOwn={true} />,
-        key: item.symbol
-      };
-    });
-    setOwn(temp_self_select);
-    setOwnLoading(false);
+    setTimeout(() => {
+      if (needLoop.current) selectRequest();
+    }, LOOPTIME);
   };
-
+  useDidShow(async () => {
+    selectRequest();
+  });
 
   // 行情处理
   const [marketData, setMarketData] = useState([]);
@@ -227,14 +211,9 @@ export default function Find() {
   const [isExchangeError, setExchangeError] = useState(false);
   const [isExchangeLoading, setExchangeLoading] = useState(true);
   const exchangeArr = useRef([]);
-  
-  useLoad(async () => {
 
-    Taro.showShareMenu({
-      withShareTicket: true,
-      showShareItems: ['wechatFriends', 'wechatMoment']
-    });
-
+  // 热门交易所
+  const exchangeRequest = async () => {
     const exchangeSpot = await request({
       url: Interface.hot_exchange,
       data: {
@@ -291,6 +270,21 @@ export default function Find() {
       exchangeSelect,
     });
     setExchangeLoading(false);
+
+    setTimeout(() => {
+      if (needLoop.current) exchangeRequest();
+    }, LOOPTIME);
+  };
+  
+  useLoad(async () => {
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+  });
+
+  useDidShow(() => {
+    exchangeRequest();
   });
 
   const exchangePickChange = (idx) => {
@@ -323,7 +317,9 @@ export default function Find() {
 
   
   const priceSelect = [];
-  useLoad(async () => {
+
+  // 涨幅
+  const upPriceRequest = async () => {
     for (let i = 0; i < dimArr.length; i++) {
       const price = await request({
         url: Interface.price_change,
@@ -359,6 +355,12 @@ export default function Find() {
       priceSelect,
     });
     setPriceLoading(false);
+    setTimeout(() => {
+      if (needLoop.current) upPriceRequest();
+    }, LOOPTIME);
+  };
+  useDidShow(() => {
+    upPriceRequest();
   });
 
   const pricePickChange = (idx) => {
@@ -392,7 +394,8 @@ export default function Find() {
 
   
   const downSelect = [];
-  useLoad(async () => {
+  // 跌幅
+  const downPriceRequest = async () => {
     for (let i = 0; i < dimArr.length; i++) {
       const price = await request({
         url: Interface.PRICE_DOWNCHANGE,
@@ -428,6 +431,13 @@ export default function Find() {
       downSelect,
     });
     setDownLoading(false);
+
+    setTimeout(() => {
+      if (needLoop.current) downPriceRequest();
+    }, LOOPTIME);
+  };
+  useDidShow(() => {
+    downPriceRequest();
   });
 
   const downPickChange = (idx) => {
@@ -451,7 +461,9 @@ export default function Find() {
 
   
   const waveSelect = [];
-  useLoad(async () => {
+
+  // 波幅
+  const waveRequest = async () => {
     for (let i = 0; i < dimArr.length; i++) {
       const wave = await request({
         url: Interface.price_wave,
@@ -487,6 +499,12 @@ export default function Find() {
       waveSelect,
     });
     setWaveLoading(false);
+    setTimeout(() => {
+      if (needLoop.current) waveRequest();
+    }, LOOPTIME);
+  };
+  useDidShow(() => {
+    waveRequest();
   });
 
   const wavePickChange = (idx) => {
@@ -519,7 +537,9 @@ export default function Find() {
 
   
   const tradeSelect = [];
-  useLoad(async () => {
+
+  // 交易额
+  const tradeRequest = async () => {
     for (let i = 0; i < intervalsArr.length; i++) {
       const trade = await request({
         url: Interface.coin_trade,
@@ -555,6 +575,12 @@ export default function Find() {
       tradeSelect,
     });
     setTradeLoading(false);
+    setTimeout(() => {
+      if (needLoop.current) tradeRequest();
+    }, LOOPTIME);
+  };
+  useDidShow(() => {
+    tradeRequest();
   });
 
   const tradePickChange = (idx) => {
@@ -579,7 +605,7 @@ export default function Find() {
 
   
   const xinbiSelect = [];
-  useLoad(async () => {
+  const newCoinRequest = async () => {
     const xinbi = await request({
       url: Interface.NEW_COIN,
       data: {}
@@ -609,6 +635,12 @@ export default function Find() {
     });
     setXinbiLoading(false);
     console.log('新币展示');
+    setTimeout(() => {
+      if (needLoop.current) newCoinRequest();
+    }, LOOPTIME);
+  };
+  useDidShow(() => {
+    newCoinRequest();
   });
 
   // const tradePickChange = (idx) => {
@@ -629,10 +661,10 @@ export default function Find() {
   const [isUpTradeError, setUpTradeError] = useState(false);
   const [isUpTradeLoading, setUpTradeLoading] = useState(true);
   const upTradeArr = useRef([]);
-
-  
   const upTradeSelect = [];
-  useLoad(async () => {
+
+  // 飙升请求
+  const upTradeRequest = async () => {
     for (let i = 0; i < dimArr.length; i++) {
       const wave = await request({
         url: Interface.PRICE_UPTRADE,
@@ -668,6 +700,12 @@ export default function Find() {
       upTradeSelect,
     });
     setUpTradeLoading(false);
+    setTimeout(() => {
+      if (needLoop.current) upTradeRequest();
+    }, LOOPTIME);
+  };
+  useDidShow(() => {
+    upTradeRequest();
   });
 
   const upTradePickChange = (idx) => {
@@ -691,21 +729,21 @@ export default function Find() {
       {
         pageActiveKey === 'own' && (
           <View className='ownBox'>
-            <Layout isLoading={ownLoading} isError={isOwnError} needLogin={needLogin} loginCallback={uploadOwn}>
+            <Layout isLoading={ownLoading} isError={isOwnError} needLogin={needLogin} loginCallback={selectRequest}>
               {
                 my_own.length === 0 ? (
                   <Button className='addOwnBtn' onClick={addOwn}>添加自选</Button>
                 ): (
                   <>
-                    <Grid className='gridTitle' columns={4}>
+                    <Grid className='gridTitle' columns={5}>
                       {
-                        ['币种', '最新价', '24小时涨幅', '是否自选'].map((colNameItem, colNameIndex) => {
+                        ['币种', '最新价', '24小时涨幅', '是否自选', '加监控'].map((colNameItem, colNameIndex) => {
                           return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
                         })
                       }
                     </Grid>
                     <ComplexList
-                      gridTitle={['币种', '最新价', '24小时涨幅', '是否自选']}
+                      gridTitle={['币种', '最新价', '24小时涨幅', '是否自选', '加自选']}
                       defaultpageSize={20}
                       enableLoadMore={false}
                       data={my_own}
@@ -842,7 +880,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_change,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '最新价','涨幅', '加自选'],
+                  gridTitle: ['币种', '最新价','涨幅', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -856,6 +894,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -874,7 +915,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_change,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '最新价','涨幅', '加自选'],
+                  gridTitle: ['币种', '最新价','涨幅', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -888,6 +929,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -920,7 +964,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.PRICE_DOWNCHANGE,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '最新价', '跌幅', '加自选'],
+                  gridTitle: ['币种', '最新价', '跌幅', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -934,6 +978,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -952,7 +999,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.PRICE_DOWNCHANGE,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '最新价', '跌幅', '加自选'],
+                  gridTitle: ['币种', '最新价', '跌幅', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -966,6 +1013,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -998,7 +1048,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_wave,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '最新价', '波幅', '加自选'],
+                  gridTitle: ['币种', '最新价', '波幅', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1012,6 +1062,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1030,7 +1083,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.price_wave,
                   requestData: dimRequestData(),
-                  gridTitle: ['币种', '最新价', '波幅', '加自选'],
+                  gridTitle: ['币种', '最新价', '波幅', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1044,6 +1097,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1075,7 +1131,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.coin_trade,
                   requestData: tradeRequestData(),
-                  gridTitle: ['币种', '成交额'],
+                  gridTitle: ['币种', '成交额', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1083,6 +1139,12 @@ export default function Find() {
                     type: 'Text',
                     data: 'usd'
                   }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  },{
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1101,7 +1163,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.coin_trade,
                   requestData: tradeRequestData(),
-                  gridTitle: ['币种', '成交额'],
+                  gridTitle: ['币种', '成交额', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1109,6 +1171,12 @@ export default function Find() {
                     type: 'Text',
                     data: 'usd'
                   }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  },{
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1140,7 +1208,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.NEW_COIN,
                   requestData: {},
-                  gridTitle: ['币种', '最新价', '幅度', '加自选'],
+                  gridTitle: ['币种', '最新价', '幅度', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1154,6 +1222,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1172,7 +1243,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.NEW_COIN,
                   requestData: {},
-                  gridTitle: ['币种', '最新价', '幅度', '加自选'],
+                  gridTitle: ['币种', '最新价', '幅度', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1186,6 +1257,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1217,7 +1291,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.PRICE_UPTRADE,
                   requestData: tradeRequestData(),
-                  gridTitle: ['币种', '最新价', '增长值', '加自选'],
+                  gridTitle: ['币种', '最新价', '增长值', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1231,6 +1305,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {
@@ -1249,7 +1326,7 @@ export default function Find() {
                 jump2List({
                   interFace: Interface.PRICE_UPTRADE,
                   requestData: tradeRequestData(),
-                  gridTitle: ['币种', '最新价', '增长值', '加自选'],
+                  gridTitle: ['币种', '最新价', '增长值', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',
                     data: ['url', 'symbol']
@@ -1263,6 +1340,9 @@ export default function Find() {
                     type: 'AddCollect',
                     data: ['favorite', 'symbol']
                   }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
                     type: 'key',
                     data: 'symbol'
                   }, {

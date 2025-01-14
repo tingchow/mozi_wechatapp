@@ -84,6 +84,15 @@ const Interface = {
   ALL_COIN: '/derivatives/allcoin',
   // 全部交易所
   ALL_CEX: '/derivatives/allcex',
+
+  // 添加告警
+  ADD_WARN: '/alarm/add',
+  // 我的告警
+  MY_WARN: '/alarm/info',
+  // 打开告警
+  OPEN_WARN: '/alarm/on',
+  // 关闭告警
+  CLOSE_WARN: '/alarm/off',
 };
 
 let proxyObj = {};

@@ -9,6 +9,20 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/mywarn/index",
+          "pathName": "pages/mywarn/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/addwarn/index",
+          "pathName": "pages/addwarn/index",
+          "query": "symbol=btc",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/landscapechart/index",
           "pathName": "pages/landscapechart/index",
           "query": "",

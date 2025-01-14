@@ -1,15 +1,16 @@
 import { View, Image, ScrollView, Button } from '@tarojs/components'
-import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro';
+import Taro, { useLoad, useShareAppMessage, useDidShow, useDidHide } from '@tarojs/taro';
 import IconFont from '../../components/iconfont';
-import { Grid, TabBar} from 'antd-mobile';
-import { useState } from 'react';
+import { Grid, TabBar, NoticeBar } from 'antd-mobile';
+import { useState, useRef } from 'react';
 import { request } from '../../utils/request';
-import { Interface } from '../../utils/constants';
+import { Interface, LOOPTIME } from '../../utils/constants';
 import { MoziCard } from '../../components/MoziCard';
 import { MoziGrid } from '../../components/MoziGrid';
 import { SearchInput } from '../../components/SearchInput';
 import { Layout } from '../../components/Layout';
 import { AddCollect } from '../../components/AddCollect';
+import { AddMonitor } from '../../components/AddMonitor';
 import { HighlightArea } from '../../components/HighlightArea';
 import { MoziTreeMap } from '../../components/MoziChart/TreeMap';
 import { PageLogin } from '../../components/PageLogin';
@@ -54,6 +55,7 @@ export default function Index() {
   const [ myOwnLoading, setMyOwnLoading ] = useState(true);
   const [ popVis, setPopVis ] = useState(false);
   const [ rankActiveKey, setRankActive ] = useState('zhangfu');
+  const needLoop = useRef(true);
 
   // 自选接口、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
   const footerIfList = [{
@@ -94,13 +96,8 @@ export default function Index() {
     }
   }];
 
-  useLoad(async () => {
-
-    Taro.showShareMenu({
-      withShareTicket: true,
-      showShareItems: ['wechatFriends', 'wechatMoment']
-    });
-
+  // 全部请求
+  const allRequest = async () => {
     // 热门币种
     const coin = await cardRequest(Interface.hot_coin, {
       pageSize: 10
@@ -119,28 +116,6 @@ export default function Index() {
     });
     setHotContract(contract.data);
     setContractLoading(false);
-    
-    // 自选
-    // const self_select = await cardRequest(Interface.find_coin, {
-    //   pageSize: 10,
-    //   pageNo: 1
-    // });
-    // const temp_self_select = self_select.data.list.map((item) => {
-    //   return {
-    //     symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
-    //     currentPrice: item.currentPrice,
-    //     priceChangePercentage24h: <HighlightArea value={item.priceChangePercentage24h}></HighlightArea>,
-    //     totalVolume: item.totalVolume,
-    //     own: <AddCollect symbol={item.symbol} isOwn={false} loginCb={() => {setPopVis(true)}} />,
-    //     key: item.symbol
-    //   };
-    // });
-    // setOwn(temp_self_select);
-    // setMyOwnLoading(false);
-
-
-    
-   
 
     const tempFooterList = [];
 
@@ -156,6 +131,7 @@ export default function Index() {
             currentPrice: item.currentPrice,
             priceChange24h: <HighlightArea value={item.priceChangePercentage24h}></HighlightArea>,
             own: <AddCollect symbol={item.symbol} isOwn={item.favorite} loginCb={() => {setPopVis(true)}} />,
+            monitor: <AddMonitor symbol={item.symbol} />,
             key: item.symbol,
           };
         });
@@ -165,17 +141,39 @@ export default function Index() {
             symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
             last: item.last || item.volume_24h,
             priceRange: <HighlightArea value={item.priceRange || item.movers || item.price_24h}></HighlightArea>,
-            own: <AddCollect symbol={item.symbol} isOwn={item.favorite} loginCb={() => {setPopVis(true)}} />,
+            own: (<AddCollect symbol={item.symbol} isOwn={item.favorite} loginCb={() => {setPopVis(true)}} />),
+            monitor: <AddMonitor symbol={item.symbol} />,
             key: item.symbol
           }
         });
       }
       tempFooterList.push(tempData);
-      
     }
 
     setFooterArr(tempFooterList);
     setFooterLoading(false);
+    setTimeout(() => {
+      if (needLoop.current) allRequest();
+    }, LOOPTIME);
+  };
+
+  useLoad(async () => {
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'wechatMoment']
+    });
+    // allRequest();
+  });
+
+  useDidShow(() => {
+    console.log('index 展示');
+    needLoop.current = true;
+    allRequest();
+  });
+
+  useDidHide(() => {
+    console.log('index 隐藏');
+    needLoop.current = false;
   });
 
   useShareAppMessage(() => {
@@ -249,6 +247,9 @@ export default function Index() {
         type: 'AddCollect',
         data: ['favorite', 'symbol']
       }, {
+        type: 'AddMonitor',
+        data: 'symbol'
+      }, {
         type: 'key',
         data: 'symbol'
       }, {
@@ -283,13 +284,13 @@ export default function Index() {
   const activeArr = ['zixuan', 'zhangfu', 'diefu', 'zhenfu', 'chengjiaoe', 'xinbi', 'biaosheng'];
   const activeArrValue = ['自选榜', '涨幅榜', '跌幅榜', '波幅榜', '成交额榜', '新币榜', '飙升榜'];
   const colNameArr = [
-    ['币种', '最新价', '24小时幅度', '加自选'],
-    ['币种', '最新价', '24小时幅度', '加自选'],
-    ['币种', '最新价', '24小时幅度', '加自选'],
-    ['币种', '最新价', '24小时幅度', '加自选'],
-    ['币种', '最新成交额', '24小时幅度', '加自选'],
-    ['币种', '最新价', '24小时幅度', '加自选'],
-    ['币种', '最新价', '24小时幅度', '加自选']
+    ['币种', '最新价', '24小时幅度', '加自选', '加监控'],
+    ['币种', '最新价', '24小时幅度', '加自选', '加监控'],
+    ['币种', '最新价', '24小时幅度', '加自选', '加监控'],
+    ['币种', '最新价', '24小时幅度', '加自选', '加监控'],
+    ['币种', '最新成交额', '24小时幅度', '加自选', '加监控'],
+    ['币种', '最新价', '24小时幅度', '加自选', '加监控'],
+    ['币种', '最新价', '24小时幅度', '加自选', '加监控']
   ];
   return (
     <View className='indexBox'>
@@ -305,6 +306,25 @@ export default function Index() {
             <IconFont name='close-circle-fill' color='#b2b2b2' size={30} />
           </View>
         </View>
+      </View>
+      <View className='notice'>
+        {/* <View className='notice-item'>
+          <IconFont name='bell-fill' size={30} color='#ff6430' />
+          <View className='notice-content'>告别手动盯盘，实时波动随时跟进！进入币种详情页，开启智能告警配置吧！</View>
+        </View> */}
+        {/* <NoticeBar
+          className='notice-item'
+          content='告别手动盯盘，实时波动随时跟进！进入币种详情页，开启智能告警配置吧！'
+          color='alert'
+          icon={<IconFont name='bell-fill' size={30} color='#ff6430' />}
+        /> */}
+        <NoticeBar
+          className='notice-item'
+          content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
+          color='alert'
+          wrap
+          icon={<IconFont name='bell-fill' size={30} color='#ff6430' />}
+        />
       </View>
       {/* 衍生品专区 */}
       <MoziCard
@@ -426,7 +446,7 @@ export default function Index() {
               footerArr.length > 0 && (
                 <View>
                   <MoziGrid
-                    length={4}
+                    length={5}
                     colName={colNameArr[activeArr.indexOf(rankActiveKey)]}
                     gridContent={footerArr[activeArr.indexOf(rankActiveKey)]}
                     callback={(gridCon) => {jump2Detail(gridCon.key)}}
