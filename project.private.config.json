@@ -4,10 +4,17 @@
   "setting": {
     "compileHotReLoad": true
   },
-  "libVersion": "3.5.3",
+  "libVersion": "latest",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "pages/user/index",
+          "pathName": "pages/user/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "pages/mywarn/index",
           "pathName": "pages/mywarn/index",
@@ -25,13 +32,6 @@
         {
           "name": "pages/landscapechart/index",
           "pathName": "pages/landscapechart/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/tradevol/index",
-          "pathName": "pages/tradevol/index",
           "query": "",
           "launchMode": "default",
           "scene": null

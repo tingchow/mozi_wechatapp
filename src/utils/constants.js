@@ -60,6 +60,8 @@ export const Interface = {
   // 我的
   // 登录
   MOZI_LOGIN: '/user/login',
+  // 用户信息保存
+  MOZI_USER: '/user/info',
   // 评分
   MOZI_COMMENT: '/feedback/add',
 

@@ -237,13 +237,26 @@ export default function Index() {
             console.log('用户信息本地缓存成功');
             setIsLogin(true);
 
-            // todo 请求用户的信息
-            // todo 成功后
             // 如果是登录，表示有用户信息，不需要跳转
             // setUserInfo(userInfo);
             // Taro.setStorage('userInfo', userInfo);
             // 如果是注册，表示没有用户信息，跳转到用户信息页
             // jump2NoTab('user');
+            const userInfo = tokenInfo?.data?.userInfo;
+            if (!userInfo?.avatar || !userInfo?.nickName ) {
+              jump2User();
+            } else {
+              Taro.setStorageSync('userInfo', {
+                avatar: userInfo?.avatar,
+                nickName: userInfo?.nickName
+              });
+              setUserInfo({
+                avatar: userInfo?.avatar,
+                nickName: userInfo?.nickName
+              });
+            }
+
+            
           } else {
             console.log('数据失败');
             Taro.showToast({
@@ -279,7 +292,7 @@ export default function Index() {
         {
           isLogin? (
             
-            <View className='headerUser'>
+            <View className='headerUser' onClick={() => jump2User()}>
               <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
               <Text>{userInfo.nickName || '微信用户'}</Text>
             </View>
