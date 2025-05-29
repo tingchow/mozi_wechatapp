@@ -2,7 +2,6 @@ import { View, Text, Image, Button, PageContainer, OfficialAccount, ScrollView, 
 import { List, Popup, Grid, Avatar } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
 import Taro from '@tarojs/taro';
-import { Login } from '../../components/Login';
 import { useState, useEffect, useRef } from 'react';
 import { useLoad, useShareTimeline, useRouter } from '@tarojs/taro';
 import { jump2Detail, jump2Market } from '../../utils/core';
@@ -72,7 +71,7 @@ export default function User() {
     if (infoRes?.data) {
       Taro.setStorageSync('userInfo', {
         avatar: infoRes?.data,
-        nickName: e.detail.value?.nickName
+        nickName: e.detail.value?.nickName,
       });
       Taro.hideLoading();
       Taro.showToast({

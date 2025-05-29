@@ -381,6 +381,20 @@ export default function Detail() {
     jump2DataPage('landscapechart', 'chartData', chartData.current);
   };
 
+  const jump2Community = () => {
+    // 跳转社区tab
+    if (coinInfo && coinInfo.symbol) {
+      Taro.setStorageSync('communityCoinSymbol', coinInfo.symbol);
+    }
+    Taro.switchTab({
+      url: '/pages/community/index'
+    });
+    return;
+    // Taro.switchTab({
+    //   url: `/pages/community/index?symbol=${coinInfo?.symbol}`,
+    // });
+  };
+
   return (
     <View className='indexBox'>
       {/* 头部详情 */}
@@ -595,6 +609,10 @@ export default function Detail() {
           <View className='footer-item' onClick={() => {jump2NoTab('addwarn', {symbol})}}>
             <IconFont name='bell-fill' size={40} />
             <View>告警</View>
+          </View>
+          <View className='footer-item' onClick={jump2Community}>
+            <IconFont name='shequ' size={40} />
+            <View>社区</View>
           </View>
         </View>
       {/* )} */}

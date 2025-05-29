@@ -1,6 +1,10 @@
 /* eslint-disable */
 
 import React from 'react';
+import IconCheck from './IconCheck';
+import IconShequ from './IconShequ';
+import IconMessage from './IconMessage';
+import IconEllipsis from './IconEllipsis';
 import IconBellFill from './IconBellFill';
 import IconArrawsalt from './IconArrawsalt';
 import IconClose from './IconClose';
@@ -27,6 +31,10 @@ import IconHeartFill from './IconHeartFill';
 import IconCloseCircleFill from './IconCloseCircleFill';
 import IconSearch from './IconSearch';
 import IconRight from './IconRight';
+export { default as IconCheck } from './IconCheck';
+export { default as IconShequ } from './IconShequ';
+export { default as IconMessage } from './IconMessage';
+export { default as IconEllipsis } from './IconEllipsis';
 export { default as IconBellFill } from './IconBellFill';
 export { default as IconArrawsalt } from './IconArrawsalt';
 export { default as IconClose } from './IconClose';
@@ -56,6 +64,14 @@ export { default as IconRight } from './IconRight';
 
 const IconFont = ({ name, ...rest }) => {
   switch (name) {
+    case 'check':
+      return <IconCheck {...rest} />;
+    case 'shequ':
+      return <IconShequ {...rest} />;
+    case 'message':
+      return <IconMessage {...rest} />;
+    case 'ellipsis':
+      return <IconEllipsis {...rest} />;
     case 'bell-fill':
       return <IconBellFill {...rest} />;
     case 'arrawsalt':

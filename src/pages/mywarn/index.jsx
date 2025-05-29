@@ -33,6 +33,8 @@ export default function Mywarn() {
     data: {},
     sideData: null,
   });
+  const [editingIndex, setEditingIndex] = useState(-1);
+  const [editValue, setEditValue] = useState('');
 
   // const data = {
   //   BTC: {
@@ -110,6 +112,80 @@ export default function Mywarn() {
     priceFallChange24HPercent: '币值跌超',
   };
 
+  const startEdit = (item, index) => {
+    // 提取数字部分
+    const numericValue = item.content.replace('%', '');
+    setEditValue(numericValue);
+    setEditingIndex(index);
+  };
+
+  const confirmEdit = async (code, index) => {
+    setEditingIndex(-1);
+    if (!/^[0-9]+(\.?[0-9]+)?$/.test(editValue)) {
+      Taro.showToast({
+        title: '请输入数字',
+        icon: 'error',
+        duration: 2000,
+        mask: true
+      });
+      return;
+    }
+
+    const symbol = Object.keys(warnData.data)[activeKey];
+    const sideKey = ['priceRise', 'priceFall', 'priceRiseChange24HPercent', 'priceFallChange24HPercent'];
+    const codeIndex = sideKey.indexOf(code);
+    const formattedValue = (codeIndex === 0 || codeIndex === 1) ? editValue : `${editValue}%`;
+    Taro.showLoading();
+    const addRes = await request({
+      url: Interface.ADD_WARN,
+      method: 'POST',
+      data: {
+        symbol,
+        content: {
+          [code]: formattedValue
+        }
+      }
+    });
+    Taro.hideLoading();
+    if (addRes.data === true) {
+      // 更新本地数据
+      const newWarnContent = warnData.sideData.warnContent.map((warnItem, warnIndex) => {
+        if (index === warnIndex) {
+          return {
+            ...warnItem,
+            content: formattedValue
+          };
+        }
+        return warnItem;
+      });
+      
+      setWarnData({
+        ...warnData,
+        sideData: {
+          ...warnData.sideData,
+          warnContent: newWarnContent
+        }
+      });
+      
+      
+      setEditValue('');
+      
+      Taro.showToast({
+        title: '修改成功',
+        icon: 'success',
+        duration: 2000,
+        mask: true
+      });
+    } else {
+      Taro.showToast({
+        title: addRes.errorMsg || '修改失败',
+        icon: 'error',
+        duration: 2000,
+        mask: true
+      });
+    }
+  };
+
   const switchChange = async (code, active, index) => {
     let interfaceurl = Interface.CLOSE_WARN;
     if (!active) {
@@ -179,11 +255,46 @@ export default function Mywarn() {
                 </SideBar>
               </View>
               <View className='main'>
-                {
-                  warnData.sideData?.warnContent?.length > 0 && warnData.sideData?.warnContent.map((item, index) => {
+                {warnData.sideData?.warnContent?.length > 0 && warnData.sideData?.warnContent.map((item, index) => {
                     return (
                       <View className='main-item' key={index}>
-                        <View>{`${code2Content[item.code]}${item.content}`}</View>
+                        {editingIndex === index ? (
+                          <View className='edit-container'>
+                            <Text className='content-label'>
+                              {code2Content[item.code]}
+                            </Text>
+                            <Input 
+                              className='edit-input'
+                              value={editValue}
+                              onInput={(e) => setEditValue(e.detail.value)}
+                              placeholder='请输入数字'
+                              type='digit'
+                            />
+                            <View className='confirm-btn' onClick={() => confirmEdit(item.code, index)}>
+                              <IconFont name='check' size={50} color='#02c076' />
+                            </View>
+                            {/* <Button 
+                              className='confirm-btn'
+                              size='mini'
+                              type='primary'
+                              onClick={() => confirmEdit(item.code, index)}
+                            >
+                              ✔️
+                            </Button> */}
+                          </View>
+                        ) : (
+                          <View className='content-wrapper'>
+                            <Text className='content-label'>
+                              {code2Content[item.code]}
+                            </Text>
+                            <Text 
+                              className='content-text'
+                              onClick={() => startEdit(item, index)}
+                            >
+                              {item.content}
+                            </Text>
+                          </View>
+                        )}
                         <Switch checked={item.active} onChange={() => switchChange(item.code, item.active, index)} />
                       </View>
                     )

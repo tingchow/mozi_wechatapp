@@ -49,7 +49,7 @@ export const SearchInput = (props) => {
         <div className='searchIcon'>
           <IconFont name='search' size={30} />
         </div>
-        <Input className='searchInput' type='text' placeholder='请搜索币种' value={inputValue} onInput={onChange} confirmType='search' onConfirm={(e) => {jump2Search(e)}} focus/>
+        <Input className='searchInput' type='text' placeholder={props?.placeholder || '请搜索币种'} value={inputValue} onInput={onChange} confirmType='search' onConfirm={(e) => {jump2Search(e)}} focus/>
         <div className='searchCancel' onClick={clear}>
           <IconFont name='close-circle-fill' color={closeColor} size={30} />
         </div>

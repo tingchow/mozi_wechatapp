@@ -3,7 +3,6 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Taro, { useDidShow, useDidHide, useLoad, useShareAppMessage } from '@tarojs/taro';
 import { Grid } from 'antd-mobile';
 import { Layout } from '../../components/Layout';
-import { Login } from '../../components/Login';
 import { TabBar } from 'antd-mobile';
 import { MoziGrid } from '../../components/MoziGrid';
 import { MoziCard } from '../../components/MoziCard';

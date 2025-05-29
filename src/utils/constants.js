@@ -100,6 +100,32 @@ export const Interface = {
   OPEN_WARN: '/alarm/on',
   // 关闭告警
   CLOSE_WARN: '/alarm/off',
+
+  // 社区
+  // 获取帖子列表
+  POSTS_API: '/posts',
+  // 获取帖子详情
+  POST_DETAIL_API: '/posts/{id}',
+  // 获取评论列表
+  COMMENTS_API: '/comments/post/{postId}',
+  // 获取热榜话题
+  HOT_TOPICS_API: '/topic/hot',
+  // 话题搜索
+  TOPIC_SEARCH: '/topic/search',
+  // 发帖
+  POST_NEW: '/posts/new',
+  // 点踩
+  POSTS_UNLIKE: '/posts/unlike',
+  // 点赞
+  POSTS_LIKE: '/posts/like',
+  // 创建评论
+  COMMENTS_NEW: '/comments/new',
+  // 更新帖子
+  POSTS_UPDATE: '/posts/update',
+  // 删除帖子
+  POSTS_DELETE: '/posts/delete',
+  // 创建话题
+  CREATE_TOPIC: '/topic/new',
 };
 
 // 邮箱

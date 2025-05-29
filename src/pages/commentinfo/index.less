@@ -1,0 +1,499 @@
+// index.less
+.comment-detail {
+  // padding: 20px;
+  // background: #f8f8f8;
+  min-height: 100vh;
+
+  .first-comment {
+    padding: 24px;
+    padding-bottom: 0;
+    background: #fff;
+    // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    .header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin-right: 12px;
+        object-fit: cover;
+        border: 2px solid #f0f0f0;
+      }
+
+      .nickname {
+        font-size: 30px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .category {
+        margin-left: 10px;
+        font-size: 22px;
+        color: #45e87f;
+        background: rgba(69, 232, 127, 0.1);
+        padding: 4px 10px;
+        border-radius: 12px;
+      }
+
+      .info-content {
+        overflow: hidden;
+
+        .nickname {
+          font-size: 32px;
+          color: #333;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+
+        .performance {
+          font-size: 26px;
+          color: #666;
+          margin-bottom: 6px;
+
+          .label {
+            margin-right: 15px;
+          }
+
+          .value {
+            color: #333;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .follow-btn {
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: #45e87f;
+        color: #fff;
+        font-size: 26px;
+
+        &.followed {
+          background: #eee;
+          color: #666;
+        }
+      }
+    }
+
+    .post-info {
+      .title {
+        font-size: 32px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 20px;
+        display: block;
+      }
+
+      .content {
+        font-size: 28px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: block;
+      }
+
+      .tags-topics-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px; // 标签与按钮之间的间距
+        
+        .coin-tag,
+        .topic-tag {
+          display: inline-block;
+          padding: 8px 16px;
+          margin-right: 16px;
+          margin-bottom: 12px;
+          font-size: 24px;
+          color: #45e87f;
+          background: rgba(69, 232, 127, 0.1);
+          border-radius: 32px;
+          transition: all 0.2s ease;
+          
+          &:active {
+            opacity: 0.7;
+            transform: scale(0.98);
+          }
+        }
+        
+        .topic-tag {
+          color: #1890ff;
+          background: rgba(24, 144, 255, 0.1);
+        }
+      }
+
+      .post-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        padding: 15px 0 0;
+
+        .time {
+          font-size: 24px;
+          color: #999;
+        }
+
+        .action-group {
+          display: flex;
+          align-items: center;
+
+          .like-btn {
+            display: flex;
+            align-items: center;
+            margin-right: 30px;
+            
+            .likes {
+              font-size: 24px;
+              color: #666;
+              margin-left: 8px;
+              
+              &.liked {
+                color: #ff6b6b;
+              }
+            }
+          }
+
+          .share-btn {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+            line-height: normal;
+            
+            &::after {
+              border: none;
+            }
+            
+            .share-text {
+              font-size: 24px;
+              color: #666;
+              margin-left: 8px;
+            }
+          }
+        }
+      }
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 15px;
+      padding: 10px 0 0;
+      font-size: 24px;
+      color: #999;
+
+      .address, .time {
+        margin-right: 15px;
+      }
+    }
+  }
+
+  .comment-list {
+    border-top: 1rpx solid #f0f0f0;
+
+    .list-header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+
+    .view-more {
+      padding: 12px;
+      text-align: center;
+      color: #576b95;
+      font-size: 28px;
+      background: #f8f8f8;
+      margin: 10px 0;
+      border-radius: 8px;
+      transition: opacity 0.2s;
+
+      &:active {
+        opacity: 0.8;
+      }
+    }
+
+      .total {
+        font-size: 32px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .count {
+        font-size: 26px;
+        color: #999;
+      }
+    }
+
+    .second-comment {
+      padding: 20px;
+      margin-bottom: 15px;
+      background: #fff;
+
+      .comment-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-right: 12px;
+          object-fit: cover;
+          border: 1px solid #f0f0f0;
+        }
+
+        .nickname {
+          font-size: 28px;
+          color: #333;
+          font-weight: 500;
+        }
+        
+        .delete-btn {
+          position: absolute;
+          right: 0;
+          font-size: 24px;
+          color: #ff4d4f;
+          padding: 6px 12px;
+          background: rgba(255, 77, 79, 0.1);
+          border-radius: 16px;
+        }
+      }
+
+      .comment-content {
+        margin-left: 52px;
+
+        .text {
+          font-size: 28px;
+          color: #333;
+          line-height: 1.5;
+        }
+
+        .meta {
+          margin-top: 10px;
+          font-size: 24px;
+          color: #999;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .time {
+            margin-left: 10px;
+          }
+          
+          .like-btn {
+            display: flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 16px;
+            background: #f8f8f8;
+            
+            .like-count {
+              margin-left: 5px;
+              
+              &.liked {
+                color: red;
+                font-weight: 500;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .third-comment {
+      margin: 15px 0 0 52px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 12px;
+
+      .comment-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        
+        .avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          margin-right: 10px;
+          object-fit: cover;
+          border: 1px solid #f0f0f0;
+        }
+
+        .nickname {
+          font-size: 26px;
+          color: #333;
+          font-weight: 500;
+        }
+        
+        .delete-btn {
+          position: absolute;
+          right: 0;
+          font-size: 24px;
+          color: #ff4d4f;
+          padding: 6px 10px;
+          background: rgba(255, 77, 79, 0.1);
+          border-radius: 14px;
+        }
+      }
+
+      .comment-content {
+        margin-left: 46px;
+
+        .reply-hint {
+          font-size: 26px;
+          color: #45e87f;
+          margin-right: 5px;
+          font-weight: 500;
+        }
+        
+        .text {
+          font-size: 26px;
+          color: #333;
+          line-height: 1.5;
+        }
+        
+        .meta {
+          margin-top: 8px;
+          font-size: 24px;
+          color: #999;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .time {
+            margin-left: 10px;
+          }
+          
+          .like-btn {
+            display: flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 16px;
+            background: #f8f8f8;
+            
+            .like-count {
+              margin-left: 5px;
+              
+              &.liked {
+                color: red;
+                font-weight: 500;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .list-footer {
+      padding: 20px;
+      text-align: center;
+
+      .footer-text {
+        color: #999;
+        font-size: 24px;
+      }
+    }
+  }
+
+  // 评论输入框样式
+  .comment-input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #fff;
+    border-top: 1px solid #eee;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    
+    .reply-info {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      right: 0;
+      padding: 8px 20px;
+      background: rgba(69, 232, 127, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 26px;
+      
+      .reply-text {
+        color: #333;
+        font-weight: 500;
+      }
+      
+      .cancel-reply {
+        color: #45e87f;
+        padding: 4px 10px;
+        border-radius: 14px;
+        background: #fff;
+      }
+    }
+
+    .comment-input {
+      flex: 1;
+      height: 76px;
+      padding-left: 20px;
+      border-radius: 38px;
+      background-color: #f5f5f5;
+      font-size: 28px;
+      box-sizing: border-box;
+    }
+
+    .submit-btn {
+      width: 120px;
+      height: 76px;
+      line-height: 76px;
+      margin-left: 15px;
+      border-radius: 38px;
+      background-color: #45e87f;
+      color: #fff;
+      font-size: 28px;
+      font-weight: 500;
+
+      &[disabled] {
+        background-color: #ccc;
+      }
+    }
+  }
+
+  // 为底部输入框留出空间
+  padding-bottom: 120px;
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+  }
+
+  .loading-more {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+  }
+
+  .list-footer {
+    text-align: center;
+    padding: 20px 0 100px;
+    color: #999;
+    font-size: 24px;
+    margin-bottom: 60px;
+  }
+}

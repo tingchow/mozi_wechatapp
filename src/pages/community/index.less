@@ -1,0 +1,758 @@
+.community-container {
+  padding: 0 20px;
+  background: #fff;
+  min-height: 100vh;
+  padding-bottom: 100px; // 为悬浮按钮留出空间
+
+  .searchContainer {
+    padding: 20px;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .main-tabs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #f5f5f5;
+
+    .tabs-left {
+      display: flex;
+      gap: 30px;
+
+      .tab-item {
+        font-size: 32px;
+        color: #666;
+        position: relative;
+
+        &.active {
+          color: #333;
+          font-weight: bold;
+
+          &:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: #45e87f;
+            border-radius: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  .sub-tabs {
+    position: fixed;
+    top: 82px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #f5f5f5;
+
+    .sub-tab {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 28px;
+      color: #666;
+      position: relative;
+
+      &.active {
+        color: #333;
+        font-weight: bold;
+
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 30px;
+          height: 3px;
+          background: #45e87f;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+
+  .coin-tabs {
+    position: fixed;
+    top: 160px;
+    left: 0;
+    right: 0;
+    z-index: 98;
+    background: #fff;
+    white-space: nowrap;
+    padding: 20px;
+    border-bottom: 1px solid #f5f5f5;
+
+    .coin-tab {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 24px;
+      color: #666;
+      background: #f5f5f5;
+      border-radius: 16px;
+      margin-right: 16px;
+
+      &.active {
+        color: #fff;
+        background: #45e87f;
+      }
+
+      &.more {
+        color: #45e87f;
+        background: #e6fff0;
+      }
+    }
+  }
+
+  .content-list {
+    padding-top: 90px;
+    transition: padding-top 0.3s ease;
+  
+    &.with-sub-tabs {
+      padding-top: 180px;
+    }
+  
+    &.with-coin-tabs {
+      padding-top: 230px;
+    }
+  
+    &.with-search-bar {
+      padding-top: 180px;
+    }
+
+    &.topic-sub-tabs {
+      padding-top: 210px;
+    }
+
+    .hot-topic-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 20px 0;
+      border-bottom: 1px solid #f5f5f5;
+
+      .topic-rank {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        font-size: 28px;
+        color: #fff;
+        background: #45e87f;
+        border-radius: 8px;
+        margin-right: 20px;
+      }
+
+      .topic-info {
+        flex: 1;
+
+        .topic-title {
+          font-size: 32px;
+          color: #333;
+          margin-bottom: 10px;
+        }
+
+        .topic-desc {
+          font-size: 28px;
+          color: #666;
+          margin-bottom: 16px;
+        }
+
+        .topic-stats {
+          display: flex;
+          gap: 20px;
+
+          .stat-item {
+            font-size: 24px;
+            color: #999;
+          }
+        }
+      }
+    }
+
+    .list-footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .comment-card {
+      padding: 20px;
+      border-bottom: 1px solid #f5f5f5;
+      position: relative; /* 添加相对定位，作为编辑按钮的定位参考 */
+  
+      .edit-actions {
+        position: absolute;
+        top: 30px;
+        right: 0;
+        z-index: 10;
+        padding: 10px;
+        
+        .edit-btn {
+          color: #1890ff;
+        }
+        
+        .delete-btn {
+          color: #ff4d4f;
+        }
+
+        .actions-btn {
+          margin-left: 10px;
+          padding: 0 10px;
+          height: 30px;
+          line-height: 30px;
+          font-size: 24px;
+          background: #f5f5f5;
+          border-radius: 15px;
+          border: none;
+        }
+      }
+  
+      .user-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+
+        .avatar {
+          width: 80px;
+          height: 80px;
+          border-radius: 40px;
+          margin-right: 16px;
+        }
+
+        .nickname {
+          font-size: 28px;
+          color: #333;
+        }
+      }
+
+      .content-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        font-size: 24px;
+        color: #45e87f;
+        background: #e6fff0;
+        border-radius: 12px;
+        margin-bottom: 16px; // 增加分类与标题之间的间距
+        margin-right: 10px;
+      }
+
+      .title {
+        display: block;
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 12px; // 标题与描述之间的间距
+      }
+
+      .description {
+        font-size: 28px;
+        color: #666;
+        margin-bottom: 16px; // 描述与标签之间的间距
+        display: block; // 确保描述在标题下方
+      }
+      
+      .tags-topics-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px; // 标签与按钮之间的间距
+        
+        .coin-tag,
+        .topic-tag {
+          display: inline-block;
+          padding: 8px 16px;
+          margin-right: 16px;
+          margin-bottom: 12px;
+          font-size: 24px;
+          color: #45e87f;
+          background: rgba(69, 232, 127, 0.1);
+          border-radius: 32px;
+          transition: all 0.2s ease;
+          
+          &:active {
+            opacity: 0.7;
+            transform: scale(0.98);
+          }
+        }
+        
+        .topic-tag {
+          color: #1890ff;
+          background: rgba(24, 144, 255, 0.1);
+        }
+      }
+
+      .action-sheet-mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: flex;
+        align-items: flex-end;
+
+        .action-sheet {
+          width: 100%;
+          background: #fff;
+          border-radius: 24px 24px 0 0;
+          overflow: hidden;
+
+          .action-sheet-title {
+            text-align: center;
+            padding: 24px;
+            font-size: 28px;
+            color: #999;
+          }
+
+          .action-sheet-item {
+            text-align: center;
+            padding: 24px;
+            font-size: 32px;
+            color: #333;
+            border-top: 1px solid #f5f5f5;
+
+            &:active {
+              background: #f5f5f5;
+            }
+          }
+
+          .action-sheet-cancel {
+            text-align: center;
+            padding: 24px;
+            font-size: 32px;
+            color: #333;
+            background: #f5f5f5;
+            margin-top: 16px;
+
+            &:active {
+              background: #e5e5e5;
+            }
+          }
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 40px;
+
+        .action-btn {
+          display: flex;
+          font-size: 28px;
+          align-items: center;
+          gap: 8px;
+          color: #999;
+          background: none;
+          padding: 0;
+          line-height: 1;
+
+          &:after {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .float-post-btn {
+    position: fixed;
+    right: 40px;
+    bottom: 100px;
+    z-index: 101;
+
+    .post-btn {
+      width: 100px;
+      height: 100px;
+      border-radius: 50px;
+      background: #45e87f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+
+      .icon-plus {
+        font-size: 48px;
+        color: #fff;
+        line-height: 0;
+      }
+
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  .coin-selector-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+
+    .coin-selector {
+      background: #fff;
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+
+      .selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        font-size: 32px;
+
+        .close {
+          font-size: 40px;
+          color: #999;
+        }
+      }
+
+      .selector-search {
+        margin-bottom: 20px;
+
+        input {
+          width: 100%;
+          height: 80px;
+          background: #f5f5f5;
+          border-radius: 40px;
+          padding: 0 30px;
+          font-size: 28px;
+        }
+      }
+
+      .selector-list {
+        max-height: 600px;
+      }
+    }
+  }
+
+  .topic-creator-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+
+    .topic-creator {
+      width: 100%;
+      background: #fff;
+      border-radius: 32px 32px 0 0;
+      padding: 32px;
+
+      .creator-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+
+        Text {
+          font-size: 32px;
+          font-weight: bold;
+        }
+
+        .close {
+          font-size: 40px;
+          color: #999;
+        }
+      }
+
+      .creator-content {
+        .input-group {
+          margin-bottom: 24px;
+
+          .label {
+            font-size: 28px;
+            color: #666;
+            margin-bottom: 12px;
+            display: block;
+          }
+
+          .title-input {
+            width: 100%;
+            height: 88px;
+            background: #f5f5f5;
+            border-radius: 16px;
+            padding: 0 24px;
+            font-size: 28px;
+            box-sizing: border-box;
+          }
+
+          .desc-input {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            border-radius: 16px;
+            padding: 24px;
+            font-size: 28px;
+            box-sizing: border-box;
+          }
+
+          .word-count {
+            text-align: right;
+            font-size: 24px;
+            color: #999;
+            margin-top: 8px;
+          }
+        }
+      }
+
+      .create-btn {
+        width: 100%;
+        height: 88px;
+        background: #ccc;
+        color: #fff;
+        border-radius: 44px;
+        font-size: 32px;
+        margin-top: 32px;
+
+        &.active {
+          background: #45e87f;
+        }
+      }
+    }
+  }
+}
+
+.hot-search-bar {
+  position: fixed;
+  top: 90px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: #fff;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f5f5f5;
+
+  .search-box {
+    flex: 1;
+    margin-right: 20px;
+    width: 100%;
+    height: 72px;
+    background: #f5f5f5;
+    border-radius: 36px;
+    padding: 0 30px;
+    font-size: 28px;
+    align-items: center;
+    display: flex;
+    color: #b2b2b2;
+  }
+
+  .create-topic-btn {
+    height: 72px;
+    line-height: 72px;
+    padding: 0 30px;
+    background: #45e87f;
+    color: #fff;
+    border-radius: 36px;
+    font-size: 28px;
+  }
+}
+
+/* 创建话题弹窗 */
+.create-topic-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  width: 80%;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-close {
+  font-size: 24px;
+  color: #999;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal-footer {
+  padding: 16px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+}
+
+.cancel-btn {
+  margin-right: 12px;
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.submit-btn {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+/* 币种选择器弹窗 */
+.coin-selector-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fff;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  .selector-header {
+    padding: 32px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f5f5f5;
+
+    .header-title {
+      font-size: 32px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .close {
+      font-size: 28px;
+      color: #666;
+    }
+  }
+
+  .selector-search {
+    padding: 24px;
+
+    .search-input {
+      background: #f5f5f5;
+      border-radius: 8px;
+      height: 72px;
+      padding: 0 24px;
+      font-size: 28px;
+    }
+
+    .selector-search-box {
+      .searchBox {
+        background-color: #f5f5f5;
+      }
+    }
+
+    .loading-text {
+      margin-top: 40px;
+    }
+
+    .coin-item {
+      display: flex;
+      align-items: center;
+      margin-top: 40px;
+      font-size: 32px;
+      font-weight: bold;
+
+      .coin-icon {
+        width: 48px;
+        height: 48px;
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .selector-list {
+    flex: 1;
+    padding: 0 24px;
+
+    .coin-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      border-bottom: 1px solid #f5f5f5;
+
+      .coin-name {
+        font-size: 28px;
+        color: #333;
+      }
+
+      .selected-icon {
+        color: #45e87f;
+        font-size: 32px;
+      }
+    }
+  }
+}

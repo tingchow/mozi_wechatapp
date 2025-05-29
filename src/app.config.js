@@ -34,10 +34,18 @@ export default defineAppConfig({
     'pages/landscapechart/index',
     // 社区
     'pages/community/index',
+    // 评论详情页
+    'pages/commentinfo/index',
+    // 话题详情页
+    'pages/topicinfo/index',
+    // 发帖页
+    'pages/post/index',
     // 配置告警页
     'pages/addwarn/index',
     // 我的告警页
     'pages/mywarn/index',
+    // 话题搜索页
+    'pages/topicsearch/index',
     
   ],
   // subpackages: [
@@ -79,12 +87,12 @@ export default defineAppConfig({
       selectedIconPath: 'assets/icon/chengguo-select.png',
       text: '发现',
     },
-    // {
-    //   pagePath: 'pages/community/index',
-    //   iconPath: 'assets/icon/xiaoxi-default.png',
-    //   selectedIconPath: 'assets/icon/xiaoxi-select.png',
-    //   text: '社区',
-    // },
+    {
+      pagePath: 'pages/community/index',
+      iconPath: 'assets/icon/xiaoxi-default.png',
+      selectedIconPath: 'assets/icon/xiaoxi-select.png',
+      text: '社区',
+    },
     {
       pagePath: 'pages/me/index',
       iconPath: 'assets/icon/huiyuan-default.png',

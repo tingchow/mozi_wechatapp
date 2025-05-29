@@ -2,7 +2,6 @@ import { View, Text, Image, Button, PageContainer, OfficialAccount, ScrollView, 
 import { List, Popup, Grid } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
 import Taro from '@tarojs/taro';
-import { Login } from '../../components/Login';
 import { useState, useEffect, useRef } from 'react';
 import { useLoad, useShareTimeline, useDidShow } from '@tarojs/taro';
 import { jump2Detail, jump2Market, jump2NoTab } from '../../utils/core';
@@ -242,13 +241,15 @@ export default function Index() {
             // Taro.setStorage('userInfo', userInfo);
             // 如果是注册，表示没有用户信息，跳转到用户信息页
             // jump2NoTab('user');
+            console.log('userId', tokenInfo?.data?.userId);
             const userInfo = tokenInfo?.data?.userInfo;
             if (!userInfo?.avatar || !userInfo?.nickName ) {
               jump2User();
             } else {
               Taro.setStorageSync('userInfo', {
                 avatar: userInfo?.avatar,
-                nickName: userInfo?.nickName
+                nickName: userInfo?.nickName,
+                userId: tokenInfo?.data?.userId
               });
               setUserInfo({
                 avatar: userInfo?.avatar,

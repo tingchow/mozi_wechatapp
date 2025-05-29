@@ -9,6 +9,20 @@
     "miniprogram": {
       "list": [
         {
+          "name": "community/index",
+          "pathName": "pages/community/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/commentinfo/index",
+          "pathName": "pages/commentinfo/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/user/index",
           "pathName": "pages/user/index",
           "query": "",
@@ -70,13 +84,6 @@
           "query": "",
           "launchMode": "default",
           "scene": 1011
-        },
-        {
-          "name": "me/index",
-          "pathName": "pages/me/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
         }
       ]
     }

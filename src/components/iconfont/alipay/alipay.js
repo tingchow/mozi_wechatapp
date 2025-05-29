@@ -1,6 +1,6 @@
 Component({
   props: {
-    // bell-fill | arrawsalt | close | info-circle | plus-square | moneycollect | attachment | share | wechat-fill | m-pingfen | info-circle-fill | file-copy | caret-down | caret-up | bodongfenxi | jijin | jiaoyichaxun | jifen | wangdian | piaowu | licaichanpin2 | licaichanpin | heart-fill | close-circle-fill | search | right
+    // check | shequ | message | ellipsis | bell-fill | arrawsalt | close | info-circle | plus-square | moneycollect | attachment | share | wechat-fill | m-pingfen | info-circle-fill | file-copy | caret-down | caret-up | bodongfenxi | jijin | jiaoyichaxun | jifen | wangdian | piaowu | licaichanpin2 | licaichanpin | heart-fill | close-circle-fill | search | right
     name: null,
     // string | string[]
     color: '',

@@ -1,8 +1,8 @@
 import { View, Text, Input, Button, Image, PageContainer } from '@tarojs/components'
-import { useLoad, getCurrentInstance, useRouter, useShareAppMessage } from '@tarojs/taro';
-import { useEffect, useState } from 'react';
+import { useLoad, getCurrentInstance, useRouter, useShareAppMessage, useDidShow, useDidHide } from '@tarojs/taro';
+import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
-import { Interface } from '../../utils/constants';
+import { Interface, LOOPTIME } from '../../utils/constants';
 import { Card, List, Grid } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
 import { Layout } from '../../components/Layout';
@@ -22,7 +22,6 @@ import './index.less';
 export default function Search() {
   const [showType, setShowType] = useState('none');
   const [searchValue, setSearchValue] = useState('');
-  const [ popVis, setPopVis ] = useState(false);
 
   const [infoData, setInfoData] = useState({
     length: 0,
@@ -50,6 +49,48 @@ export default function Search() {
     close: false
   });
 
+  const needLoop = useRef(true);
+
+  useDidShow(() => {
+    needLoop.current = true;
+  });
+
+  useDidHide(() => {
+    needLoop.current = false;
+  });
+
+  const coinRequest = async (value) => {
+    const sectionRes = await request({
+      url: Interface.COIN_INFO,
+      data: {
+        coin: value
+      }
+    });
+    let tempData = null
+    // 币种信息
+    tempData = sectionRes.data.slice(0, 3).map((item) => {
+      return {
+        title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
+        last: item.last,
+        price24h: (<HighlightArea value={item.price24h} />),
+        isOwn: (<AddCollect isOwn={item.favorite} symbol={item.symbol} />),
+        monitor: <AddMonitor symbol={item.symbol} />,
+        key: item.symbol
+      };
+    });
+    console.log(tempData, tempData);
+    setInfoData({
+      length: sectionRes.data.length,
+      data: [...tempData],
+      loading: false,
+      close: false
+    });
+
+    setTimeout(() => {
+      if (needLoop.current) coinRequest(value);
+    }, LOOPTIME);
+  };
+
   const reload = async (value) => {
     setSearchValue(value);
     // setShowType('loading');
@@ -67,7 +108,8 @@ export default function Search() {
 
     // 正确的币种，继续请求各模块信息
     // const interfaceList = [Interface.COIN_INFO, Interface.COIN_SECTION, Interface.COIN_PLATFORM, Interface.COIN_SPOT];
-    const interfaceList = [Interface.COIN_INFO, Interface.COIN_AREA, Interface.COIN_PLATFORM, Interface.COIN_SPOT];
+    coinRequest(value);
+    const interfaceList = [Interface.COIN_AREA, Interface.COIN_PLATFORM, Interface.COIN_SPOT];
     
     for (let i = 0; i < interfaceList.length; i++) {
       const sectionRes = await request({
@@ -80,32 +122,32 @@ export default function Search() {
       
       if (!isEmpty(sectionRes?.data)) {
         console.log(i, sectionRes);
-        if (interfaceList[i] === Interface.COIN_INFO) {
-          // 币种信息
-          tempData = sectionRes.data.slice(0, 3).map((item) => {
-            return {
-              title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
-              last: item.last,
-              price24h: (<HighlightArea value={item.price24h} />),
-              isOwn: (<AddCollect isOwn={item.favorite} symbol={item.symbol} />),
-              monitor: <AddMonitor symbol={item.symbol} />,
-              key: item.symbol
-            };
-          });
-          setInfoData({
-            length: sectionRes.data.length,
-            data: [...tempData],
-            loading: false,
-            close: false
-          });
-          // setSectionType({
-          //   ...sectionType,
-          //   info: {
-          //     ...sectionType.info,
-          //     loading: false
-          //   }
-          // });
-        }
+        // if (interfaceList[i] === Interface.COIN_INFO) {
+        //   // 币种信息
+        //   tempData = sectionRes.data.slice(0, 3).map((item) => {
+        //     return {
+        //       title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} /><View className='gridName'>{item.symbol}</View></View>,
+        //       last: item.last,
+        //       price24h: (<HighlightArea value={item.price24h} />),
+        //       isOwn: (<AddCollect isOwn={item.favorite} symbol={item.symbol} />),
+        //       monitor: <AddMonitor symbol={item.symbol} />,
+        //       key: item.symbol
+        //     };
+        //   });
+        //   setInfoData({
+        //     length: sectionRes.data.length,
+        //     data: [...tempData],
+        //     loading: false,
+        //     close: false
+        //   });
+        //   // setSectionType({
+        //   //   ...sectionType,
+        //   //   info: {
+        //   //     ...sectionType.info,
+        //   //     loading: false
+        //   //   }
+        //   // });
+        // }
         if (interfaceList[i] === Interface.COIN_AREA) {
           // 版块信息
           tempData = sectionRes.data.slice(0, 4);
