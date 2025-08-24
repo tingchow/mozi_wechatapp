@@ -47,7 +47,6 @@ export const SimpleList = ({
   useEffect(() => {
     // init();
     // setSelected(selectArr[0]);
-    console.log('renderData', renderData);
     const tempFindCoin = renderData.map((item) => {
       const itemObj = {};
       gridCon.forEach((value, index) => {
@@ -59,7 +58,6 @@ export const SimpleList = ({
       });
       return itemObj;
     });
-    console.log('tempFindCoin', tempFindCoin);
     setData(tempFindCoin);
   }, [renderData]);
 
@@ -147,9 +145,6 @@ export const SimpleList = ({
     
   // };
 
-  
-
-  console.log('当前选项', selected);
   const onChange = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -191,7 +186,6 @@ export const SimpleList = ({
                 </View>
               </View>
               <View className='right'>
-                { console.log('data', data) }
                 { data[0].img && <Image src={data[0].img} mode='aspectFit' className='header-img' /> }
               </View>
             </View>

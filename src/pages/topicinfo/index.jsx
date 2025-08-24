@@ -3,6 +3,10 @@ import { useLoad, useReachBottom, useRouter } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import './index.less'
+import { request } from '../../utils/request'
+import { Interface } from '../../utils/constants'
+import { GardenLoading } from '../../components/Loading'
+import IconFont from '../../components/iconfont'
 
 export default function TopicInfo() {
   const router = useRouter();
@@ -16,143 +20,95 @@ export default function TopicInfo() {
   })
 
   const [posts, setPosts] = useState([])
-  const [allLoaded, setAllLoaded] = useState(false)
-
-  // 模拟话题数据
-  const mockTopics = [
-    {
-      id: 1,
-      title: '币圈新人必看',
-      description: '新手入门指南，避坑经验分享',
-      followers: 2345,
-      posts: 167
-    },
-    {
-      id: 2,
-      title: 'DeFi生态探讨',
-      description: '深入了解去中心化金融的发展',
-      followers: 1890,
-      posts: 521
-    },
-    {
-      id: 3,
-      title: '技术分析',
-      description: 'K线形态、技术指标分析',
-      followers: 3400,
-      posts: 198
-    },
-    {
-      id: 4,
-      title: '链上数据解读',
-      description: '区块链数据分析与洞察',
-      followers: 1560,
-      posts: 230
-    },
-    {
-      id: 5,
-      title: '项目评测',
-      description: '深度解析区块链项目',
-      followers: 2100,
-      posts: 89
-    }
-  ];
-
-  // 模拟帖子数据
-  const mockPosts = {
-    1: [
-      {
-        id: 101,
-        avatar: 'https://placeholder.co/100',
-        nickname: '币圈新手',
-        tag: '不懂就问',
-        title: '如何安全存储数字货币？',
-        content: '刚入币圈，想了解一下大家都是如何安全存储自己的数字资产的，有什么好的冷钱包推荐吗？',
-        comments: 24,
-        likes: 78
-      },
-      {
-        id: 102,
-        avatar: 'https://placeholder.co/100',
-        nickname: '区块链教育者',
-        tag: '经验分享',
-        title: '新手常见的5个错误及如何避免',
-        content: '总结了新手入场常犯的几个错误，希望对大家有所帮助：1. 追高杀低 2. 不做研究盲目投资 3. 把所有资金都投入 4. 忽视安全 5. 轻信他人',
-        comments: 56,
-        likes: 203
-      }
-    ],
-    2: [
-      {
-        id: 201,
-        avatar: 'https://placeholder.co/100',
-        nickname: 'DeFi研究员',
-        tag: '项目分析',
-        title: 'Uniswap V3流动性提供策略分析',
-        content: 'Uniswap V3的集中流动性机制为LP提供了更多策略选择，本文将分析几种不同的策略及其收益情况。',
-        comments: 35,
-        likes: 142
-      }
-    ],
-    3: [
-      {
-        id: 301,
-        avatar: 'https://placeholder.co/100',
-        nickname: '技术分析师',
-        tag: 'TA教学',
-        title: '如何识别和利用三角形整理形态',
-        content: '三角形整理是K线图中常见的一种形态，正确识别可以帮助判断突破方向。本文详细介绍三角形整理的特征和交易策略。',
-        comments: 28,
-        likes: 115
-      }
-    ],
-    4: [
-      {
-        id: 401,
-        avatar: 'https://placeholder.co/100',
-        nickname: '链上数据分析师',
-        tag: '数据解读',
-        title: 'BTC大额转账监控与市场影响分析',
-        content: '通过监控链上大额转账，可以提前发现可能的市场波动信号。本文分析了近期几笔大额转账对市场的影响。',
-        comments: 42,
-        likes: 187
-      }
-    ],
-    5: [
-      {
-        id: 501,
-        avatar: 'https://placeholder.co/100',
-        nickname: '项目评测员',
-        tag: '深度评测',
-        title: '某新项目代码审计与安全分析',
-        content: '对最近热门的新项目进行了代码审计和安全分析，发现了几个潜在的安全隐患，建议投资者谨慎参与。',
-        comments: 63,
-        likes: 241
-      }
-    ]
-  };
+  const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [size] = useState(10)
+  const [hasMore, setHasMore] = useState(true)
+  const [likedPosts, setLikedPosts] = useState({}) // 存储点赞状态
+  const [currentUserId, setCurrentUserId] = useState('')
+  const [showActionSheet, setShowActionSheet] = useState(false)
+  const [selectedPost, setSelectedPost] = useState(null)
 
   useLoad(() => {
-    // 获取路由参数中的话题ID
-    const { id } = router.params;
+    // 获取路由参数中的话题ID和其他信息
+    const { id, title, description, followers, posts: postCount } = router.params;
     if (id) {
       setTopicId(Number(id));
-      // 根据ID加载对应的话题数据
-      loadTopicData(Number(id));
+      // 设置话题详情
+      setDetail({
+        id: Number(id),
+        title: title || '话题标题',
+        description: description || '暂无描述',
+        followers: Number(followers) || 0,
+        posts: Number(postCount) || 0
+      });
+      // 加载帖子列表
+      fetchTopicPosts(Number(id), 1);
+      // 获取当前用户ID
+      getCurrentUserId();
     }
   })
 
-  // 加载话题数据的方法
-  const loadTopicData = (id) => {
-    // 在实际应用中，这里应该是一个API请求
-    // 这里使用模拟数据进行演示
-    const topicData = mockTopics.find(item => item.id === id);
-    if (topicData) {
-      setDetail(topicData);
-      // 加载话题相关的帖子
-      const topicPosts = mockPosts[id] || [];
-      setPosts(topicPosts);
+  // 获取当前用户ID
+  const getCurrentUserId = () => {
+    try {
+      const userInfo = Taro.getStorageSync('userInfo');
+      if (userInfo && userInfo.userId) {
+        setCurrentUserId(userInfo.userId);
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
     }
   }
+
+  // 获取话题相关帖子
+  const fetchTopicPosts = async (id, pageNum) => {
+    if (loading) return;
+    
+    setLoading(true);
+    try {
+      const response = await request({
+        url: `${Interface.TOPIC_POSTS}/${id}`,
+        data: {
+          page: pageNum,
+          size: size
+        }
+      });
+      
+      if (response?.data) {
+        const { data, total, totalPages, page: currentPage } = response.data;
+        
+        // 格式化帖子数据
+        const formattedPosts = data.map(item => ({
+          id: item.id,
+          avatar: item.avatar || 'https://placeholder.co/100',
+          nickname: item.nickName || '匿名用户',
+          tag: item.category || '普通',
+          title: item.title,
+          content: item.content,
+          comments: item.commentCnt || 0,
+          likes: item.likeCnt || 0,
+          userId: item.userId,
+          tags: item.tags || [],
+          topics: item.topics || [],
+        }));
+        
+        // 更新帖子列表
+        setPosts(prev => pageNum === 1 ? formattedPosts : [...prev, ...formattedPosts]);
+        setHasMore(currentPage < totalPages);
+        setPage(currentPage + 1);
+      }
+    } catch (error) {
+      console.error('获取话题帖子失败:', error);
+      Taro.showToast({
+        title: '获取帖子失败',
+        icon: 'error',
+        duration: 2000
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 跳转到评论详情页
   const navigateToCommentInfo = (commentId) => {
@@ -170,10 +126,125 @@ export default function TopicInfo() {
     }
   }
 
+  // 处理点赞/取消点赞
+  const handleLike = async (e, postId) => {
+    e.stopPropagation() // 阻止冒泡，避免触发帖子详情跳转
+    try {
+      const isLiked = likedPosts[postId]
+      const response = await request({
+        url: isLiked ? `${Interface.POSTS_UNLIKE}/${postId}` : `${Interface.POSTS_LIKE}/${postId}`,
+        method: 'get'
+      })
+
+      if (response?.code === 0) {
+        // 更新点赞状态
+        setLikedPosts(prev => ({
+          ...prev,
+          [postId]: !isLiked
+        }))
+        
+        // 更新点赞数
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              likes: isLiked ? post.likes - 1 : post.likes + 1
+            }
+          }
+          return post
+        }))
+      }
+    } catch (error) {
+      console.error('点赞操作失败:', error)
+      Taro.showToast({
+        title: '操作失败',
+        icon: 'error',
+        duration: 2000
+      })
+    }
+  }
+
+  // 处理删除帖子
+  const handleDeletePost = async (postId) => {
+    // 显示确认对话框
+    Taro.showModal({
+      title: '确认删除',
+      content: '确定要删除这条帖子吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            const response = await request({
+              url: `${Interface.POSTS_DELETE}/${postId}`,
+              method: 'get'
+            });
+            
+            if (response?.code === 0) {
+              Taro.showToast({
+                title: '删除成功',
+                icon: 'success',
+                duration: 2000
+              });
+              
+              // 从列表中移除已删除的帖子
+              setPosts(prev => prev.filter(post => post.id !== postId));
+            } else {
+              Taro.showToast({
+                title: '删除失败',
+                icon: 'error',
+                duration: 2000
+              });
+            }
+          } catch (error) {
+            console.error('删除帖子失败:', error);
+            Taro.showToast({
+              title: '删除失败',
+              icon: 'error',
+              duration: 2000
+            });
+          }
+        }
+      }
+    });
+  }
+
+  // 处理更新帖子
+  const handleUpdatePost = (post) => {
+    // 跳转到发帖页面，并传递帖子信息
+    Taro.navigateTo({
+      url: `/pages/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
+    });
+  }
+
+  // 处理操作菜单选择
+  const handleActionClick = (type) => {
+    if (!selectedPost) return;
+    
+    if (type === 'edit') {
+      handleUpdatePost(selectedPost);
+    } else if (type === 'delete') {
+      handleDeletePost(selectedPost.id);
+    }
+    setShowActionSheet(false);
+  };
+
+  // 下拉刷新
+  Taro.usePullDownRefresh(async () => {
+    try {
+      setPage(1);
+      setHasMore(true);
+      await fetchTopicPosts(topicId, 1);
+    } catch (error) {
+      console.error('下拉刷新失败:', error);
+    } finally {
+      Taro.stopPullDownRefresh();
+    }
+  });
+
+  // 上拉加载更多
   useReachBottom(() => {
-    // 加载更多帖子
-    // 这里可以实现分页加载逻辑
-    setAllLoaded(true); // 示例：标记已加载全部
+    if (hasMore && !loading && topicId) {
+      fetchTopicPosts(topicId, page);
+    }
   })
 
   return (
@@ -182,17 +253,12 @@ export default function TopicInfo() {
       <View className="topic-header">
         <View className="title-section">
           <Text className="title">{detail.title}</Text>
-          <View className="follow-btn">关注</View>
         </View>
         
         <View className="description">
           <Text>{detail.description}</Text>
         </View>
         
-        <View className="stats">
-          <Text className="stat-item">{detail.followers} 关注</Text>
-          <Text className="stat-item">{detail.posts} 讨论</Text>
-        </View>
       </View>
 
       {/* 帖子列表 */}
@@ -202,7 +268,35 @@ export default function TopicInfo() {
         </View>
 
         {posts.map(item => (
-          <View key={item.id} className="post-card" onClick={() => navigateToCommentInfo(item.id)}>
+          <View key={item.id} className="comment-card" onClick={() => navigateToCommentInfo(item.id)}>
+            {/* 用户自己的帖子显示编辑按钮 */}
+            {item.userId === currentUserId && (
+              <View className="edit-actions">
+                <View onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPost(item);
+                  setShowActionSheet(true);
+                }}>
+                  <IconFont name='ellipsis' size={50} />
+                </View>
+              </View>
+            )}
+
+            {/* 底部操作菜单 */}
+            {showActionSheet && (
+              <View className="action-sheet-mask" onClick={(e) => {e.stopPropagation(); setShowActionSheet(false)}}>
+                <View className="action-sheet" onClick={(e) => e.stopPropagation()}>
+                  <View className="action-sheet-title">请选择操作</View>
+                  <View className="action-sheet-item" onClick={() => handleActionClick('edit')}>
+                    <Text>编辑</Text>
+                  </View>
+                  <View className="action-sheet-item" onClick={() => handleActionClick('delete')}>
+                    <Text>删除</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
             {/* 用户信息 */}
             <View className="user-info">
               <Image src={item.avatar} className="avatar" />
@@ -218,28 +312,83 @@ export default function TopicInfo() {
             {/* 描述 */}
             <Text className="description">{item.content}</Text>
 
+            {/* 币种和话题标签 */}
+            {(item.tags?.length > 0 || item.topics?.length > 0) && (
+              <View className="tags-topics-container">
+                {item.tags?.map(tag => (
+                  <Text 
+                    key={`tag-${tag.id}`} 
+                    className="coin-tag"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      Taro.navigateTo({
+                        url: `/pages/detail/index?symbol=${tag.name}`
+                      });
+                    }}
+                  >
+                    ${tag.name}$
+                  </Text>
+                ))}
+                {item.topics?.map(topic => (
+                  <Text 
+                    key={`topic-${topic.id}`} 
+                    className="topic-tag"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      Taro.navigateTo({
+                        url: `/pages/topicinfo/index?id=${topic.id}`
+                      });
+                    }}
+                  >
+                    #{topic.name}
+                  </Text>
+                ))}
+              </View>
+            )}
+
             {/* 操作按钮 */}
             <View className="action-buttons">
-              <View className="action-btn">
-                <Text className="icon-share"></Text>
+              <Button 
+                className="action-btn" 
+                openType='share' 
+                data-post-id={item.id} 
+                data-post-title={item.title}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <IconFont name='share' size={40} />
                 分享
-              </View>
-              <View className="action-btn">
-                <Text className="icon-comment"></Text>
+              </Button>
+              <Button className="action-btn">
+                <IconFont name='message' size={30} />
                 {item.comments}
-              </View>
-              <View className="action-btn">
-                <Text className="icon-like"></Text>
+              </Button>
+              <Button 
+                className={`action-btn ${likedPosts[item.id] ? 'liked' : ''}`}
+                onClick={(e) => handleLike(e, item.id)}
+              >
+                <IconFont name='heart-fill' color={likedPosts[item.id]? 'red': ''} size={30} />
                 {item.likes}
-              </View>
+              </Button>
             </View>
           </View>
         ))}
 
         {/* 底部提示 */}
-        {allLoaded && (
+        {loading && (
+          <View className="loading-more">
+            <GardenLoading />
+          </View>
+        )}
+        
+        {!loading && !hasMore && posts.length > 0 && (
           <View className="list-footer">
             <Text className="footer-text">已加载全部内容</Text>
+          </View>
+        )}
+        
+        {!loading && posts.length === 0 && (
+          <View className="list-footer">
+            <Text className="footer-text">暂无帖子</Text>
           </View>
         )}
       </View>

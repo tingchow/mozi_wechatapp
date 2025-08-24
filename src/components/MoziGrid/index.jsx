@@ -4,7 +4,6 @@ import './index.less';
 // import IconFont from '../iconfont';
 
 export const MoziGrid = (props) => {
-  console.log('grid', props);
   return (
     <View>
       {

@@ -36,6 +36,8 @@ export const PopLogin = ({ show = false, hideCb }) => {
               console.log('tokenInfo', tokenInfo);
               if (tokenInfo?.data?.token) {
                 Taro.setStorageSync('token', tokenInfo?.data?.token);
+                // 设置登录成功标记，用于社区页面刷新
+                Taro.setStorageSync('needRefreshCommunity', true);
                 console.log('用户信息本地缓存成功');
                 const title = tokenInfo.data.type === 'login'? '登录成功': '注册成功';
                 hidePop();

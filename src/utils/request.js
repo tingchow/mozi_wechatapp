@@ -39,7 +39,6 @@ export const getToken = () => {
     Taro.getStorage({
       key: 'token',
       success: (tokenRes) => {
-        console.log('token', tokenRes);
         if (tokenRes && tokenRes.data) {
           resolve(tokenRes.data);
         } else {

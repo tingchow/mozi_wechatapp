@@ -8,7 +8,7 @@ import { MoziGrid } from '../../components/MoziGrid';
 import { MoziCard } from '../../components/MoziCard';
 import { RankGrid } from './components/RankGrid';
 import { ComplexList } from '../../components/ListCom/ComplexList';
-import { HighlightArea } from '../../components/HighlightArea';
+import HighlightArea from '../../components/HighlightArea';
 import './index.less';
 import { jump2List, jump2NoTab } from '../../utils/core';
 import { Interface, LOOPTIME } from '../../utils/constants';
@@ -67,7 +67,6 @@ export default function Find() {
   });
 
   const pageActiveClick = useCallback((key) => {
-    console.log(key);
     setPageActiveKey(key);
   });
 
@@ -101,7 +100,6 @@ export default function Find() {
     //   setLogin(true);
     // }
 
-    console.log('self_select', coinSelectRes);
     const temp_self_select = coinSelectRes.data.map((item) => {
       return {
         symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
@@ -147,9 +145,7 @@ export default function Find() {
         pageSize: marketPageSize.current
       }
     });
-    console.log('coinData', coinData?.data);
     if (isEmpty(coinData?.data?.list)) {
-      console.log('ceshi');
       setMarketError(true);
       return;
     }
@@ -171,7 +167,6 @@ export default function Find() {
 
   const loadMore = async (e) => {
     if (marketPageFinish.current) return;
-    console.log('pageNo', marketPageNo)
 
     const coinData = await request({
       url: Interface.find_coin,
@@ -232,7 +227,6 @@ export default function Find() {
     }
     let tempExchangeSpot = null;
     let tempExchangeFutures = null;
-    console.log('exchageData', exchangeSpot.data)
     if (!isEmpty(exchangeSpot.data)) {
       tempExchangeSpot = exchangeSpot.data.slice(0, 3).map((item) => {
         return {
@@ -365,7 +359,6 @@ export default function Find() {
   const pricePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    console.log('priceArr', priceArr);
     setPriceData({
       ...priceData,
       priceArr: priceArr.current[idx],
@@ -509,7 +502,6 @@ export default function Find() {
   const wavePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    console.log('waveArr', waveArr);
     setWaveData({
       ...waveData,
       waveArr: waveArr.current[idx],
@@ -585,7 +577,6 @@ export default function Find() {
   const tradePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    console.log('tradeArr', tradeArr);
     setTradeData({
       ...tradeData,
       tradeArr: tradeArr.current[idx],
@@ -633,7 +624,6 @@ export default function Find() {
       xinbiArr: xinbiArr.current,
     });
     setXinbiLoading(false);
-    console.log('新币展示');
     setTimeout(() => {
       if (needLoop.current) newCoinRequest();
     }, LOOPTIME);

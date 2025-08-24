@@ -3,19 +3,16 @@ import { useGlobalIconFont } from './components/iconfont/helper';
 
 export default defineAppConfig({
   pages: [
+    // 社区
+    'pages/community/index',
     // 首页
     'pages/index/index',
-    
     // 发现页
     'pages/find/index',
-    
-    
     // 通用列表页
     'pages/list/index',
     // 我的
     'pages/me/index',
-    
-    
     // 币种详情页
     'pages/detail/index',
     // 搜索页
@@ -32,8 +29,6 @@ export default defineAppConfig({
     'pages/tradevol/index',
     // 横向图表
     'pages/landscapechart/index',
-    // 社区
-    'pages/community/index',
     // 评论详情页
     'pages/commentinfo/index',
     // 话题详情页
@@ -77,21 +72,22 @@ export default defineAppConfig({
     backgroundColor: '#fff',
     borderStyle: 'black',
     list: [{
-      pagePath: 'pages/index/index',
+      pagePath: 'pages/community/index',
       iconPath: 'assets/icon/shouye-default.png',
       selectedIconPath: 'assets/icon/shouye-select.png',
       text: '首页',
-    }, {
+    },
+    {
+      pagePath: 'pages/index/index',
+      iconPath: 'assets/icon/xiaoxi-default.png',
+      selectedIconPath: 'assets/icon/xiaoxi-select.png',
+      text: '行情',
+    },
+    {
       pagePath: 'pages/find/index',
       iconPath: 'assets/icon/chengguo-default.png',
       selectedIconPath: 'assets/icon/chengguo-select.png',
       text: '发现',
-    },
-    {
-      pagePath: 'pages/community/index',
-      iconPath: 'assets/icon/xiaoxi-default.png',
-      selectedIconPath: 'assets/icon/xiaoxi-select.png',
-      text: '社区',
     },
     {
       pagePath: 'pages/me/index',
@@ -102,4 +98,12 @@ export default defineAppConfig({
   },
   usingComponents: Object.assign(useGlobalIconFont(), ''),
   lazyCodeLoading: 'requiredComponents',
+  
+  // 为特定页面配置下拉刷新
+  pagesSettings: {
+    'pages/topicinfo/index': {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    }
+  }
 })

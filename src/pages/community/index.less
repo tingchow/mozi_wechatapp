@@ -161,12 +161,14 @@
         flex: 1;
 
         .topic-title {
+          display: block;
           font-size: 32px;
           color: #333;
-          margin-bottom: 10px;
+          margin-bottom: 16px;
         }
 
         .topic-desc {
+          display: block;
           font-size: 28px;
           color: #666;
           margin-bottom: 16px;
@@ -184,7 +186,7 @@
       }
     }
 
-    .list-footer {
+    .list-footer,.empty-content,.loading-more {
       display: flex;
       justify-content: center;
       margin-top: 20px;
@@ -268,14 +270,13 @@
       .tags-topics-container {
         display: flex;
         flex-wrap: wrap;
-        margin-bottom: 20px; // 标签与按钮之间的间距
+        margin-bottom: 12px; // 标签与按钮之间的间距
         
         .coin-tag,
         .topic-tag {
           display: inline-block;
           padding: 8px 16px;
           margin-right: 16px;
-          margin-bottom: 12px;
           font-size: 24px;
           color: #45e87f;
           background: rgba(69, 232, 127, 0.1);
@@ -287,11 +288,23 @@
             transform: scale(0.98);
           }
         }
+
+        .coin-tag {
+          color: #ff9500;
+          background: rgba(255, 149, 0, 0.1);
+        }
         
         .topic-tag {
           color: #1890ff;
           background: rgba(24, 144, 255, 0.1);
         }
+      }
+
+      .time {
+        font-size: 24px;
+        color: #999;
+        display: block;
+        margin-bottom: 16px;
       }
 
       .action-sheet-mask {

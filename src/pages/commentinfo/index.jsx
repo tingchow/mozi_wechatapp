@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, Input, Button } from '@tarojs/components'
+import { View, Text, Image, ScrollView, Input, Button, Textarea } from '@tarojs/components'
 import Taro, { useLoad, useReachBottom, useRouter, useShareAppMessage } from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import { request } from '../../utils/request'
@@ -37,8 +37,10 @@ export default function CommentInfo() {
     likeCnt: 0,
     commentCnt: 0,
     avatar: '',
-    nickname: '',
-    commentIds: []
+    nickName: '',
+    commentIds: [],
+    isLikedByCurrentUser: false,
+    voteInfo: null,
   })
 
   const [list, setList] = useState([])
@@ -55,6 +57,9 @@ export default function CommentInfo() {
   const [likedPosts, setLikedPosts] = useState({}) // 存储帖子点赞状态
   const [likedComments, setLikedComments] = useState({}) // 存储评论点赞状态
   const [expandedComments, setExpandedComments] = useState({}) // 存储展开状态的评论ID
+  const [showActionSheet, setShowActionSheet] = useState(false) // 控制操作菜单显示
+  const [selectedPost, setSelectedPost] = useState(null) // 当前选中的帖子
+  const [focused, setFocused] = useState(false)
 
   useLoad(() => {
     // 获取路由参数中的评论ID
@@ -77,6 +82,76 @@ export default function CommentInfo() {
       path: `/pages/commentinfo/index?id=${commentId}`,
     }
   })
+
+  // 添加键盘高度变化监听
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+
+  useEffect(() => {
+    // 监听键盘高度变化
+    const keyboardHeightChangeListener = res => {
+      console.log('键盘高度变化:', res.height)
+      setKeyboardHeight(res.height)
+    }
+    
+    // 添加监听器
+    Taro.onKeyboardHeightChange(keyboardHeightChangeListener)
+    
+    // 组件卸载时移除监听器
+    return () => {
+      Taro.offKeyboardHeightChange(keyboardHeightChangeListener)
+    }
+  }, [])
+  
+  // 处理投票提交
+  const handleVoteSubmit = async (optionId) => {
+    if (!currentUser) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
+    try {
+      Taro.showLoading({
+        title: '提交投票中...'
+      });
+      
+      const response = await request({
+        url: Interface.CREATE_VOTE.replace('create', 'submit'),
+        method: 'POST',
+        data: { optionId }
+      });
+      
+      Taro.hideLoading();
+      
+      if (response?.code === 0) {
+        Taro.showToast({
+          title: '投票成功',
+          icon: 'success',
+          duration: 2000
+        });
+        
+        // 重新加载帖子详情，获取最新的投票结果
+        loadCommentData(commentId);
+      } else {
+        Taro.showToast({
+          title: response?.errorMsg || '投票失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    } catch (error) {
+      console.error('投票失败:', error);
+      Taro.hideLoading();
+      Taro.showToast({
+        title: '投票失败',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  };
   
   // 处理帖子点赞/取消点赞
   const handlePostLike = async () => {
@@ -211,6 +286,78 @@ export default function CommentInfo() {
     }
   }
 
+  // 处理操作菜单选择
+  const handleActionClick = (type) => {
+    if (!selectedPost) return;
+    
+    if (type === 'edit') {
+      handleUpdatePost(null, selectedPost);
+    } else if (type === 'delete') {
+      // 判断是否为评论（有user属性）或帖子
+      if (selectedPost.user) {
+        handleDeleteComment(selectedPost.id);
+      } else {
+        handleDeletePost(null, selectedPost.id);
+      }
+    }
+    setShowActionSheet(false);
+  };
+
+  // 处理删除帖子
+  const handleDeletePost = async (e, postId) => {
+    if (e) e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
+    
+    // 显示确认对话框
+    Taro.showModal({
+      title: '确认删除',
+      content: '确定要删除这条帖子吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            const response = await request({
+              url: `${Interface.POSTS_DELETE}/${postId}`,
+              method: 'get'
+            });
+            
+            if (response?.code === 0) {
+              Taro.showToast({
+                title: '删除成功',
+                icon: 'success',
+                duration: 2000
+              });
+              
+              // 删除成功后返回上一页
+              Taro.navigateBack();
+            } else {
+              Taro.showToast({
+                title: '删除失败',
+                icon: 'error',
+                duration: 2000
+              });
+            }
+          } catch (error) {
+            console.error('删除帖子失败:', error);
+            Taro.showToast({
+              title: '删除失败',
+              icon: 'error',
+              duration: 2000
+            });
+          }
+        }
+      }
+    });
+  };
+
+  // 处理更新帖子
+  const handleUpdatePost = (e, post) => {
+    if (e) e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
+    
+    // 跳转到发帖页面，并传递帖子信息
+    Taro.navigateTo({
+      url: `/pages/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
+    });
+  }
+
   // 加载评论列表
   const loadComments = async (isInitialLoad = true) => {
     console.log('allLoaded', allLoaded);
@@ -326,12 +473,18 @@ export default function CommentInfo() {
       selector: '.comment-input',
       duration: 300
     });
+    setFocused(true)
   };
   
   // 取消回复
   const cancelReply = () => {
     setReplyTo(null);
   };
+
+  const commentBlur = () => {
+    setReplyTo(null);
+    setFocused(false)
+  }
   
   // 提交评论或回复
   const handleSubmitComment = async () => {
@@ -423,6 +576,24 @@ export default function CommentInfo() {
 
   return (
     <View className="comment-detail">
+      {/* 底部操作菜单 */}
+      {showActionSheet && (
+        <View className="action-sheet-mask" onClick={(e) => {e.stopPropagation(); setShowActionSheet(false)}}>
+          <View className="action-sheet" onClick={(e) => e.stopPropagation()}>
+            <View className="action-sheet-title">请选择操作</View>
+            {/* 只有主帖子（没有user属性）才显示编辑选项 */}
+            {!selectedPost?.user && (
+              <View className="action-sheet-item" onClick={() => handleActionClick('edit')}>
+                <Text>编辑</Text>
+              </View>
+            )}
+            <View className="action-sheet-item" onClick={() => handleActionClick('delete')}>
+              <Text>删除</Text>
+            </View>
+          </View>
+        </View>
+      )}
+      
       {loading ? (
         <View className="loading-container">
           <GardenLoading />
@@ -433,12 +604,52 @@ export default function CommentInfo() {
           <View className="first-comment">
             <View className="header">
           <Image className="avatar" src={detail.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
-          <Text className="nickname">{detail.nickname || '匿名用户'}</Text>
+          <Text className="nickname">{detail.nickName || '匿名用户'}</Text>
           <Text className="category">{detail.category || '普通'}</Text>
+          {/* 用户自己的帖子显示编辑按钮 */}
+          {currentUser && currentUser.userId === detail.userId && (
+            <View className="edit-actions">
+              <View onClick={(e) => {
+                e.stopPropagation();
+                setSelectedPost(detail);
+                setShowActionSheet(true);
+              }}>
+                <IconFont name='ellipsis' size={50} />
+              </View>
+            </View>
+          )}
         </View>
         <View className="post-info">
+          
+
           <Text className="title">{detail.title}</Text>
           <Text className="content">{detail.content}</Text>
+          
+          {/* 投票区域 */}
+          {detail.voteInfo && detail.voteInfo?.options && (
+            <View className="vote-container">
+              <Text className="vote-title">{detail.voteInfo.voteTitle}</Text>
+              <View className="vote-options">
+                {detail.voteInfo?.options.length > 0 && detail.voteInfo?.options.map(option => (
+                  <View 
+                    key={option.id} 
+                    className="vote-option"
+                    onClick={() => handleVoteSubmit(option.id)}
+                  >
+                    <Text className="option-text">{option.optionText}</Text>
+                    <View className="vote-progress">
+                      <View 
+                        className="progress-bar" 
+                        style={{ width: `${option.percentage}%` }}
+                      />
+                    </View>
+                    <Text className="vote-count">{option.voteCount} 票 ({option.percentage}%)</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+          
           {/* 币种和话题标签 */}
           {(detail.tags?.length > 0 || detail.topics?.length > 0) && (
             <View className="tags-topics-container">
@@ -469,7 +680,7 @@ export default function CommentInfo() {
             <Text className="time">{(detail.createdAt|| '').replace('T', '    ')}</Text>
             <View className="action-group">
               <View className="like-btn" onClick={handlePostLike}>
-                <IconFont name='heart-fill' color={likedPosts[detail.id] ? 'red' : ''} size={30} />
+                <IconFont name='heart-fill' color={detail.isLikedByCurrentUser || likedPosts[detail.id] ? 'red' : ''} size={30} />
                 <Text className={`likes ${likedPosts[detail.id] ? 'liked' : ''}`}>{detail.likeCnt || 0} 点赞</Text>
               </View>
               <Button className="share-btn" openType="share" data-post-id={detail.id} data-post-title={detail.title}>
@@ -500,7 +711,13 @@ export default function CommentInfo() {
                   <Image className="avatar" src={item.user.avatar} />
                   <Text className="nickname">{item.user.nickname}</Text>
                   {currentUser && currentUser.userId === item.user.id && (
-                    <Text className="delete-btn" onClick={() => handleDeleteComment(item.id)}>删除</Text>
+                    <View className="comment-handle" onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPost(item);
+                      setShowActionSheet(true);
+                    }}>
+                      <IconFont name='ellipsis' size={40} />
+                    </View>
                   )}
                 </View>
                 
@@ -573,26 +790,33 @@ export default function CommentInfo() {
       )}
 
       {/* 评论输入框 */}
-      <View className="comment-input-container">
+      <View className="comment-input-container" style={{
+        bottom: keyboardHeight > 0 ? `${keyboardHeight}px` : 0,
+      }}>
         {/* {replyTo && (
           <View className="reply-info">
             <Text className="reply-text">回复 @{replyTo.nickname}</Text>
             <Text className="cancel-reply" onClick={cancelReply}>取消</Text>
           </View>
         )} */}
-        <Input
+        <Textarea
           className="comment-input"
           value={commentContent}
-          onInput={e => setCommentContent(e.detail.value)}
+          onInput={e => {setCommentContent(e.detail.value); setFocused(true)}}
           placeholder={replyTo ? `回复 @${replyTo.nickname}...` : "写下你的评论..."}
           maxlength={200}
+          focus={focused}
+          adjustPosition={false}
+          onBlur={commentBlur}
+          autoHeight
+          showConfirmBar={false}
         />
         <Button
           className="submit-btn"
           onClick={handleSubmitComment}
           disabled={submitting || !commentContent.trim()}
         >
-          {submitting ? '提交中...' : '发送'}
+          {submitting ? '提交中' : '发送'}
         </Button>
       </View>
 

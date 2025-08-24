@@ -126,6 +126,13 @@ export const Interface = {
   POSTS_DELETE: '/posts/delete',
   // 创建话题
   CREATE_TOPIC: '/topic/new',
+  // 话题相关帖子
+  TOPIC_POSTS: '/posts/topic',
+  // 创建投票
+  CREATE_VOTE: '/api/vote/create',
+
+  // 是否展示全部内容
+  SHOW_ALL: '/switch/status',
 };
 
 // 邮箱
@@ -139,5 +146,5 @@ export const COINKEY = {
 };
 
 // 轮循时间间隔(6分钟)
-export const LOOPTIME = 6*60*1000;
-// export const LOOPTIME = 5000;
+// export const LOOPTIME = 6*60*1000;
+export const LOOPTIME = 5000;

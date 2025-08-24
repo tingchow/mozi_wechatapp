@@ -29,7 +29,6 @@ export const AddCollect = (props) => {
         coin: props.symbol
       }
     });
-    console.log('changeOwnRes', changeOwnRes);
     Taro.hideLoading();
     if (changeOwnRes?.data?.isLogin === false) {
       // 未登录，引导登录
@@ -92,8 +91,6 @@ export const AddCollect = (props) => {
   //     }
   //   })
   // };
-
-  console.log(props.symbol, isOwn, props.isOwn)
 
   const curOwn = isOwn !== null? isOwn: props.isOwn;
 

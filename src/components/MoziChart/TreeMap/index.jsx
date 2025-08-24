@@ -17,9 +17,11 @@ export const MoziTreeMap = (props) => {
   }
 
   useEffect(() => {
-    const handledArr = handleArr(list);
-    setList(handledArr);
-  }, []);
+    if (list && list.length > 0) {
+      const handledArr = handleArr(list);
+      setList(handledArr);
+    }
+  }, [list]);
 
   const handleArr = (arr) => {
     let sortedArr = arr.slice().sort((a, b) => Math.abs(b[desc]) - Math.abs(a[desc]));

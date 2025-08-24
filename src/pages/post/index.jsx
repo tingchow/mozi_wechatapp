@@ -27,6 +27,7 @@ export default function PostPage() {
   const [voteTitle, setVoteTitle] = useState('')
   const [voteOptions, setVoteOptions] = useState(['看涨', '看跌'])
   const [hasVote, setHasVote] = useState(false)
+  const [voteId, setVoteId] = useState(null) // 添加投票ID状态
 
   // 在现有的 state 后添加
   const [showCoinSelect, setShowCoinSelect] = useState(false)
@@ -193,6 +194,7 @@ export default function PostPage() {
     // 显示加载中提示
     Taro.showLoading({
       title: '搜索中...',
+      mask: true
     })
     
     try {
@@ -231,8 +233,22 @@ export default function PostPage() {
     }
   }
 
+  // 发布按钮loading状态
+  const [publishing, setPublishing] = useState(false);
+
   // 发布或更新内容
   const publishPost = async () => {
+    // 检查用户是否登录
+    const userInfo = Taro.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.userId) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      });
+      // 可以在这里添加跳转到登录页的逻辑
+      return;
+    }
 
     // 验证'发现好币'模板必须选择至少一个币种
     if (selectedTemplate === '发现好币' && selectedCoins.length === 0) {
@@ -242,6 +258,9 @@ export default function PostPage() {
       })
       return
     }
+
+    // 设置发布中状态，禁用按钮
+    setPublishing(true);
 
     try {
       // 处理内容字段，对于"发现好币"模板，使用formData.reason作为content
@@ -259,9 +278,10 @@ export default function PostPage() {
       
       // 如果有投票信息，添加到postData中
       if (hasVote) {
-        postData.voteInfo = {
-          title: voteTitle,
-          options: voteOptions
+          // 否则使用投票信息
+        postData.vote = {
+          voteTitle: voteTitle,
+          options: voteOptions.filter(opt => opt) // 过滤掉空选项
         }
       }
       
@@ -288,6 +308,11 @@ export default function PostPage() {
             }, 1000)
           }
         })
+      } else {
+        Taro.showToast({
+          title: isUpdate? '更新失败' : '发布失败',
+          icon: 'none'
+        })
       }
     } catch (error) {
       console.error(isUpdate ? '更新失败:' : '发布失败:', error)
@@ -295,6 +320,9 @@ export default function PostPage() {
         title: isUpdate ? '更新失败' : '发布失败',
         icon: 'none'
       })
+    } finally {
+      // 无论成功失败，都恢复按钮状态
+      setPublishing(false);
     }
   }
 
@@ -331,7 +359,7 @@ export default function PostPage() {
     loadHotTopics()
     loadCoinList()
     
-    const { topicId, topicTitle, id, title: postTitle, content: postContent, isUpdate: updateFlag, templateType } = router.params
+    const { topicId, topicTitle, id, title: postTitle, content: postContent, isUpdate: updateFlag, templateType, symbol } = router.params
     
     // 处理话题参数
     if (topicId && topicTitle) {
@@ -361,6 +389,43 @@ export default function PostPage() {
           setShowAskTips(true);
         }
       }
+    }
+    
+    // 处理币种参数
+    if (symbol) {
+      console.log('收到symbol参数:', symbol);
+      // 立即设置一个默认值，确保至少有一个选中的币种
+      setSelectedCoins([{ symbol: symbol, name: symbol }]);
+      
+      // 当币种列表加载完成后，尝试找到更完整的币种信息
+      const checkCoinList = () => {
+        console.log('检查币种列表:', coinList.length);
+        if (coinList.length > 0) {
+          const foundCoin = coinList.find(coin => coin.symbol === symbol);
+          if (foundCoin) {
+            console.log('找到匹配的币种:', foundCoin);
+            setSelectedCoins([foundCoin]);
+          }
+        } else {
+          // 如果币种列表还没加载完成，等待加载
+          console.log('币种列表为空，等待加载');
+          setTimeout(checkCoinList, 1000);
+        }
+      };
+      
+      // 立即检查一次
+      checkCoinList();
+      
+      // 同时监听币种列表变化
+      const coinListObserver = setInterval(() => {
+        if (coinList.length > 0) {
+          checkCoinList();
+          clearInterval(coinListObserver);
+        }
+      }, 1000);
+      
+      // 5秒后清除观察器，避免无限循环
+      setTimeout(() => clearInterval(coinListObserver), 5000);
     }
   })
   
@@ -396,6 +461,25 @@ export default function PostPage() {
     }
   }, [showTopicSelect])
 
+  // 添加键盘高度变化监听
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  
+  useEffect(() => {
+    // 监听键盘高度变化
+    const keyboardHeightChangeListener = res => {
+      console.log('键盘高度变化:', res.height)
+      setKeyboardHeight(res.height)
+    }
+    
+    // 添加监听器
+    Taro.onKeyboardHeightChange(keyboardHeightChangeListener)
+    
+    // 组件卸载时移除监听器
+    return () => {
+      Taro.offKeyboardHeightChange(keyboardHeightChangeListener)
+    }
+  }, [])
+
   // 模板配置
   const templates =   ["普通", "发现好币", "不懂就问"]
 
@@ -403,7 +487,7 @@ export default function PostPage() {
   const selectTemplate = (template) => {
     setSelectedTemplate(template)
     setShowTemplates(false)
-    
+    setShowAskTips(false);
     // 如果选择了"不懂就问"模板，显示提示弹窗
     if (template === '不懂就问') {
       setShowAskTips(true)
@@ -440,8 +524,17 @@ export default function PostPage() {
       })
       return
     }
+    
+    // 设置hasVote为true，表示帖子包含投票
     setHasVote(true)
+    // 关闭投票弹窗
     setShowVote(false)
+    
+    Taro.showToast({
+      title: '投票已添加',
+      icon: 'success'
+    })
+
   }
   
   // 检查币种是否已被选择
@@ -472,7 +565,8 @@ export default function PostPage() {
     
     try {
       Taro.showLoading({
-        title: '搜索中...'
+        title: '搜索中...',
+        mask: true
       })
       
       const response = await request({
@@ -541,7 +635,14 @@ export default function PostPage() {
       <View className='user-info'>
         <Image className='avatar' src={userInfo?.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
         <Text className='nickname'>{userInfo?.nickName || ''}</Text>
-        <Button className='publish-btn' onClick={publishPost}>{isUpdate ? '更新' : '发布'}</Button>
+        <Button 
+          className='publish-btn' 
+          onClick={publishPost} 
+          disabled={publishing}
+          loading={publishing}
+        >
+          {isUpdate ? '更新' : '发布'}
+        </Button>
       </View>
 
       {/* 标题输入区 */}
@@ -564,6 +665,7 @@ export default function PostPage() {
             placeholder={selectedTemplate === '普通' ? '写下你的想法...': '详细描述你的问题...'}
             value={content}
             onInput={e => setContent(e.detail.value)}
+            maxlength={300}
           />
         )}
 
@@ -575,6 +677,7 @@ export default function PostPage() {
                 value={content}
                 onInput={e => setContent(e.detail.value)}
                 placeholder='请输入推荐理由'
+                maxlength={300}
               />
             </View>
             <View className='form-item'>
@@ -617,34 +720,40 @@ export default function PostPage() {
       </View>
 
       {/* 底部工具栏 */}
-      <View className='bottom-toolbar'>
+      <View className={`bottom-toolbar ${keyboardHeight > 0? 'bottom-fixed': ''}`} style={{
+        bottom: keyboardHeight > 0 ? `${keyboardHeight}px` : 0,
+      }}>
         <Button 
           className='template-btn'
           onClick={() => setShowTemplates(true)}
         >
-          <Text className='icon-template'></Text>
+          <View className='template-box'>
           模板
+          </View>
         </Button>
         <Button 
-          className='vote-btn'
+          className='template-btn vote-btn'
           onClick={() => setShowVote(true)}
         >
-          <Text className='icon-vote'></Text>
+          <View className='template-box'>
           投票
+          </View>
         </Button>
         <Button 
-          className='coin-btn'
+          className='template-btn coin-btn'
           onClick={() => setShowCoinSelect(true)}
         >
-          <Text className='icon-coin'></Text>
+          <View className='template-box'>
           币种
+          </View>
         </Button>
         <Button 
-          className='topic-btn'
+          className='template-btn topic-btn'
           onClick={() => setShowTopicSelect(true)}
         >
-          <Text className='icon-topic'></Text>
+          <View className='template-box'>
           话题
+          </View>
         </Button>
       </View>
 

@@ -37,13 +37,13 @@ export default function Index() {
     // 分享mozi view
     key: 'share',
     icon: <IconFont name='share' size={50} />,
-    text: '分享MoziView',
+    text: '推荐给朋友',
     extra: <IconFont name='right' size={50} />,
   }, {
     // 评分
     key: 'score',
     icon: <IconFont name='m-pingfen' size={50} />,
-    text: '给我们评分',
+    text: '产品功能反馈',
     extra: <IconFont name='right' size={50} />,
     callback: () => {score()}
   },
@@ -158,6 +158,7 @@ export default function Index() {
     isReporting = true;
     Taro.showLoading({
       title: '',
+      mask:true
     });
     // todo 上传评分
     const commentRes = await request({
@@ -219,6 +220,7 @@ export default function Index() {
     Taro.login({
       complete: async (res) => {
         if (res.code) {
+          Taro.showLoading({mask:true});
           const openIdCode = res.code;
           console.log('openIdCode', openIdCode);
           const tokenInfo = await request({
@@ -231,6 +233,7 @@ export default function Index() {
           });
 
           console.log('tokenInfo', tokenInfo);
+          Taro.hideLoading();
           if (tokenInfo?.data?.token) {
             Taro.setStorageSync('token', tokenInfo?.data?.token);
             console.log('用户信息本地缓存成功');
@@ -243,6 +246,7 @@ export default function Index() {
             // jump2NoTab('user');
             console.log('userId', tokenInfo?.data?.userId);
             const userInfo = tokenInfo?.data?.userInfo;
+            Taro.setStorageSync('needRefreshCommunity', true);
             if (!userInfo?.avatar || !userInfo?.nickName ) {
               jump2User();
             } else {
@@ -284,6 +288,25 @@ export default function Index() {
     } else {
       return '';
     }
+  };
+
+  const logout = () => {
+    if (!isLogin) {
+      Taro.showToast({
+        title: '您已退出登录',
+        icon: 'error',
+      })
+      return;
+    }
+    Taro.removeStorageSync('token');
+    Taro.removeStorageSync('userInfo');
+    setIsLogin(false);
+    setUserInfo({})
+    Taro.setStorageSync('needRefreshCommunity', true);
+    Taro.showToast({
+      title: '退出成功',
+      icon: 'success',
+    })
   };
 
 
@@ -346,6 +369,7 @@ export default function Index() {
             )
           })}
         </List>
+        <Button onClick={logout}>退出登录</Button>
         {/* <OfficialAccount></OfficialAccount> */}
       </View>
       <PageContainer

@@ -95,7 +95,6 @@ export default function Detail() {
     onInit: initChart
   }
   
-  console.log('useRouter().params.symbol', useRouter().params);
   const symbol = useRouter().params.symbol;
 
   useDidShow(() => {
@@ -260,7 +259,8 @@ export default function Detail() {
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
     });
-    getAiData({});
+    // TODO-暂时下掉
+    // getAiData({});
   });
 
   useShareAppMessage(() => {
@@ -289,16 +289,15 @@ export default function Detail() {
 
   const activeClick = async (value) => {
     if ( value ===  activeKey) return;
-    console.log(value);
     chartData.current.active = value;
     setActiveKey(value);
 
     chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
+    // TODO-暂时下掉
     getAiData({activeKey: value});
   };
 
   const pageActiveClick = (value) => {
-    console.log(value);
     setPageActiveKey(value);
     // if (value === 'ai') {
       
@@ -331,7 +330,6 @@ export default function Detail() {
       week: 3,
       month: 4
     };
-    console.log('aiData.current', aiData.current);
     if (aiData.current[activeKey] !== null) {
       setAi({
         ...ai,
@@ -369,7 +367,6 @@ export default function Detail() {
     }
     let mdRes = towxml(aiRes?.data,'markdown',{});
     aiData.current[activeKey] = mdRes;
-    console.log('aiData[activeKey]', aiData.current[activeKey]);
     
     setAi({
       loading: false,
@@ -510,7 +507,8 @@ export default function Detail() {
       {/* tab选择 */}
       <TabBar className='tabContainer' activeKey={pageActiveKey} onChange={pageActiveClick}>
         <TabBar.Item key='chart' title='图表' />
-        <TabBar.Item key='ai' title='AI解读' />
+        {/* TODO-暂时下掉 */}
+        {/* <TabBar.Item key='ai' title='AI解读' /> */}
         <TabBar.Item key='market' title='市场' />
         {/* <TabBar.Item key='comment' title='评论' /> */}
       </TabBar>
@@ -534,8 +532,9 @@ export default function Detail() {
           
         </div>
       </div>
+      {/* TODO-暂时下掉 */}
       {/* AI解析 */}
-      <View className='ai-box'>
+      {/* <View className='ai-box'>
         <MoziCard
           title='AI解读'
           // sumNum={coinMarket.length}
@@ -554,7 +553,7 @@ export default function Detail() {
           </ScrollView>
         </Layout>
         </MoziCard>
-      </View>
+      </View> */}
       
 
 
