@@ -3,7 +3,7 @@
   min-height: 100vh;
 
   .header {
-    background-color: #fff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     // height: 300px;
     margin-bottom: 20px;
     padding: 80px 20px 20px;
@@ -31,17 +31,107 @@
       }
     }
 
-    .headerSelect {
+    // 功能按钮区域
+    .actionButtons {
       display: flex;
       justify-content: space-around;
+      margin-top: 40px;
+      padding: 0 40px;
 
-      .headerSelectItem {
+      .actionButton {
         display: flex;
         flex-direction: column;
         align-items: center;
-        
-        .headerSelectText {
-          margin-top: 10px;
+        cursor: pointer;
+
+        .actionIcon {
+          width: 80px;
+          height: 80px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 12px;
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          transition: all 0.3s ease;
+
+          &:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+          }
+        }
+
+        .actionText {
+          color: #fff;
+          font-size: 24px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  // 第二排功能按钮
+  .secondaryActions {
+    background: #fff;
+    margin: 20px;
+    border-radius: 16px;
+    padding: 30px 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+    .actionRow {
+      display: flex;
+      justify-content: space-around;
+
+      .actionButton {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+
+        .actionIcon {
+          &.secondary {
+            width: 60px;
+            height: 60px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+
+            &:active {
+              transform: scale(0.95);
+              background: #e8e8e8;
+            }
+
+            .badge {
+              position: absolute;
+              top: -5px;
+              right: -5px;
+              background: #ff4757;
+              color: #fff;
+              border-radius: 50%;
+              width: 20px;
+              height: 20px;
+              font-size: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+            }
+          }
+        }
+
+        .actionText {
+          &.secondary {
+            color: #333;
+            font-size: 24px;
+            font-weight: 400;
+          }
         }
       }
     }

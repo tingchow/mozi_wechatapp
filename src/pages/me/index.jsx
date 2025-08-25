@@ -330,22 +330,54 @@ export default function Index() {
           )
         }
         
-        <View className='headerSelect'>
-          <View className='headerSelectItem' onClick={() => jump2Market('own')}>
-             <IconFont name='plus-square' size={60} />
-             <View className='headerSelectText'>我的自选</View>
+        {/* 功能按钮区域 */}
+        <View className='actionButtons'>
+          <View className='actionButton' onClick={() => jump2Market('own')}>
+            <View className='actionIcon'>
+              <IconFont name='plus-square' size={48} color='#fff' />
+            </View>
+            <Text className='actionText'>我的自选</Text>
           </View>
-          <View className='headerSelectItem' onClick={() => jump2NoTab('mywarn')}>
-            <IconFont name='bell-fill' size={60} />
-            <View className='headerSelectText'>我的报警</View>
+          <View className='actionButton' onClick={() => jump2NoTab('mywarn')}>
+            <View className='actionIcon'>
+              <IconFont name='bell-fill' size={48} color='#fff' />
+            </View>
+            <Text className='actionText'>我的报警</Text>
           </View>
-          
-          <View className='headerSelectItem' onClick={attendUs}>
-            <IconFont name='wechat-fill' color='#04be02' size={60} />
-            <View className='headerSelectText'>关注公众号</View>
+          <View className='actionButton' onClick={attendUs}>
+            <View className='actionIcon'>
+              <IconFont name='wechat-fill' size={48} color='#fff' />
+            </View>
+            <Text className='actionText'>关注公众号</Text>
           </View>
         </View>
       </View>
+
+      {/* 第二排功能按钮 */}
+      <View className='secondaryActions'>
+        <View className='actionRow'>
+          <View className='actionButton' onClick={score}>
+            <View className='actionIcon secondary'>
+              <IconFont name='message' size={40} color='#666' />
+            </View>
+            <Text className='actionText secondary'>我的评论</Text>
+          </View>
+          <View className='actionButton' onClick={score}>
+            <View className='actionIcon secondary'>
+              <IconFont name='bell-fill' size={40} color='#666' />
+              <View className='badge'>3</View>
+            </View>
+            <Text className='actionText secondary'>消息通知</Text>
+          </View>
+          <View className='actionButton' onClick={score}>
+            <View className='actionIcon secondary'>
+              <IconFont name='heart-fill' size={40} color='#666' />
+            </View>
+            <Text className='actionText secondary'>我的点赞</Text>
+          </View>
+        </View>
+      </View>
+
       <View className='footer'>
         <List className='footerList'>
           {footerList.map((item, index) => {
