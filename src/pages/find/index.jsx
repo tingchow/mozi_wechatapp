@@ -8,7 +8,7 @@ import { MoziGrid } from '../../components/MoziGrid';
 import { MoziCard } from '../../components/MoziCard';
 import { RankGrid } from './components/RankGrid';
 import { ComplexList } from '../../components/ListCom/ComplexList';
-import HighlightArea from '../../components/HighlightArea';
+import { HighlightArea } from '../../components/HighlightArea';
 import './index.less';
 import { jump2List, jump2NoTab } from '../../utils/core';
 import { Interface, LOOPTIME } from '../../utils/constants';
@@ -727,7 +727,7 @@ export default function Find() {
                     <Grid className='gridTitle' columns={5}>
                       {
                         ['币种', '最新价', '24小时涨幅', '是否自选', '加监控'].map((colNameItem, colNameIndex) => {
-                          return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+                          return <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
                         })
                       }
                     </Grid>
@@ -754,7 +754,7 @@ export default function Find() {
             <Grid className='gridTitle' columns={3}>
               {
                 ['币种/市值', '最新价格/24H价格变化', '24H价格变化'].map((colNameItem, colNameIndex) => {
-                  return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+                  return <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
                 })
               }
             </Grid>

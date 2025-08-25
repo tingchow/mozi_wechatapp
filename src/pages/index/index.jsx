@@ -334,7 +334,7 @@ export default function Index() {
         {
           area.derivativeArea.list.map((item, index) => {
             return (
-              <Grid.Item className='derivativeItem' onClick={item.callback}>
+              <Grid.Item key={index} className='derivativeItem' onClick={item.callback}>
                 <div className='derivativeIcon'>
                   <IconFont name={item.icon} size={50} />
                 </div>

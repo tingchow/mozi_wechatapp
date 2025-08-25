@@ -351,7 +351,7 @@ export default function Index() {
           {footerList.map((item, index) => {
             const openType = matchOpenType(item.key);
             return (
-              <List.Item className={`footerItem ${index === footerList.length - 1? 'last': ''}`}>
+              <List.Item key={index} className={`footerItem ${index === footerList.length - 1? 'last': ''}`}>
                 {
                   openType === 'getPhoneNumber'? 
                   <Button className='footerBtn' openType={openType} onGetPhoneNumber={phoneLogin}>
@@ -418,7 +418,7 @@ export default function Index() {
             <Grid className='scoreList' columns={10} gap={5}>
               {
                 [1,2,3,4,5,6,7,8,9,10].map((item, index) => {
-                  return <Grid.Item className={`scoreItem ${item === reportScore? 'scoreActive': ''}`} onClick={() => {scoreReport(item)}}>{item}</Grid.Item>
+                  return <Grid.Item key={index} className={`scoreItem ${item === reportScore? 'scoreActive': ''}`} onClick={() => {scoreReport(item)}}>{item}</Grid.Item>
                 })
               }
             </Grid>
