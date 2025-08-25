@@ -26,54 +26,35 @@ export default function Index() {
   const scoreInput = useRef('');
 
   const footerList = [
-  //   {
-  //   // 分享mozi view
-  //   icon: <IconFont name='heart-fill' color='red' size={50} />,
-  //   text: '我的自选',
-  //   extra: <IconFont name='right' size={50} />,
-  //   callback: () => jump2Market('own')
-  // }, 
-  // 已经移动到上方的左右分布按钮区域
-  // {
-  //   // 分享mozi view
-  //   key: 'share',
-  //   icon: <IconFont name='share' size={50} />,
-  //   text: '推荐给朋友',
-  //   extra: <IconFont name='right' size={50} />,
-  // }, {
-  //   // 评分
-  //   key: 'score',
-  //   icon: <IconFont name='m-pingfen' size={50} />,
-  //   text: '产品功能反馈',
-  //   extra: <IconFont name='right' size={50} />,
-  //   callback: () => {score()}
-  // },
-  // {
-  //   // 到社交媒体找我们
-  //   icon: <IconFont name='bodongfenxi' size={50} />,
-  //   text: '到社交媒体找我们',
-  //   extra: <IconFont name='right' size={50} />
-  // }, 
   {
-    // 关于
-    key: '',
-    icon: <IconFont name='info-circle' size={50} />,
-    text: '关于',
-    extra: <IconFont name='right' size={50} />,
-    callback: () => {about()}
+    key: 'theme',
+    icon: <IconFont name='wangdian' size={40} color='#45e87f' />,
+    text: '皮肤中心',
+    extra: <IconFont name='right' size={32} color='#ccc' />,
+    callback: () => {console.log('皮肤中心')}
   }, {
-    // 给我们留言
     key: '',
-    icon: <IconFont name='attachment' size={50} />,
+    icon: <IconFont name='attachment' size={40} color='#45e87f' />,
     text: '联系我们',
-    extra: <IconFont name='right' size={50} />,
+    extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {contact()}
   }, {
-    // 赞赏
+    key: 'social',
+    icon: <IconFont name='shequ' size={40} color='#45e87f' />,
+    text: '到社交媒体找我们',
+    extra: <IconFont name='right' size={32} color='#ccc' />,
+    callback: () => {console.log('社交媒体')}
+  }, {
     key: '',
-    icon: <IconFont name='moneycollect' size={50} />,
-    text: '赞赏',
-    extra: <IconFont name='right' size={50} />,
+    icon: <IconFont name='info-circle' size={40} color='#45e87f' />,
+    text: '关于',
+    extra: <IconFont name='right' size={32} color='#ccc' />,
+    callback: () => {about()}
+  }, {
+    key: '',
+    icon: <IconFont name='moneycollect' size={40} color='#45e87f' />,
+    text: '捐赠',
+    extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {reward()}
   }];
 
@@ -335,19 +316,19 @@ export default function Index() {
         <View className='actionButtons'>
           <View className='actionButton' onClick={() => jump2Market('own')}>
             <View className='actionIcon'>
-              <IconFont name='plus-square' size={48} color='#fff' />
+              <Image className='actionIconImg' src={require('@/assets/icon/alert.png')} />
             </View>
             <Text className='actionText'>我的自选</Text>
           </View>
           <View className='actionButton' onClick={() => jump2NoTab('mywarn')}>
             <View className='actionIcon'>
-              <IconFont name='bell-fill' size={48} color='#fff' />
+              <Image className='actionIconImg' src={require('@/assets/icon/like.png')} />
             </View>
             <Text className='actionText'>我的报警</Text>
           </View>
           <View className='actionButton' onClick={attendUs}>
             <View className='actionIcon'>
-              <IconFont name='wechat-fill' size={48} color='#fff' />
+              <Image className='actionIconImg' src={require('@/assets/icon/wechat.png')} />
             </View>
             <Text className='actionText'>关注公众号</Text>
           </View>
@@ -359,20 +340,20 @@ export default function Index() {
         <View className='actionRow'>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <IconFont name='message' size={40} color='#666' />
+              <Image className='actionIconImg secondary' src={require('@/assets/icon/comment.png')} />
             </View>
             <Text className='actionText secondary'>我的评论</Text>
           </View>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <IconFont name='bell-fill' size={40} color='#666' />
+              <Image className='actionIconImg secondary' src={require('@/assets/icon/notification.png')} />
               <View className='badge'>3</View>
             </View>
             <Text className='actionText secondary'>消息通知</Text>
           </View>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <IconFont name='heart-fill' size={40} color='#666' />
+              <Image className='actionIconImg secondary' src={require('@/assets/icon/upvote.png')} />
             </View>
             <Text className='actionText secondary'>我的点赞</Text>
           </View>
@@ -466,9 +447,12 @@ export default function Index() {
             )
           })}
         </List>
-        <Button onClick={logout}>退出登录</Button>
         {/* <OfficialAccount></OfficialAccount> */}
       </View>
+      
+      {isLogin && (
+        <Button className='logoutBtn' onClick={logout}>退出登录</Button>
+      )}
       <PageContainer
         show={popVis}
         // onMaskClick={() => {
