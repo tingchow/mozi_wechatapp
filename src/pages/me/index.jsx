@@ -33,20 +33,21 @@ export default function Index() {
   //   extra: <IconFont name='right' size={50} />,
   //   callback: () => jump2Market('own')
   // }, 
-  {
-    // 分享mozi view
-    key: 'share',
-    icon: <IconFont name='share' size={50} />,
-    text: '推荐给朋友',
-    extra: <IconFont name='right' size={50} />,
-  }, {
-    // 评分
-    key: 'score',
-    icon: <IconFont name='m-pingfen' size={50} />,
-    text: '产品功能反馈',
-    extra: <IconFont name='right' size={50} />,
-    callback: () => {score()}
-  },
+  // 已经移动到上方的左右分布按钮区域
+  // {
+  //   // 分享mozi view
+  //   key: 'share',
+  //   icon: <IconFont name='share' size={50} />,
+  //   text: '推荐给朋友',
+  //   extra: <IconFont name='right' size={50} />,
+  // }, {
+  //   // 评分
+  //   key: 'score',
+  //   icon: <IconFont name='m-pingfen' size={50} />,
+  //   text: '产品功能反馈',
+  //   extra: <IconFont name='right' size={50} />,
+  //   callback: () => {score()}
+  // },
   // {
   //   // 到社交媒体找我们
   //   icon: <IconFont name='bodongfenxi' size={50} />,
@@ -375,6 +376,70 @@ export default function Index() {
             </View>
             <Text className='actionText secondary'>我的点赞</Text>
           </View>
+        </View>
+      </View>
+
+      {/* 左右分布的功能按钮 */}
+      <View className='horizontalButtons'>
+        {
+          !isLogin ? (
+                          <Button className='horizontalBtn left' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>
+                <View className='btnIcon'>
+                  <Image className='btnIconImg' src={require('@/assets/icon/feedback.png')} />
+                </View>
+              <View className='btnBottom'>
+                <View className='btnContent'>
+                  <Text className='btnText'>产品功能反馈</Text>
+                  <Text className='btnSubtext'>留言你想要的功能</Text>
+                </View>
+                <View className='btnArrow'>
+                  <IconFont name='right' size={28} color='#ccc' />
+                </View>
+              </View>
+            </Button>
+          ) : (
+            <View className='horizontalBtn left' onClick={score}>
+              <View className='btnIcon'>
+                <Image className='btnIconImg' src={require('@/assets/icon/feedback.png')} />
+              </View>
+              <View className='btnBottom'>
+                <View className='btnContent'>
+                  <Text className='btnText'>产品功能反馈</Text>
+                  <Text className='btnSubtext'>留言你想要的功能</Text>
+                </View>
+                <View className='btnArrow'>
+                  <IconFont name='right' size={28} color='#ccc' />
+                </View>
+              </View>
+            </View>
+          )
+        }
+        <Button className='horizontalBtn right' openType='share'>
+          <View className='btnIcon'>
+            <Image className='btnIconImg' src={require('@/assets/icon/share.png')} />
+          </View>
+          <View className='btnBottom'>
+            <View className='btnContent'>
+              <Text className='btnText'>推荐朋友</Text>
+              <Text className='btnSubtext'>分享你的喜爱</Text>
+            </View>
+            <View className='btnArrow'>
+              <IconFont name='right' size={28} color='#ccc' />
+            </View>
+          </View>
+        </Button>
+      </View>
+
+      {/* 我的积分 */}
+      <View className='pointsSection'>
+        <View className='pointsInfo'>
+          <Text className='pointsTitle'>我的积分</Text>
+          <Text className='pointsValue'>2000</Text>
+          <Text className='pointsDaily'>昨日积分：+100</Text>
+          <Text className='pointsRank'>当前排名：总榜第 23 名</Text>
+        </View>
+        <View className='pointsAction' onClick={() => jump2NoTab('ranklist')}>
+          <Text className='pointsButton'>积分榜单</Text>
         </View>
       </View>
 

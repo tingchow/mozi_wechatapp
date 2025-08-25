@@ -137,6 +137,144 @@
     }
   }
 
+  // 积分模块
+  .pointsSection {
+    background: #fff;
+    margin: 20px;
+    border-radius: 16px;
+    padding: 30px 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .pointsInfo {
+      flex: 1;
+
+      .pointsTitle {
+        color: #333;
+        font-size: 32px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .pointsValue {
+        color: #52c41a;
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .pointsDaily, .pointsRank {
+        color: #666;
+        font-size: 24px;
+        margin-bottom: 5px;
+        display: block;
+      }
+    }
+
+    .pointsAction {
+      .pointsButton {
+        background: #52c41a;
+        color: #fff;
+        border-radius: 20px;
+        padding: 12px 24px;
+        font-size: 24px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  // 左右分布的按钮
+  .horizontalButtons {
+    margin: 20px;
+    display: flex;
+    gap: 12px;
+
+    .horizontalBtn {
+      flex: 1;
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px 16px;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      cursor: pointer;
+      border: none;
+      text-align: left;
+      border: 1px solid #f0f0f0;
+
+      &::after {
+        border: none;
+      }
+
+      .btnIcon {
+        width: 48px;
+        height: 48px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        align-self: flex-start;
+
+        .btnIconImg {
+          width: 44px;
+          height: 44px;
+        }
+      }
+
+      .btnBottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .btnContent {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+      }
+
+      .btnText {
+        color: #333;
+        font-size: 28px;
+        font-weight: 500;
+        line-height: 1.2;
+        margin-bottom: 4px;
+        text-align: left;
+      }
+
+      .btnSubtext {
+        color: #999;
+        font-size: 22px;
+        line-height: 1.3;
+        text-align: left;
+      }
+
+      .btnArrow {
+        flex-shrink: 0;
+        margin-left: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 60px; // 给箭头容器一个高度来匹配文字区域的高度
+      }
+
+      &:active {
+        background: #f8f8f8;
+        transform: scale(0.98);
+      }
+    }
+  }
+
   .footer {
     margin: 20px;
     background-color: #efefef;
