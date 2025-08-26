@@ -29,31 +29,31 @@ export default function Index() {
   const footerList = [
   {
     key: 'theme',
-    icon: <IconFont name='wangdian' size={40} color='#45e87f' />,
+    icon: <Image src={require('@/assets/icon/skin.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '皮肤中心',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('皮肤中心')}
   }, {
     key: '',
-    icon: <IconFont name='attachment' size={40} color='#45e87f' />,
+    icon: <Image src={require('@/assets/icon/contact.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '联系我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {contact()}
   }, {
     key: 'social',
-    icon: <IconFont name='shequ' size={40} color='#45e87f' />,
+    icon: <Image src={require('@/assets/icon/social.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '到社交媒体找我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('社交媒体')}
   }, {
     key: '',
-    icon: <IconFont name='info-circle' size={40} color='#45e87f' />,
+    icon: <Image src={require('@/assets/icon/about.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '关于',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {about()}
   }, {
     key: '',
-    icon: <IconFont name='moneycollect' size={40} color='#45e87f' />,
+    icon: <Image src={require('@/assets/icon/donate.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '捐赠',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {reward()}
