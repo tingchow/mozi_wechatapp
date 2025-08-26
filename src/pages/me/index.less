@@ -1,8 +1,6 @@
 .me {
-  background-image: url('@/assets/image/me-bg.png');
+  background: #EEF0F3 url('@/assets/image/me-bg.png') no-repeat top center;
   background-size: 100% 460px;
-  background-position: top center;
-  background-repeat: no-repeat;
   min-height: 100vh;
   padding: 0 24px;
 
@@ -152,51 +150,85 @@
 
   // 积分模块
   .pointsSection {
-    background: #fff;
+    background: url('@/assets/image/integral.png') no-repeat center center;
+    background-size: 100% 100%;
     margin: 20px 0;
     border-radius: 16px;
     padding: 30px 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    // box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: 180px;
+    max-height: 210px;
+    position: relative;
 
     .pointsInfo {
       flex: 1;
+      padding-left: 26px;
 
       .pointsTitle {
         color: #333;
-        font-size: 32px;
+        font-size: 28px;
         font-weight: 500;
         margin-bottom: 10px;
         display: block;
       }
 
+      .pointsValueRow {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+
       .pointsValue {
         color: #52c41a;
-        font-size: 48px;
+        font-size: 50px;
         font-weight: bold;
         margin-bottom: 10px;
         display: block;
       }
 
-      .pointsDaily, .pointsRank {
-        color: #666;
-        font-size: 24px;
+      .pointsDaily {
+        color: #707070;
+        font-size: 22px;
+        margin-left: 20px;
+        display: block;
+      }
+
+      .pointsRank {
+        color: #707070;
+        font-size: 22px;
         margin-bottom: 5px;
         display: block;
       }
     }
 
     .pointsAction {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      
       .pointsButton {
-        background: #52c41a;
         color: #fff;
         border-radius: 20px;
-        padding: 12px 24px;
+        padding: 12px 10px 12px 24px;
         font-size: 24px;
         cursor: pointer;
+        font-family: PingFang SC;
+        font-weight: 500;
+        line-height: 36px;
       }
+    }
+
+    .pointsCoin {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 80px;
+      height: 110px;
     }
   }
 
@@ -234,7 +266,7 @@
         justify-content: center;
         margin-bottom: 12px;
         align-self: flex-start;
-        margin-left: 16px;
+        margin-left: 26px;
 
         .btnIconImg {
           width: 44px;
@@ -255,7 +287,7 @@
         flex-direction: column;
         align-items: flex-start;
         min-width: 0;
-        padding-left: 16px;
+        padding-left: 26px;
       }
 
       .btnText {

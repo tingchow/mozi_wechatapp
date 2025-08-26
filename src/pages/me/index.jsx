@@ -415,13 +415,19 @@ export default function Index() {
       <View className='pointsSection'>
         <View className='pointsInfo'>
           <Text className='pointsTitle'>我的积分</Text>
-          <Text className='pointsValue'>2000</Text>
-          <Text className='pointsDaily'>昨日积分：+100</Text>
-          <Text className='pointsRank'>当前排名：总榜第 23 名</Text>
+          <View className='pointsValueRow'>
+            <Text className='pointsValue'>2000</Text>
+            <Text className='pointsDaily'>昨日积分：+100</Text>
+          </View>
+          <Text className='pointsRank'>
+                         当前排名：总榜第 <Text style={{color: '#000', fontWeight: 'bold'}}>23</Text> 名
+          </Text>
         </View>
         <View className='pointsAction' onClick={() => jump2NoTab('ranklist')}>
           <Text className='pointsButton'>积分榜单</Text>
+          <IconFont name='right' size={24} color='#fff'/>
         </View>
+        <Image className='pointsCoin' src={require('@/assets/image/integral-coin.png')} />
       </View>
 
       <View className='footer'>
