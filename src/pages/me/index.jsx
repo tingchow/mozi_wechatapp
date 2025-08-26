@@ -1,6 +1,7 @@
 import { View, Text, Image, Button, PageContainer, OfficialAccount, ScrollView, Textarea } from '@tarojs/components';
 import { List, Popup, Grid } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
+import CalendarCard from '../../components/CalendarCard';
 import Taro from '@tarojs/taro';
 import { useState, useEffect, useRef } from 'react';
 import { useLoad, useShareTimeline, useDidShow } from '@tarojs/taro';
@@ -123,6 +124,17 @@ export default function Index() {
   const reward = ()=> {
     setPopVis(true);
     setPopType('reward');
+  };
+
+  // 日历组件事件处理
+  const handleDateChange = (date) => {
+    console.log('选中日期:', date);
+    // 这里可以添加日期选择后的逻辑
+  };
+
+  const handleToggleChange = (checked) => {
+    console.log('交易所公告开关状态:', checked);
+    // 这里可以添加开关切换后的逻辑，比如保存用户偏好设置
   };
 
   const scoreReport = (score) => {
@@ -428,6 +440,15 @@ export default function Index() {
           <IconFont name='right' size={24} color='#fff'/>
         </View>
         <Image className='pointsCoin' src={require('@/assets/image/integral-coin.png')} />
+      </View>
+
+      {/* 日历组件 */}
+      <View className='calendarSection'>
+        <CalendarCard
+          onDateChange={handleDateChange}
+          onToggleChange={handleToggleChange}
+          defaultToggle={true}
+        />
       </View>
 
       <View className='footer'>
