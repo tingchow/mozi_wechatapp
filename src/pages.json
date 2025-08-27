@@ -7,6 +7,24 @@
       }
     },
     {
+      "path": "pages/market/market",
+      "style": {
+        "navigationBarTitleText": "行情"
+      }
+    },
+    {
+      "path": "pages/discovery/discovery",
+      "style": {
+        "navigationBarTitleText": "发现"
+      }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
       "path": "pages/about/about",
       "style": {
         "navigationBarTitleText": "关于"
@@ -38,7 +56,7 @@
   },
   "tabBar": {
     "color": "#7A7E83",
-    "selectedColor": "#3cc51f",
+    "selectedColor": "#667eea",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
     "list": [
@@ -47,8 +65,16 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/about/about",
-        "text": "关于"
+        "pagePath": "pages/market/market",
+        "text": "行情"
+      },
+      {
+        "pagePath": "pages/discovery/discovery",
+        "text": "发现"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
       }
     ]
   }
