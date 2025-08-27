@@ -123,31 +123,16 @@ export const useMarketStore = defineStore('market', {
       try {
         this.loading.hotCoins = true
         
-        const params = {
-          page: refresh ? 1 : this.pagination.hotCoins.page,
-          limit: this.pagination.hotCoins.limit
-        }
+        // 暂时跳过接口调用
+        // const params = {
+        //   page: refresh ? 1 : this.pagination.hotCoins.page,
+        //   limit: this.pagination.hotCoins.limit
+        // }
+        // const result = await homeApi.getHotCoin(params)
         
-        const result = await homeApi.getHotCoin(params)
-        
-        if (result.success && result.data) {
-          if (refresh || params.page === 1) {
-            this.hotCoins = result.data
-          } else {
-            this.hotCoins = [...this.hotCoins, ...result.data]
-          }
-          
-          // 更新分页信息
-          this.pagination.hotCoins.hasMore = result.data.length === params.limit
-          if (!refresh) {
-            this.pagination.hotCoins.page += 1
-          }
-          
-          // 更新时间戳
-          this.lastUpdateTime.hotCoins = Date.now()
-        }
-        
-        return { success: true, data: result.data }
+        // 暂时返回空数据，避免接口调用
+        this.lastUpdateTime.hotCoins = Date.now()
+        return { success: true, data: [] }
       } catch (error) {
         console.error('获取热门币种失败:', error)
         return { success: false, message: error.message }
@@ -163,14 +148,12 @@ export const useMarketStore = defineStore('market', {
       try {
         this.loading.hotIndustries = true
         
-        const result = await homeApi.getHotIndustry()
+        // 暂时跳过接口调用
+        // const result = await homeApi.getHotIndustry()
         
-        if (result.success && result.data) {
-          this.hotIndustries = result.data
-          this.lastUpdateTime.hotIndustries = Date.now()
-        }
-        
-        return { success: true, data: result.data }
+        // 暂时返回空数据，避免接口调用
+        this.lastUpdateTime.hotIndustries = Date.now()
+        return { success: true, data: [] }
       } catch (error) {
         console.error('获取热门版块失败:', error)
         return { success: false, message: error.message }
@@ -186,14 +169,12 @@ export const useMarketStore = defineStore('market', {
       try {
         this.loading.hotContracts = true
         
-        const result = await homeApi.getHotContract()
+        // 暂时跳过接口调用
+        // const result = await homeApi.getHotContract()
         
-        if (result.success && result.data) {
-          this.hotContracts = result.data
-          this.lastUpdateTime.hotContracts = Date.now()
-        }
-        
-        return { success: true, data: result.data }
+        // 暂时返回空数据，避免接口调用
+        this.lastUpdateTime.hotContracts = Date.now()
+        return { success: true, data: [] }
       } catch (error) {
         console.error('获取热门合约失败:', error)
         return { success: false, message: error.message }
@@ -209,28 +190,29 @@ export const useMarketStore = defineStore('market', {
       try {
         this.loading.discoveryData = true
         
-        const promises = []
+        // 暂时跳过接口调用
+        // const promises = []
+        // 
+        // if (type === 'all' || type === 'coinList') {
+        //   promises.push(discoveryApi.getCoinList().then(res => ({ type: 'coinList', data: res })))
+        // }
+        // if (type === 'all' || type === 'hotExchange') {
+        //   promises.push(discoveryApi.getHotExchange().then(res => ({ type: 'hotExchange', data: res })))
+        // }
+        // if (type === 'all' || type === 'priceChange') {
+        //   promises.push(discoveryApi.getPriceChange().then(res => ({ type: 'priceChange', data: res })))
+        // }
+        // 
+        // const results = await Promise.allSettled(promises)
+        // 
+        // results.forEach((result) => {
+        //   if (result.status === 'fulfilled' && result.value.data.success) {
+        //     this.discoveryData[result.value.type] = result.value.data.data || []
+        //   }
+        // })
         
-        if (type === 'all' || type === 'coinList') {
-          promises.push(discoveryApi.getCoinList().then(res => ({ type: 'coinList', data: res })))
-        }
-        if (type === 'all' || type === 'hotExchange') {
-          promises.push(discoveryApi.getHotExchange().then(res => ({ type: 'hotExchange', data: res })))
-        }
-        if (type === 'all' || type === 'priceChange') {
-          promises.push(discoveryApi.getPriceChange().then(res => ({ type: 'priceChange', data: res })))
-        }
-        
-        const results = await Promise.allSettled(promises)
-        
-        results.forEach((result) => {
-          if (result.status === 'fulfilled' && result.value.data.success) {
-            this.discoveryData[result.value.type] = result.value.data.data || []
-          }
-        })
-        
+        // 暂时返回空数据，避免接口调用
         this.lastUpdateTime.discoveryData = Date.now()
-        
         return { success: true }
       } catch (error) {
         console.error('获取发现页数据失败:', error)
@@ -243,13 +225,11 @@ export const useMarketStore = defineStore('market', {
     // 获取币种详情
     async fetchCoinDetail(symbol) {
       try {
-        const result = await detailApi.getCoinInfo({ symbol })
+        // 暂时跳过接口调用
+        // const result = await detailApi.getCoinInfo({ symbol })
         
-        if (result.success && result.data) {
-          this.coinDetails[symbol] = result.data
-        }
-        
-        return { success: true, data: result.data }
+        // 暂时返回空数据，避免接口调用
+        return { success: true, data: null }
       } catch (error) {
         console.error('获取币种详情失败:', error)
         return { success: false, message: error.message }

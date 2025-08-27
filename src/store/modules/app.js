@@ -121,10 +121,13 @@ export const useAppStore = defineStore('app', {
     // 更新应用配置
     async updateAppConfig() {
       try {
-        const result = await systemApi.getShowAll()
-        if (result.success) {
-          this.appConfig = { ...this.appConfig, ...result.data }
-        }
+        // 暂时跳过接口调用，避免域名白名单错误
+        // const result = await systemApi.getShowAll()
+        // if (result.success) {
+        //   this.appConfig = { ...this.appConfig, ...result.data }
+        // }
+        
+        console.log('应用配置接口暂时禁用，避免域名白名单错误')
       } catch (error) {
         console.error('更新应用配置失败:', error)
       }
