@@ -43,6 +43,12 @@
         "navigationBarTitleText": "简化版演示",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/components-demo/uview-test",
+      "style": {
+        "navigationBarTitleText": "UView UI 测试"
+      }
     }
   ],
   "globalStyle": {
@@ -52,7 +58,12 @@
     "backgroundColor": "#F8F8F8"
   },
   "easycom": {
-    "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+    "autoscan": true,
+    "custom": {
+      "^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+    }
   },
   "tabBar": {
     "color": "#7A7E83",

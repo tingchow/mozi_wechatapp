@@ -10,6 +10,7 @@ const appStore = useAppStore()
 
 const title = ref('Mozi UniApp')
 const apiResult = ref('')
+const switchValue = ref(true)
 
 // 计算属性
 const hotCoins = computed(() => marketStore.hotCoins.slice(0, 5))
@@ -25,6 +26,12 @@ const navigateToAbout = () => {
 const navigateToUIDemo = () => {
   uni.navigateTo({
     url: '/pages/components-demo/simple'
+  })
+}
+
+const navigateToUViewTest = () => {
+  uni.navigateTo({
+    url: '/pages/components-demo/uview-test'
   })
 }
 
@@ -138,10 +145,37 @@ onMounted(() => {
         </view>
       </view>
       
+      <!-- UView Plus 组件测试区域 -->
+      <view class="card">
+        <text class="card-title">UView Plus 组件测试</text>
+        <view class="uview-test">
+          <text class="test-hint">如果看到下面的按钮，说明UView Plus工作正常：</text>
+          
+          <!-- 测试不同前缀的按钮组件 -->
+          <view style="margin: 20upx 0;">
+            <u-button type="primary" @click="showToast">u-button Primary</u-button>
+          </view>
+          <view style="margin: 20upx 0;">
+            <up-button type="success" @click="navigateToAbout">up-button Success</up-button>
+          </view>
+          <view style="margin: 20upx 0;">
+            <u-button type="error">u-button Error</u-button>
+          </view>
+          
+          <!-- 标签组件 -->
+          <view class="tag-group" style="margin-top: 30upx;">
+            <u-tag text="热门" type="error" plain></u-tag>
+            <up-tag text="推荐" type="warning" plain></up-tag>
+            <u-tag text="新品" type="success" plain></u-tag>
+          </view>
+        </view>
+      </view>
+      
       <view class="actions">
         <button class="btn btn-primary" @click="navigateToAbout">了解更多</button>
         <button class="btn btn-secondary" @click="showToast">显示提示</button>
-        <button class="btn btn-ui-demo" @click="navigateToUIDemo">uView UI 演示</button>
+        <button class="btn btn-ui-demo" @click="navigateToUIDemo">简单演示</button>
+        <button class="btn btn-uview-test" @click="navigateToUViewTest">UView Plus 完整测试</button>
       </view>
     </view>
   </view>
@@ -291,5 +325,24 @@ onMounted(() => {
   background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
   color: #333;
   font-weight: bold;
+}
+
+.btn-uview-test {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+}
+
+.uview-test {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tag-group {
+  display: flex;
+  gap: 20upx;
+  flex-wrap: wrap;
+  align-items: center;
 }
 </style>
