@@ -56,25 +56,33 @@
   },
   "tabBar": {
     "color": "#7A7E83",
-    "selectedColor": "#667eea",
+    "selectedColor": "#45e87f",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "static/images/tabbar/home-default.png",
+        "selectedIconPath": "static/images/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/market/market",
-        "text": "行情"
+        "text": "行情",
+        "iconPath": "static/images/tabbar/market-default.png",
+        "selectedIconPath": "static/images/tabbar/market-active.png"
       },
       {
         "pagePath": "pages/discovery/discovery",
-        "text": "发现"
+        "text": "发现",
+        "iconPath": "static/images/tabbar/discovery-default.png",
+        "selectedIconPath": "static/images/tabbar/discovery-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/images/tabbar/profile-default.png",
+        "selectedIconPath": "static/images/tabbar/profile-active.png"
       }
     ]
   }
