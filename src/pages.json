@@ -43,12 +43,6 @@
         "navigationBarTitleText": "简化版演示",
         "navigationStyle": "custom"
       }
-    },
-    {
-      "path": "pages/components-demo/uview-test",
-      "style": {
-        "navigationBarTitleText": "UView UI 测试"
-      }
     }
   ],
   "globalStyle": {
