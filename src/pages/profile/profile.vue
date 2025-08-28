@@ -37,12 +37,161 @@ const COINKEY = {
   TRON: 'TXBGXsZN8GBjY6v1mtJN8gDqD2BxUxk2Xw'
 }
 
-// 处理登录
+// 获取手机号授权回调
+const onGetPhoneNumber = async (e) => {
+  console.log('获取手机号事件:', e)
+  
+  if (e.detail.code) {
+    // 用户授权成功，获取登录凭证
+    uni.login({
+      provider: 'weixin',
+      success: async (loginRes) => {
+        if (loginRes.code) {
+          console.log('获取微信登录code成功:', loginRes.code)
+          
+          try {
+            uni.showLoading({
+              title: '登录中...',
+              mask: true
+            })
+            
+            // 调用后端登录接口
+            const result = await userStore.wxLogin({
+              code: loginRes.code,
+              phoneCode: e.detail.code // 手机号授权码
+            })
+            
+            uni.hideLoading()
+            
+            if (result.success) {
+              uni.showToast({
+                title: result.isNewUser ? '注册成功' : '登录成功',
+                icon: 'success'
+              })
+            } else {
+              throw new Error(result.message || '登录失败')
+            }
+          } catch (error) {
+            uni.hideLoading()
+            console.error('登录失败:', error)
+            uni.showToast({
+              title: error.message || '登录失败',
+              icon: 'none'
+            })
+          }
+        } else {
+          console.log('微信登录失败:', loginRes.errMsg)
+          uni.showToast({
+            title: '微信登录失败',
+            icon: 'none'
+          })
+        }
+      },
+      fail: (err) => {
+        console.log('调用uni.login失败:', err)
+        uni.showToast({
+          title: '登录失败，请重试',
+          icon: 'none'
+        })
+      }
+    })
+  } else {
+    console.log('用户拒绝手机号授权')
+    uni.showToast({
+      title: '需要手机号授权才能登录',
+      icon: 'none'
+    })
+  }
+}
+
+// 备用登录方法：使用用户信息授权
+const handleUserInfoLogin = async () => {
+  uni.getUserProfile({
+    desc: '用于完善用户资料',
+    success: async (userRes) => {
+      console.log('获取用户信息成功:', userRes.userInfo)
+      
+      // 获取登录凭证
+      uni.login({
+        provider: 'weixin',
+        success: async (loginRes) => {
+          if (loginRes.code) {
+            console.log('获取微信登录code成功:', loginRes.code)
+            
+            try {
+              uni.showLoading({
+                title: '登录中...',
+                mask: true
+              })
+              
+              // 调用后端登录接口（不带手机号）
+              const result = await userStore.wxLogin({
+                code: loginRes.code,
+                phoneCode: '', // 空手机号授权码
+                userInfo: userRes.userInfo
+              })
+              
+              uni.hideLoading()
+              
+              if (result.success) {
+                uni.showToast({
+                  title: result.isNewUser ? '注册成功' : '登录成功',
+                  icon: 'success'
+                })
+              } else {
+                throw new Error(result.message || '登录失败')
+              }
+            } catch (error) {
+              uni.hideLoading()
+              console.error('登录失败:', error)
+              uni.showToast({
+                title: error.message || '登录失败',
+                icon: 'none'
+              })
+            }
+          } else {
+            console.log('微信登录失败:', loginRes.errMsg)
+            uni.showToast({
+              title: '微信登录失败',
+              icon: 'none'
+            })
+          }
+        },
+        fail: (err) => {
+          console.log('调用uni.login失败:', err)
+          uni.showToast({
+            title: '登录失败，请重试',
+            icon: 'none'
+          })
+        }
+      })
+    },
+    fail: (err) => {
+      console.log('用户拒绝授权:', err)
+      uni.showToast({
+        title: '需要用户信息授权才能登录',
+        icon: 'none'
+      })
+    }
+  })
+}
+
+// 处理登录（显示选择弹窗）
 const handleLogin = () => {
-  uni.showModal({
-    title: '登录提示',
-    content: '登录功能暂时禁用，请稍后再试',
-    showCancel: false
+  uni.showActionSheet({
+    itemList: ['手机号登录', '微信信息登录'],
+    success: (res) => {
+      if (res.tapIndex === 0) {
+        // 手机号登录 - 用户需要重新点击按钮
+        uni.showToast({
+          title: '请点击头像完成手机号授权',
+          icon: 'none'
+        })
+      } else if (res.tapIndex === 1) {
+        // 用户信息登录
+        handleUserInfoLogin()
+      }
+    }
   })
 }
 
@@ -51,13 +200,28 @@ const handleLogout = () => {
   uni.showModal({
     title: '退出登录',
     content: '确定要退出登录吗？',
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm) {
-        userStore.logout()
-        uni.showToast({
-          title: '已退出登录',
-          icon: 'success'
-        })
+        try {
+          // 调用store的退出登录方法
+          await userStore.logout()
+          
+          // 清除本地存储
+          uni.removeStorageSync('token')
+          uni.removeStorageSync('userInfo')
+          uni.removeStorageSync('needRefreshCommunity')
+          
+          uni.showToast({
+            title: '已退出登录',
+            icon: 'success'
+          })
+        } catch (error) {
+          console.error('退出登录失败:', error)
+          uni.showToast({
+            title: '退出登录失败',
+            icon: 'none'
+          })
+        }
       }
     }
   })
@@ -188,8 +352,22 @@ const handleToggleChange = (checked) => {
 }
 
 // 页面加载时初始化
-onMounted(() => {
-  // 可以在这里获取用户统计数据
+onMounted(async () => {
+  // 检查本地是否有登录信息
+  try {
+    const token = uni.getStorageSync('token')
+    const localUserInfo = uni.getStorageSync('userInfo')
+    
+    if (token && localUserInfo) {
+      // 恢复登录状态
+      userStore.token = token
+      userStore.userInfo = localUserInfo
+      userStore.isLogin = true
+      console.log('恢复登录状态成功:', localUserInfo)
+    }
+  } catch (error) {
+    console.error('恢复登录状态失败:', error)
+  }
 })
 </script>
 
@@ -207,7 +385,7 @@ onMounted(() => {
         />
         <text>{{ userInfo.nickName || '微信用户' }}</text>
       </view>
-      <button v-else class="login-box" @click="handleLogin">
+      <button v-else class="login-box" open-type="getPhoneNumber" @getphonenumber="onGetPhoneNumber">
         <view class="header-user">
           <image 
             class="header-avatar" 

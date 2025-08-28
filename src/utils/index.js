@@ -1,5 +1,10 @@
 // 工具函数库
 
+// 导出请求相关工具
+export { default as request, get, post, put, del, getToken, setToken, clearToken } from './request'
+export { Interface, INTERFACE_URL, COMMON_MSG, EMAIL, COINKEY } from './constants'
+export { jump2Me } from './core'
+
 /**
  * 格式化日期
  * @param {Date|string|number} date 日期
