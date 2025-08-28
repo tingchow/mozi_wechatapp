@@ -195,13 +195,15 @@ onMounted(() => {
 
 <template>
   <view class="me">
+    <!-- 背景图片 -->
+    <image class="me-background" src="@/static/images/background/me-bg.png" mode="aspectFill" />
     <!-- 头部用户信息 -->
     <view class="header">
       <view v-if="isLoggedIn" class="header-user" @click="handleLogin">
         <image 
           class="header-avatar" 
           mode="aspectFill" 
-          :src="userInfo.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'" 
+          :src="userInfo.avatar || '/static/images/profile/avatar.png'" 
         />
         <text>{{ userInfo.nickName || '微信用户' }}</text>
       </view>
@@ -210,7 +212,7 @@ onMounted(() => {
           <image 
             class="header-avatar" 
             mode="aspectFill" 
-            :src="userInfo.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'" 
+            :src="userInfo.avatar || '/static/images/profile/avatar.png'" 
           />
           <text>{{ userInfo.nickName || '请登录' }}</text>
         </view>
@@ -220,19 +222,19 @@ onMounted(() => {
       <view class="action-buttons">
         <view class="action-button" @click="goToFavorites">
           <view class="action-icon">
-            <image class="action-icon-img" src="/static/images/profile/alert.png" />
+            <image class="action-icon-img" src="@/static/images/profile/alert.png" />
           </view>
           <text class="action-text">我的自选</text>
         </view>
         <view class="action-button" @click="goToAlarms">
           <view class="action-icon">
-            <image class="action-icon-img" src="/static/images/profile/like.png" />
+            <image class="action-icon-img" src="@/static/images/profile/like.png" />
           </view>
           <text class="action-text">我的报警</text>
         </view>
         <view class="action-button" @click="followWechat">
           <view class="action-icon">
-            <image class="action-icon-img" src="/static/images/profile/wechat.png" />
+            <image class="action-icon-img" src="@/static/images/profile/wechat.png" />
           </view>
           <text class="action-text">关注公众号</text>
         </view>
@@ -244,20 +246,20 @@ onMounted(() => {
       <view class="action-row">
         <view class="action-button" @click="productFeedback">
           <view class="action-icon secondary">
-            <image class="action-icon-img secondary" src="/static/images/profile/comment.png" />
+            <image class="action-icon-img secondary" src="@/static/images/profile/comment.png" />
           </view>
           <text class="action-text secondary">我的评论</text>
         </view>
         <view class="action-button" @click="productFeedback">
           <view class="action-icon secondary">
-            <image class="action-icon-img secondary" src="/static/images/profile/notification.png" />
+            <image class="action-icon-img secondary" src="@/static/images/profile/notification.png" />
             <view class="badge">3</view>
           </view>
           <text class="action-text secondary">消息通知</text>
         </view>
         <view class="action-button" @click="productFeedback">
           <view class="action-icon secondary">
-            <image class="action-icon-img secondary" src="/static/images/profile/upvote.png" />
+            <image class="action-icon-img secondary" src="@/static/images/profile/upvote.png" />
           </view>
           <text class="action-text secondary">我的点赞</text>
         </view>
@@ -268,7 +270,7 @@ onMounted(() => {
     <view class="horizontal-buttons">
       <view class="horizontal-btn left" @click="productFeedback">
         <view class="btn-icon">
-          <image class="btn-icon-img" src="/static/images/profile/feedback.png" />
+          <image class="btn-icon-img" src="@/static/images/profile/feedback.png" />
         </view>
         <view class="btn-bottom">
           <view class="btn-content">
@@ -276,13 +278,13 @@ onMounted(() => {
             <text class="btn-subtext">留言你想要的功能</text>
           </view>
           <view class="btn-arrow">
-            <text class="arrow-icon">></text>
+            <view class="arrow-icon"></view>
           </view>
         </view>
       </view>
       <button class="horizontal-btn right" open-type="share" @click="shareApp">
         <view class="btn-icon">
-          <image class="btn-icon-img" src="/static/images/profile/share.png" />
+          <image class="btn-icon-img" src="@/static/images/profile/share.png" />
         </view>
         <view class="btn-bottom">
           <view class="btn-content">
@@ -290,7 +292,7 @@ onMounted(() => {
             <text class="btn-subtext">分享你的喜爱</text>
           </view>
           <view class="btn-arrow">
-            <text class="arrow-icon">></text>
+            <view class="arrow-icon"></view>
           </view>
         </view>
       </button>
@@ -298,6 +300,9 @@ onMounted(() => {
 
     <!-- 我的积分 -->
     <view class="points-section">
+      <!-- 积分区域背景图片 -->
+      <image class="points-background" src="@/static/images/background/integral.png" mode="aspectFill" />
+      
       <view class="points-info">
         <text class="points-title">我的积分</text>
         <view class="points-value-row">
@@ -310,9 +315,9 @@ onMounted(() => {
       </view>
       <view class="points-action" @click="productFeedback">
         <text class="points-button">积分榜单</text>
-        <text class="arrow-icon">></text>
+        <view class="arrow-icon"></view>
       </view>
-      <image class="points-coin" src="/static/images/background/integral-coin.png" />
+      <image class="points-coin" src="@/static/images/background/integral-coin.png" />
     </view>
 
     <!-- 日历组件 -->
@@ -329,38 +334,48 @@ onMounted(() => {
       <view class="footer-list">
         <view class="footer-item" @click="productFeedback">
           <view class="icon">
-            <image src="/static/images/profile/skin.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/skin.png" style="width: 44px; height: 44px" mode="aspectFit" />
           </view>
           <view class="text">皮肤中心</view>
-          <view class="extra">></view>
+          <view class="extra">
+            <view class="arrow-icon"></view>
+          </view>
         </view>
         <view class="footer-item" @click="contactUs">
           <view class="icon">
-            <image src="/static/images/profile/contact.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/contact.png" style="width: 44px; height: 44px" mode="aspectFit" />
           </view>
           <view class="text">联系我们</view>
-          <view class="extra">></view>
+          <view class="extra">
+            <view class="arrow-icon"></view>
+          </view>
         </view>
         <view class="footer-item" @click="productFeedback">
           <view class="icon">
-            <image src="/static/images/profile/social.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/social.png" style="width: 44px; height: 44px" mode="aspectFit" />
           </view>
           <view class="text">到社交媒体找我们</view>
-          <view class="extra">></view>
+          <view class="extra">
+            <view class="arrow-icon"></view>
+          </view>
         </view>
         <view class="footer-item" @click="aboutUs">
           <view class="icon">
-            <image src="/static/images/profile/about.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/about.png" style="width: 44px; height: 44px" mode="aspectFit" />
           </view>
           <view class="text">关于</view>
-          <view class="extra">></view>
+          <view class="extra">
+            <view class="arrow-icon"></view>
+          </view>
         </view>
         <view class="footer-item" @click="donateSupport">
           <view class="icon">
-            <image src="/static/images/profile/donate.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/donate.png" style="width: 44px; height: 44px" mode="aspectFit" />
           </view>
           <view class="text">捐赠</view>
-          <view class="extra">></view>
+          <view class="extra">
+            <view class="arrow-icon"></view>
+          </view>
         </view>
       </view>
     </view>
@@ -434,7 +449,7 @@ onMounted(() => {
           <view class="contact-email">
             <text>{{ EMAIL }}</text>
             <view class="contact-copy" @click="copyText(EMAIL)">
-              <text>📋</text>
+              <view class="copy-icon"></view>
             </view>
           </view>
         </view>
@@ -472,7 +487,7 @@ onMounted(() => {
               <view class="contact-email">
                 <text class="coin-key">{{ COINKEY.BTC }}</text>
                 <view class="contact-copy" @click="copyText(COINKEY.BTC)">
-                  <text>📋</text>
+                  <view class="copy-icon"></view>
                 </view>
               </view>
             </view>
@@ -486,7 +501,7 @@ onMounted(() => {
               <view class="contact-email">
                 <text>{{ COINKEY.ETH }}</text>
                 <view class="contact-copy" @click="copyText(COINKEY.ETH)">
-                  <text>📋</text>
+                  <view class="copy-icon"></view>
                 </view>
               </view>
             </view>
@@ -500,7 +515,7 @@ onMounted(() => {
               <view class="contact-email">
                 <text>{{ COINKEY.TRON }}</text>
                 <view class="contact-copy" @click="copyText(COINKEY.TRON)">
-                  <text>📋</text>
+                  <view class="copy-icon"></view>
                 </view>
               </view>
             </view>
@@ -513,15 +528,27 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .me {
-  background: #EEF0F3 url('/static/images/background/me-bg.png') no-repeat top center;
-  background-size: 100% 460px;
+  background: #EEF0F3;
   min-height: 100vh;
   padding: 0 24px;
+  position: relative;
+
+  .me-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 460px;
+    z-index: 0;
+    pointer-events: none;
+  }
 
   .header {
     background: transparent;
     margin-bottom: 20px;
-    padding: 80px 0 20px;
+    padding: 60px 0 20px;
+    position: relative;
+    z-index: 1;
 
     .login-box {
       background-color: transparent;
@@ -539,15 +566,15 @@ onMounted(() => {
       display: flex;
       padding: 10px 14px;
       align-items: center;
-      margin-bottom: 50px;
+      margin-bottom: 30px;
       color: #333;
 
       .header-avatar {
-        width: 90px;
-        height: 90px;
+        width: 70px;
+        height: 70px;
         border: 1px solid transparent;
         border-radius: 50%;
-        margin-right: 40px;
+        margin-right: 24px;
       }
     }
 
@@ -555,7 +582,7 @@ onMounted(() => {
     .action-buttons {
       background: #fff;
       border-radius: 16px;
-      margin: 40px 0 0;
+      margin: 20px 0 0;
       padding: 30px 20px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       display: flex;
@@ -668,8 +695,6 @@ onMounted(() => {
 
   // 积分模块
   .points-section {
-    background: url('/static/images/background/integral.png') no-repeat center center;
-    background-size: 100% 100%;
     margin: 20px 0;
     border-radius: 16px;
     padding: 30px 20px;
@@ -679,10 +704,23 @@ onMounted(() => {
     min-height: 180px;
     max-height: 210px;
     position: relative;
+    overflow: hidden;
+
+    .points-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      border-radius: 16px;
+    }
 
     .points-info {
       flex: 1;
       padding-left: 26px;
+      position: relative;
+      z-index: 1;
 
       .points-title {
         color: #333;
@@ -727,6 +765,7 @@ onMounted(() => {
       right: 30px;
       display: flex;
       align-items: center;
+      z-index: 1;
       
       .points-button {
         color: #fff;
@@ -739,11 +778,22 @@ onMounted(() => {
         line-height: 36px;
       }
 
-      .arrow-icon {
-        color: #fff;
-        font-size: 24px;
-        margin-left: 8px;
-      }
+              .arrow-icon {
+          width: 16px;
+          height: 16px;
+          margin-left: 8px;
+          
+          &::after {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(-45deg);
+            margin: 2px;
+          }
+        }
     }
 
     .points-coin {
@@ -752,6 +802,7 @@ onMounted(() => {
       right: 0;
       width: 80px;
       height: 110px;
+      z-index: 1;
     }
   }
 
@@ -838,8 +889,19 @@ onMounted(() => {
         height: 60px;
 
         .arrow-icon {
-          color: #ccc;
-          font-size: 28px;
+          width: 16px;
+          height: 16px;
+          
+          &::after {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #ccc;
+            border-bottom: 2px solid #ccc;
+            transform: rotate(-45deg);
+            margin: 2px;
+          }
         }
       }
 
@@ -891,8 +953,22 @@ onMounted(() => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #A5A9AF;
-          font-size: 28px;
+          
+          .arrow-icon {
+            width: 16px;
+            height: 16px;
+            
+            &::after {
+              content: '';
+              display: block;
+              width: 8px;
+              height: 8px;
+              border-right: 2px solid #A5A9AF;
+              border-bottom: 2px solid #A5A9AF;
+              transform: rotate(-45deg);
+              margin: 2px;
+            }
+          }
         }
 
         &:active {
@@ -1055,6 +1131,36 @@ onMounted(() => {
         border-radius: 8px;
         color: white;
         cursor: pointer;
+        
+        .copy-icon {
+          width: 16px;
+          height: 16px;
+          position: relative;
+          
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 2px;
+            width: 10px;
+            height: 12px;
+            border: 2px solid #fff;
+            border-radius: 2px;
+            background: transparent;
+          }
+          
+          &::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 0;
+            width: 10px;
+            height: 12px;
+            border: 2px solid #fff;
+            border-radius: 2px;
+            background: #007aff;
+          }
+        }
       }
     }
 

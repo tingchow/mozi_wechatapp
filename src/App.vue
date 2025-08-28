@@ -60,6 +60,14 @@ page {
   line-height: 1.6;
 }
 
+/* 全局禁用点击时的默认高亮效果 */
+view, button, image, text, navigator, form, input, textarea, scroll-view {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* 通用按钮样式 */
 .btn {
   padding: 20upx 40upx;
