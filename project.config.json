@@ -35,7 +35,7 @@
     "beforeCompile": "npm run dev:mp-weixin",
     "beforePreview": "npm run build:mp-weixin"
   },
-  "appid": "wx6738949cc8dcd21b",
+  "appid": "wxa7bc6cc1c14e052a",
   "projectname": "mozi-uniapp",
   "editorSetting": {
     "tabIndent": "insertSpaces",

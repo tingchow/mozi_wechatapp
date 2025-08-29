@@ -478,8 +478,6 @@ onMounted(async () => {
 
     <!-- 我的积分 -->
     <view class="points-section">
-      <!-- 积分区域背景图片 -->
-      <image class="points-background" src="@/static/images/background/integral.png" mode="aspectFill" />
       
       <view class="points-info">
         <text class="points-title">我的积分</text>
@@ -512,7 +510,7 @@ onMounted(async () => {
       <view class="footer-list">
         <view class="footer-item" @click="productFeedback">
           <view class="icon">
-            <image src="@/static/images/profile/skin.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/skin.png" style="width: 26px; height: 26px" mode="aspectFit" />
           </view>
           <view class="text">皮肤中心</view>
           <view class="extra">
@@ -521,7 +519,7 @@ onMounted(async () => {
         </view>
         <view class="footer-item" @click="contactUs">
           <view class="icon">
-            <image src="@/static/images/profile/contact.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/contact.png" style="width: 26px; height: 26px" mode="aspectFit" />
           </view>
           <view class="text">联系我们</view>
           <view class="extra">
@@ -530,7 +528,7 @@ onMounted(async () => {
         </view>
         <view class="footer-item" @click="productFeedback">
           <view class="icon">
-            <image src="@/static/images/profile/social.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/social.png" style="width: 26px; height: 26px" mode="aspectFit" />
           </view>
           <view class="text">到社交媒体找我们</view>
           <view class="extra">
@@ -539,7 +537,7 @@ onMounted(async () => {
         </view>
         <view class="footer-item" @click="aboutUs">
           <view class="icon">
-            <image src="@/static/images/profile/about.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/about.png" style="width: 26px; height: 26px" mode="aspectFit" />
           </view>
           <view class="text">关于</view>
           <view class="extra">
@@ -548,7 +546,7 @@ onMounted(async () => {
         </view>
         <view class="footer-item" @click="donateSupport">
           <view class="icon">
-            <image src="@/static/images/profile/donate.png" style="width: 44px; height: 44px" mode="aspectFit" />
+            <image src="@/static/images/profile/donate.png" style="width: 26px; height: 26px" mode="aspectFit" />
           </view>
           <view class="text">捐赠</view>
           <view class="extra">
@@ -723,8 +721,7 @@ onMounted(async () => {
 
   .header {
     background: transparent;
-    margin-bottom: 20px;
-    padding: 60px 0 20px;
+    padding: 60px 0 0;
     position: relative;
     z-index: 1;
 
@@ -744,7 +741,6 @@ onMounted(async () => {
       display: flex;
       padding: 10px 14px;
       align-items: center;
-      margin-bottom: 30px;
       color: #333;
 
       .header-avatar {
@@ -761,10 +757,11 @@ onMounted(async () => {
       background: #fff;
       border-radius: 16px;
       margin: 20px 0 0;
-      padding: 30px 20px;
+      padding: 16px 20px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       display: flex;
       justify-content: space-around;
+      max-height: 120px;
 
       .action-button {
         display: flex;
@@ -773,12 +770,12 @@ onMounted(async () => {
         cursor: pointer;
 
         .action-icon {
-          width: 80px;
-          height: 80px;
+          width: 50px;
+          height: 50px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 12px;
+          margin-bottom: 6px;
           transition: all 0.3s ease;
 
           &:active {
@@ -786,16 +783,17 @@ onMounted(async () => {
           }
 
           .action-icon-img {
-            width: 56px;
-            height: 56px;
+            width: 36px;
+            height: 36px;
             object-fit: contain;
           }
         }
 
         .action-text {
-          color: #333;
-          font-size: 24px;
-          font-weight: 500;
+          font-family: PingFang SC;
+          font-size: 12px;
+          color: #333333;
+          line-height: 18px;
         }
       }
     }
@@ -806,8 +804,10 @@ onMounted(async () => {
     background: #fff;
     margin: 20px 0;
     border-radius: 16px;
-    padding: 30px 20px;
+    padding: 10px 20px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+    z-index: 2;
 
     .action-row {
       display: flex;
@@ -821,18 +821,18 @@ onMounted(async () => {
 
         .action-icon {
           &.secondary {
-            width: 60px;
-            height: 60px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             position: relative;
 
             .action-icon-img {
               &.secondary {
-                width: 44px;
-                height: 44px;
+                width: 30px;
+                height: 30px;
                 object-fit: contain;
               }
             }
@@ -844,14 +844,14 @@ onMounted(async () => {
 
             .badge {
               position: absolute;
-              top: -5px;
-              right: -5px;
+              top: 0px;
+              right: 0px;
               background: #ff4757;
               color: #fff;
               border-radius: 50%;
-              width: 20px;
-              height: 20px;
-              font-size: 20px;
+              width: 14px;
+              height: 14px;
+              font-size: 14px;
               display: flex;
               align-items: center;
               justify-content: center;
@@ -862,9 +862,10 @@ onMounted(async () => {
 
         .action-text {
           &.secondary {
-            color: #333;
-            font-size: 24px;
-            font-weight: 400;
+            font-family: PingFang SC;
+            font-size: 12px;
+            color: #333333;
+            line-height: 22px;
           }
         }
       }
@@ -875,37 +876,27 @@ onMounted(async () => {
   .points-section {
     margin: 20px 0;
     border-radius: 16px;
-    padding: 30px 20px;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: 180px;
-    max-height: 210px;
+    height: 120px;
     position: relative;
     overflow: hidden;
-
-    .points-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      border-radius: 16px;
-    }
+    background: url('@/static/images/background/integral.png') no-repeat right top;
+    background-size: auto 100%;
 
     .points-info {
       flex: 1;
       padding-left: 26px;
-      position: relative;
-      z-index: 1;
 
       .points-title {
-        color: #333;
-        font-size: 28px;
-        font-weight: 500;
-        margin-bottom: 10px;
+        color:#333333;
+        font-size: 16px;
         display: block;
+        position: absolute;
+        top: 10px;
+        left: 20px;
       }
 
       .points-value-row {
@@ -915,32 +906,34 @@ onMounted(async () => {
       }
 
       .points-value {
-        color: #52c41a;
-        font-size: 50px;
-        font-weight: bold;
-        margin-bottom: 10px;
-        display: block;
+        color: #11B787;
+        font-size: 26px;
+        position: absolute;
+        top: 40px;
+        left:20px;
       }
 
       .points-daily {
-        color: #707070;
-        font-size: 22px;
-        margin-left: 20px;
-        display: block;
+        color:#333333;
+        font-size: 16px;
+        position: absolute;
+        top: 50px;
+        right: 120px;
       }
 
       .points-rank {
         color: #707070;
-        font-size: 22px;
-        margin-bottom: 5px;
-        display: block;
+        font-size: 14px;
+        position: absolute;
+        top: 80px; 
+        left: 20px;
       }
     }
 
     .points-action {
       position: absolute;
-      top: 20px;
-      right: 30px;
+      top: 5px;
+      right: 15px;
       display: flex;
       align-items: center;
       z-index: 1;
@@ -948,8 +941,7 @@ onMounted(async () => {
       .points-button {
         color: #fff;
         border-radius: 20px;
-        padding: 12px 10px 12px 24px;
-        font-size: 24px;
+        font-size: 14px;
         cursor: pointer;
         font-family: PingFang SC;
         font-weight: 500;
@@ -957,9 +949,9 @@ onMounted(async () => {
       }
 
               .arrow-icon {
-          width: 16px;
-          height: 16px;
-          margin-left: 8px;
+          width: 12px;
+          height: 12px;
+          margin-left: 2px;
           
           &::after {
             content: '';
@@ -978,8 +970,8 @@ onMounted(async () => {
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 80px;
-      height: 110px;
+      width: 60px;
+      height: 60px;
       z-index: 1;
     }
   }
@@ -1009,20 +1001,17 @@ onMounted(async () => {
       }
 
       .btn-icon {
-        width: 48px;
-        height: 48px;
-        background: #f8f9fa;
+        width: 30px;
+        height: 30px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 12px;
         align-self: flex-start;
-        margin-left: 26px;
 
         .btn-icon-img {
-          width: 44px;
-          height: 44px;
+          width: 30px;
+          height: 30px;
         }
       }
 
@@ -1039,21 +1028,20 @@ onMounted(async () => {
         flex-direction: column;
         align-items: flex-start;
         min-width: 0;
-        padding-left: 26px;
       }
 
       .btn-text {
         color: #333;
-        font-size: 28px;
-        font-weight: 500;
+        font-size: 16px;
         line-height: 1.2;
         margin-bottom: 4px;
         text-align: left;
+        white-space: nowrap;
       }
 
       .btn-subtext {
         color: #999;
-        font-size: 22px;
+        font-size: 12px;
         line-height: 1.3;
         text-align: left;
       }
@@ -1107,12 +1095,13 @@ onMounted(async () => {
         height: 60px;
         align-items: center;
         background-color: transparent;
-        padding: 0 24px;
+        padding: 0 16px;
         text-align: left;
         cursor: pointer;
+        box-sizing: border-box;
 
         .icon {
-          width: 48px;
+          width: 32px;
           display: flex;
           align-items: center;
           justify-content: flex-start;
@@ -1120,31 +1109,31 @@ onMounted(async () => {
 
         .text {
           flex: 1;
-          margin-left: 20px;
-          font-size: 28px;
+          margin-left: 8px;
+          font-size: 16px;
           color: #333;
           font-weight: 500;
         }
 
         .extra {
-          width: 32px;
+          width: 24px;
           display: flex;
           align-items: center;
           justify-content: center;
           
           .arrow-icon {
-            width: 16px;
-            height: 16px;
+            width: 12px;
+            height: 12px;
             
             &::after {
               content: '';
               display: block;
-              width: 8px;
-              height: 8px;
+              width: 6px;
+              height: 6px;
               border-right: 2px solid #A5A9AF;
               border-bottom: 2px solid #A5A9AF;
               transform: rotate(-45deg);
-              margin: 2px;
+              margin: 1px;
             }
           }
         }
