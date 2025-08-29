@@ -14,9 +14,13 @@ const reportScore = ref(null)
 const scoreDisable = ref(true)
 const scoreInput = ref('')
 
+// 背景图片路径
+const meBgImage = ref('/static/images/background/me-bg.png')
+const integralBgImage = ref('/static/images/background/integral.png')
+
 // 计算属性
 const userInfo = computed(() => userStore.userInfo || {})
-const isLoggedIn = computed(() => userStore.isLoggedIn)
+const isLoggedIn = computed(() => userStore.isLogin)
 const favoritesCount = computed(() => favoritesStore.favorites.length)
 const alarmsCount = ref(0) // 暂时固定值，实际可以从store获取
 const userStats = computed(() => userStore.userStats || {})
@@ -204,23 +208,15 @@ const handleLogout = () => {
       if (res.confirm) {
         try {
           // 调用store的退出登录方法
-          await userStore.logout()
+          const result = await userStore.logout()
           
-          // 清除本地存储
-          uni.removeStorageSync('token')
-          uni.removeStorageSync('userInfo')
-          uni.removeStorageSync('needRefreshCommunity')
-          
-          uni.showToast({
-            title: '已退出登录',
-            icon: 'success'
-          })
+          if (result.success) {
+            console.log('退出登录成功')
+          } else {
+            console.error('退出登录失败:', result.message)
+          }
         } catch (error) {
-          console.error('退出登录失败:', error)
-          uni.showToast({
-            title: '退出登录失败',
-            icon: 'none'
-          })
+          console.error('退出登录异常:', error)
         }
       }
     }
@@ -372,9 +368,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <view class="me">
-    <!-- 背景图片 -->
-    <image class="me-background" src="@/static/images/background/me-bg.png" mode="aspectFill" />
+  <view class="me" :style="{ backgroundImage: `url(${meBgImage})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center top', backgroundSize: '100% 280px' }">
     <!-- 头部用户信息 -->
     <view class="header">
       <view v-if="isLoggedIn" class="header-user" @click="handleLogin">
@@ -393,6 +387,11 @@ onMounted(async () => {
             :src="userInfo.avatar || '/static/images/profile/avatar.png'" 
           />
           <text>{{ userInfo.nickName || '请登录' }}</text>
+          <image 
+            class="edit-icon" 
+            src="@/static/images/profile/edit.png" 
+            mode="aspectFit"
+          />
         </view>
       </button>
       
@@ -477,7 +476,7 @@ onMounted(async () => {
     </view>
 
     <!-- 我的积分 -->
-    <view class="points-section">
+    <view class="points-section" :style="{ backgroundImage: `url(${integralBgImage})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right top', backgroundSize: 'auto 100%' }">
       
       <view class="points-info">
         <text class="points-title">我的积分</text>
@@ -704,20 +703,10 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .me {
-  background: #EEF0F3;
+  background-color: #EEF0F3;
   min-height: 100vh;
   padding: 0 24px;
   position: relative;
-
-  .me-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 460px;
-    z-index: 0;
-    pointer-events: none;
-  }
 
   .header {
     background: transparent;
@@ -739,7 +728,7 @@ onMounted(async () => {
 
     .header-user {
       display: flex;
-      padding: 10px 14px;
+      padding: 10px 0px;
       align-items: center;
       color: #333;
 
@@ -748,7 +737,19 @@ onMounted(async () => {
         height: 70px;
         border: 1px solid transparent;
         border-radius: 50%;
-        margin-right: 24px;
+        margin-right: 10px;
+      }
+
+      .edit-icon {
+        width: 20px;
+        height: 20px;
+        margin-left: 8px;
+        opacity: 0.6;
+        transition: opacity 0.3s ease;
+        
+        &:active {
+          opacity: 1;
+        }
       }
     }
 
@@ -756,7 +757,6 @@ onMounted(async () => {
     .action-buttons {
       background: #fff;
       border-radius: 16px;
-      margin: 20px 0 0;
       padding: 16px 20px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       display: flex;
@@ -883,8 +883,6 @@ onMounted(async () => {
     height: 120px;
     position: relative;
     overflow: hidden;
-    background: url('@/static/images/background/integral.png') no-repeat right top;
-    background-size: auto 100%;
 
     .points-info {
       flex: 1;
@@ -1146,15 +1144,18 @@ onMounted(async () => {
   }
 
   .logout-btn {
-    margin: 32px 0 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
     background: #dc3545;
-    border-radius: 20px;
-    height: 90px;
+    border-radius: 12px;
+    height: 48px;
     color: #fff;
-    font-size: 32px;
+    font-size: 16px;
     font-weight: 500;
     border: none;
-    box-shadow: 0 2px 12px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
     width: 100%;
 
     &::after {

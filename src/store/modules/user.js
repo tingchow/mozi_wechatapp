@@ -113,13 +113,32 @@ export const useUserStore = defineStore('user', () => {
   // 退出登录
   const logout = async () => {
     try {
+      // 检查是否已经退出登录
+      if (!isLogin.value) {
+        uni.showToast({
+          title: '您已退出登录',
+          icon: 'none'
+        })
+        return { success: false, message: '您已退出登录' }
+      }
+
       // 清除本地数据
       userInfo.value = null
       token.value = ''
       isLogin.value = false
       
-      // 清除本地token
+      // 清除本地存储
       await clearToken()
+      uni.removeStorageSync('userInfo')
+      
+      // 设置社区刷新标记
+      uni.setStorageSync('needRefreshCommunity', true)
+      
+      // 显示退出成功提示
+      uni.showToast({
+        title: '退出成功',
+        icon: 'success'
+      })
       
       // 可以调用后端登出接口
       // await userApi.logout()
@@ -127,6 +146,10 @@ export const useUserStore = defineStore('user', () => {
       return { success: true }
     } catch (error) {
       console.error('退出登录失败:', error)
+      uni.showToast({
+        title: '退出登录失败',
+        icon: 'none'
+      })
       return { success: false, message: error.message }
     }
   }
