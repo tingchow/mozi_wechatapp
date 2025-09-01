@@ -298,12 +298,10 @@ export default function Index() {
       {/* <Button openType='contact'>测试-跟我聊天</Button> */}
       <View className='header' onClick={jump2Search}>
         <View className='searchBox'>
-          <View className='searchIcon'>
-            <IconFont name='search' size={30} />
-          </View>
-          <View className='searchInput'>请搜索币种</View>
+          <View className='searchInput'>请输入搜索的币种</View>
           <View className='searchCancel'>
-            <IconFont name='close-circle-fill' color='#b2b2b2' size={30} />
+            <IconFont name='search' size={52} color='#fff' />
+            搜索
           </View>
         </View>
       </View>

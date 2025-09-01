@@ -1,13 +1,29 @@
 .indexBox {
   background-color: #efefef;
   // background: linear-gradient(to bottom, #000 40%, #fff);
-  background-image: url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_logo.png');
+  background-image: url('@/assets/image/home-bg.png');
   background-size: contain;
   background-repeat: no-repeat;
-  padding: 380px 20px 0;
+  padding: 260px 0 0;
   box-sizing: border-box;
   min-height: 100vh;
   overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 170px;
+    left: 50px;
+    width: 320px;
+    height: 60px;
+    background-image: url('@/assets/image/home-logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 999;
+    pointer-events: none;
+  }
 
   .logo {
     width: 100%;
@@ -18,6 +34,8 @@
   .header {    
     width: 100%;
     margin-bottom: 20px;
+    padding: 0 20px;
+    box-sizing: border-box;
 
     .searchBox {
       width: 100%;
@@ -27,25 +45,33 @@
       background-color: #fff;
       justify-content: space-between;
       align-items: center;
-      padding: 0 40px;
+      padding: 0 5px 0 40px;
       box-sizing: border-box;
+      position: relative;
     
       .searchIcon {
-        // flex: 1;
-        margin-right: 20px;
+        margin-right: 15px;
+        color: #999;
       }
     
       .searchInput {
-        flex: 4;
+        flex: 1;
         color: #b2b2b2;
+        font-size: 28px;
       }
     
       .searchCancel {
-        height: 100%;
-        width: 80px;
+        height: 90%;
+        width: 140px;
+        background-color:#47C89D;
+        border-radius: 37px;
         display: flex;
         justify-content: center;
         align-items: center;
+        color: #fff;
+        font-size: 26px;
+        font-weight: 500;
+        gap: 8px;
       }
     }
 
