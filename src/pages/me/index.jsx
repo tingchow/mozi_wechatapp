@@ -8,6 +8,9 @@ import { useLoad, useShareTimeline, useDidShow } from '@tarojs/taro';
 import { jump2Detail, jump2Market, jump2NoTab } from '../../utils/core';
 import { request } from '../../utils/request';
 import { EMAIL, COINKEY, Interface } from '../../utils/constants';
+import DefaultAvatar from '../../assets/icon/avatar.png'; // 导入新的默认头像图片
+import EditIcon from '../../assets/icon/edit.png'; // 导入编辑图标
+import NewCoinListing from '../../components/NewCoinListing'; // 导入新币上线组件
 // import '../../assets/wechat_account.jpg'
 // import '../../assets/BTC.jpg'
 // import '../../assets/ETH.jpg'
@@ -311,13 +314,16 @@ export default function Index() {
           isLogin? (
             
             <View className='headerUser' onClick={() => jump2User()}>
-              <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
+              <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || DefaultAvatar} />
               <Text>{userInfo.nickName || '微信用户'}</Text>
+              {
+                isLogin && <Image className='editIcon' src={EditIcon} /> // 移除 size 属性
+              }
             </View>
           ) : (
             <Button className='loginBox' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>
               <View className='headerUser'>
-                <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
+                <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || DefaultAvatar} />
                 <Text>{userInfo.nickName || '请登录'}</Text>
               </View>
             </Button>
@@ -441,6 +447,10 @@ export default function Index() {
         </View>
         <Image className='pointsCoin' src={require('@/assets/image/integral-coin.png')} />
       </View>
+
+
+      {/* 新币上线组件 */}
+      <NewCoinListing />
 
       {/* 日历组件 */}
       <View className='calendarSection'>

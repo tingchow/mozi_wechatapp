@@ -21,12 +21,22 @@ export default function User() {
 
 
   useLoad(() => {
-    if (avatar) setUserAvatar(decodeURIComponent(avatar));
-    if (nickName) setUserNickName(decodeURIComponent(nickName));
+    if (avatar) {
+      const decodedAvatar = decodeURIComponent(avatar);
+      setUserAvatar(decodedAvatar);
+    } else {
+      // 如果没有传入头像，设置默认头像用于显示
+      const defaultAvatar = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
+      setUserAvatar(defaultAvatar);
+    }
+    
+    if (nickName) {
+      const decodedNickName = decodeURIComponent(nickName);
+      setUserNickName(decodedNickName);
+    }
   })
 
   const newAvatar = (e) => {
-    console.log('avatar', e);
     const { avatarUrl = '' } = e?.detail 
     if (avatarUrl) {
       setUserAvatar(avatarUrl);
@@ -39,7 +49,7 @@ export default function User() {
   }
 
   const submit = async (e) => {
-    if (!e.detail.value?.nickName || e.detail.value?.nickName.length >= 50 || e.detail.value?.nickName === decodeURIComponent(avatar)) {
+    if (!e.detail.value?.nickName || e.detail.value?.nickName.length >= 50 || e.detail.value?.nickName === decodeURIComponent(nickName)) {
       Taro.showToast({
         title: '请输入昵称',
         icon: 'error',
@@ -47,15 +57,19 @@ export default function User() {
       });
       return;
     }
+    
     setUserNickName(e.detail.value?.nickName);
     Taro.showLoading({
       title: '',
     });
+    
     // 生成base64头像
     let newAvatar = userAvatar;
-    console.log('当前设置的是', userAvatar);
-    console.log('传入的事', decodeURIComponent(avatar));
-    if (handleNewAvatar.current) {
+    
+    // 如果没有头像，使用默认头像
+    if (!newAvatar) {
+      newAvatar = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
+    } else if (handleNewAvatar.current) {
       newAvatar = 'data:image/jpeg;base64,' + Taro.getFileSystemManager().readFileSync(userAvatar, 'base64');
     }
 
@@ -108,7 +122,17 @@ export default function User() {
           <View className='nickname-content'>
             <View>昵称</View>
         
-            <Input name='nickName' className='nickname-input' placeholder={decodeURIComponent(nickName) || '请输入昵称'} type='nickname' onNickNameReview={nickNameReview} value={userNickName} />
+            <Input 
+              name='nickName' 
+              className='nickname-input' 
+              placeholder={decodeURIComponent(nickName) || '请输入昵称'} 
+              type='nickname' 
+              onNickNameReview={nickNameReview} 
+              value={userNickName}
+              onInput={(e) => {
+                setUserNickName(e.detail.value);
+              }}
+            />
           </View>
           <Button className='nickname-btn' formType='submit'>提交</Button>
         </Form>
