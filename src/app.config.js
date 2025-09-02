@@ -3,10 +3,10 @@ import { useGlobalIconFont } from './components/iconfont/helper';
 
 export default defineAppConfig({
   pages: [
-    // 社区
-    'pages/community/index',
     // 首页
     'pages/index/index',
+    // 社区
+    'pages/community/index',
     // 发现页
     'pages/find/index',
     // 通用列表页

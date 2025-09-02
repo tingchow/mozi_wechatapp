@@ -19,24 +19,30 @@ import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/cor
 import './index.less';
 
 // 区块内容
+// 导入图片
+import bullBearRatioIcon from '../../assets/icon/bull-bear-ratio.png';
+import inventoryIcon from '../../assets/icon/inventory.png';
+import fundingRateIcon from '../../assets/icon/funding-rate.png';
+import volumeTransactionIcon from '../../assets/icon/volume-transaction.png';
+
 const area = {
   derivativeArea: {
-    title: '衍生品专区',
+    title: '合约专区',
     list: [{
-      icon: 'jijin',
+      icon: bullBearRatioIcon,
       text: '多空比',
       // path: '跳转地址',
       callback: () => {jump2NoTab('putcallratio')}
     }, {
-      icon: 'jifen',
+      icon: inventoryIcon,
       text: '持仓量',
       callback: () => {jump2NoTab('positionsize')}
     }, {
-      icon: 'bodongfenxi',
+      icon: fundingRateIcon,
       text: '资金费率',
       callback: () => {jump2NoTab('fundingrate')}
     }, {
-      icon: 'jiaoyichaxun',
+      icon: volumeTransactionIcon,
       text: '成交额',
       callback: () => {jump2NoTab('tradevol')}
     }]
@@ -324,9 +330,10 @@ export default function Index() {
           icon={<IconFont name='bell-fill' size={30} color='#ff6430' />}
         />
       </View>
-      {/* 衍生品专区 */}
+      {/* 合约专区 */}
       <MoziCard
         title={area.derivativeArea.title}
+        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px'}}
       >
         <Grid columns={4}>
         {
@@ -334,7 +341,7 @@ export default function Index() {
             return (
               <Grid.Item key={index} className='derivativeItem' onClick={item.callback}>
                 <div className='derivativeIcon'>
-                  <IconFont name={item.icon} size={50} />
+                  <Image src={item.icon} style={{width: '100px', height: '70px'}} mode='aspectFit' />
                 </div>
                 <span>{item.text}</span>
               </Grid.Item>

@@ -5,6 +5,21 @@ import { useEffect, useState } from 'react';
 import './index.less';
 
 export const MoziCard = (props) => {
+  const { 
+    borderRadius = '8px', 
+    backgroundColor = '#fff', 
+    marginBottom = '10px', 
+    customStyle = {},
+    ...otherProps 
+  } = props;
+
+  // 合并样式，customStyle 优先级最高
+  const cardStyle = {
+    borderRadius,
+    backgroundColor,
+    marginBottom,
+    ...customStyle
+  };
 
   return (
     <Card
@@ -15,7 +30,7 @@ export const MoziCard = (props) => {
         </div>
       }
       extra={<CardExtra type={props.type} callback={props.callback} selectArr={props.selectArr} moreDesc={props.moreDesc} pickChange={props.pickChange} />}
-      style={{ borderRadius: '8px', backgroundColor: '#fff', marginBottom: '10px'}}
+      style={cardStyle}
       bodyClassName='cardBody'
       headerClassName='cardHead'
       
