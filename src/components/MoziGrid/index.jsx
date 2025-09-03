@@ -4,11 +4,17 @@ import './index.less';
 // import IconFont from '../iconfont';
 
 export const MoziGrid = (props) => {
+  const { gridTitleBgColor = '#F6F6F6' } = props;
+  
   return (
     <View>
       {
         !props?.hideTitle && (
-        <Grid className='gridTitle' columns={props.length}>
+        <Grid 
+          className='gridTitle' 
+          columns={props.length}
+          style={{ backgroundColor: gridTitleBgColor }}
+        >
           {
             props.colName.map((colNameItem, colNameIndex) => {
               return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>

@@ -375,11 +375,13 @@ export default function Index() {
             </View>
           </View>
         }
+        customStyle={{ backgroundColor: 'transparent' }}
+        className="investment-card"
       >
         {investmentTab === 'opportunity' ? (
           <ScrollView scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}}>
             
-            <div className='treemapBox' onClick={() => {jump2List({
+            <div className='treemapBox content-card' onClick={() => {jump2List({
               interFace: Interface.hot_coin,
               gridTitle: ['币种', '热门指数', '24H价格变化'],
               gridCon: [{
@@ -402,7 +404,7 @@ export default function Index() {
                 />
               </Layout>
             </div>
-            <div className='treemapBox' onClick={() => {jump2List({
+            <div className='treemapBox content-card' onClick={() => {jump2List({
               interFace: Interface.hot_contract,
               gridTitle: ['合约', '热门指数', '24H价格变化'],
               gridCon: [{
@@ -425,7 +427,7 @@ export default function Index() {
                 />
               </Layout>
             </div>
-            <div className='treemapBox last' onClick={() => {jump2List({
+            <div className='treemapBox content-card last' onClick={() => {jump2List({
               interFace: Interface.hot_industry,
               gridTitle: ['版块', '24H变化'],
               gridCon: [{
@@ -449,17 +451,34 @@ export default function Index() {
           </ScrollView>
         ) : (
           <View className='topics-content'>
-            <View className='topic-item'>
-              <View className='topic-title'>#热门话题1</View>
-              <View className='topic-desc'>讨论数: 1234</View>
-            </View>
-            <View className='topic-item'>
-              <View className='topic-title'>#热门话题2</View>
-              <View className='topic-desc'>讨论数: 856</View>
-            </View>
-            <View className='topic-item'>
-              <View className='topic-title'>#热门话题3</View>
-              <View className='topic-desc'>讨论数: 632</View>
+            <View className='topic-cards'>
+              <View className='topic-card'>
+                <View className='topic-rank'>🥇</View>
+                <View className='topic-title'>行情讨论</View>
+                <View className='topic-desc'>全链技术分析</View>
+                <View className='topic-stats'>
+                  <View className='topic-hot'>🔥 21543 讨论</View>
+                  <View className='topic-date'>2025-05-15</View>
+                </View>
+              </View>
+              <View className='topic-card'>
+                <View className='topic-rank'>🥈</View>
+                <View className='topic-title'>价格讨论</View>
+                <View className='topic-desc'>BTC价格方向</View>
+                <View className='topic-stats'>
+                  <View className='topic-hot'>🔥 21543 讨论</View>
+                  <View className='topic-date'>2025-05-15</View>
+                </View>
+              </View>
+              <View className='topic-card'>
+                <View className='topic-rank'>🥉</View>
+                <View className='topic-title'>行情讨论</View>
+                <View className='topic-desc'>全链技术分析</View>
+                <View className='topic-stats'>
+                  <View className='topic-hot'>🔥 21543 讨论</View>
+                  <View className='topic-date'>2025-05-15</View>
+                </View>
+              </View>
             </View>
           </View>
         )}
@@ -490,7 +509,7 @@ export default function Index() {
                     colName={colNameArr[activeArr.indexOf(rankActiveKey)]}
                     gridContent={footerArr[activeArr.indexOf(rankActiveKey)]}
                     callback={(gridCon) => {jump2Detail(gridCon.key)}}
-                    gridTitleBgColor='#F6F6F6'
+                    gridTitleBgColor='transparent'
                   />
                   <View className='list-more' onClick={go2List}>查看更多 <IconFont name='right' /></View>
                 </View>
