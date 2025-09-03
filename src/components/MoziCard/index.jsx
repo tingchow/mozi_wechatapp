@@ -24,12 +24,14 @@ export const MoziCard = (props) => {
   return (
     <Card
       title={
-        <div className='title' onClick={props.callback}>
-          <span>{props.title}</span>
-          {props.sumNum > 0? <span className='titleNum'>({props.sumNum})</span>: null}
-        </div>
+        props.customTitle ? props.customTitle : (
+          <div className='title' onClick={props.callback}>
+            <span>{props.title}</span>
+            {props.sumNum > 0? <span className='titleNum'>({props.sumNum})</span>: null}
+          </div>
+        )
       }
-      extra={<CardExtra type={props.type} callback={props.callback} selectArr={props.selectArr} moreDesc={props.moreDesc} pickChange={props.pickChange} />}
+      extra={props.customTitle ? null : <CardExtra type={props.type} callback={props.callback} selectArr={props.selectArr} moreDesc={props.moreDesc} pickChange={props.pickChange} />}
       style={cardStyle}
       bodyClassName='cardBody'
       headerClassName='cardHead'

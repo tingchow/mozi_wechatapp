@@ -11,6 +11,8 @@ let isClick = false;
 
 export const AddCollect = (props) => {
 
+  const { unselectedColor = '#C7C9CD', ...otherProps } = props;
+
   const [ isOwn, setOwn ] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
 
@@ -97,7 +99,7 @@ export const AddCollect = (props) => {
   return (
     <View>
       <View className='collect' onClick={changeOwn} catchMove={true}>
-        <IconFont name='heart-fill' color={curOwn? 'red': ''} size={40} />
+        <IconFont name='heart-fill' color={curOwn? '#E86965': unselectedColor} size={40} />
       </View>
       { showLogin && <PopLogin hideCb={() => {setShowLogin(false)}} /> }
     </View>

@@ -61,6 +61,7 @@ export default function Index() {
   const [ myOwnLoading, setMyOwnLoading ] = useState(true);
   const [ popVis, setPopVis ] = useState(false);
   const [ rankActiveKey, setRankActive ] = useState('zhangfu');
+  const [ investmentTab, setInvestmentTab ] = useState('opportunity');
   const needLoop = useRef(true);
 
   // 自选接口、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
@@ -353,81 +354,115 @@ export default function Index() {
 
       {/* 投资机会 */}
       <MoziCard
-        title='投资机会'
-        type='more'
-        moreDesc='查看更多'
-        callback={() => jump2Market('rank')}
+        customTitle={
+          <View className='investment-header'>
+            <View className='investment-tabs'>
+              <View 
+                className={`tab-item ${investmentTab === 'opportunity' ? 'active' : ''}`}
+                onClick={() => setInvestmentTab('opportunity')}
+              >
+                投资机会
+              </View>
+              <View 
+                className={`tab-item ${investmentTab === 'topics' ? 'active' : ''}`}
+                onClick={() => setInvestmentTab('topics')}
+              >
+                话题热榜
+              </View>
+            </View>
+            <View className='more-btn' onClick={() => jump2Market('rank')}>
+              查看更多 &gt;
+            </View>
+          </View>
+        }
       >
-        <ScrollView scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}}>
-          
-          <div className='treemapBox' onClick={() => {jump2List({
-            interFace: Interface.hot_coin,
-            gridTitle: ['币种', '热门指数', '24H价格变化'],
-            gridCon: [{
-              type: 'Text',
-              data: 'coin'
-            }, {
-              type: 'Text',
-              data: 'hot'
-            }, {
-              type: 'HighlightArea',
-              data: 'priceChangePercent'
-            }]
-          })}}>
-            <div className='treemapTitle'>热门币种</div>
-            <Layout isLoading={coinLoading}>
-              <MoziTreeMap
-                list={hot_coin}
-                name='coin'
-                desc='priceChangePercent'
-              />
-            </Layout>
-          </div>
-          <div className='treemapBox' onClick={() => {jump2List({
-            interFace: Interface.hot_contract,
-            gridTitle: ['合约', '热门指数', '24H价格变化'],
-            gridCon: [{
-              type: 'Text',
-              data: 'coin'
-            }, {
-              type: 'Text',
-              data: 'hot'
-            }, {
-              type: 'HighlightArea',
-              data: 'priceChangePercent'
-            }]
-          })}}>
-            <div className='treemapTitle'>热门合约</div>
-            <Layout isLoading={contractLoading}>
-              <MoziTreeMap
-                list={hot_contract}
-                name='coin'
-                desc='priceChangePercent'
-              />
-            </Layout>
-          </div>
-          <div className='treemapBox last' onClick={() => {jump2List({
-            interFace: Interface.hot_industry,
-            gridTitle: ['版块', '24H变化'],
-            gridCon: [{
-              type: 'Text',
-              data: 'section'
-            }, {
-              type: 'HighlightArea',
-              data: 'changes'
-            }]
-          })}}>
-            <div className='treemapTitle'>热门版块</div>
-            <Layout isLoading={industryLoading}>
-              <MoziTreeMap
-                // list={mock_hotbankuai.data}
-                list={hot_industry}
-                name='section'
-                desc='changes'
-              />
-            </Layout>
-          </div>
-        </ScrollView>
+        {investmentTab === 'opportunity' ? (
+          <ScrollView scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}}>
+            
+            <div className='treemapBox' onClick={() => {jump2List({
+              interFace: Interface.hot_coin,
+              gridTitle: ['币种', '热门指数', '24H价格变化'],
+              gridCon: [{
+                type: 'Text',
+                data: 'coin'
+              }, {
+                type: 'Text',
+                data: 'hot'
+              }, {
+                type: 'HighlightArea',
+                data: 'priceChangePercent'
+              }]
+            })}}>
+              <div className='treemapTitle'>热门币种</div>
+              <Layout isLoading={coinLoading}>
+                <MoziTreeMap
+                  list={hot_coin}
+                  name='coin'
+                  desc='priceChangePercent'
+                />
+              </Layout>
+            </div>
+            <div className='treemapBox' onClick={() => {jump2List({
+              interFace: Interface.hot_contract,
+              gridTitle: ['合约', '热门指数', '24H价格变化'],
+              gridCon: [{
+                type: 'Text',
+                data: 'coin'
+              }, {
+                type: 'Text',
+                data: 'hot'
+              }, {
+                type: 'HighlightArea',
+                data: 'priceChangePercent'
+              }]
+            })}}>
+              <div className='treemapTitle'>热门合约</div>
+              <Layout isLoading={contractLoading}>
+                <MoziTreeMap
+                  list={hot_contract}
+                  name='coin'
+                  desc='priceChangePercent'
+                />
+              </Layout>
+            </div>
+            <div className='treemapBox last' onClick={() => {jump2List({
+              interFace: Interface.hot_industry,
+              gridTitle: ['版块', '24H变化'],
+              gridCon: [{
+                type: 'Text',
+                data: 'section'
+              }, {
+                type: 'HighlightArea',
+                data: 'changes'
+              }]
+            })}}>
+              <div className='treemapTitle'>热门版块</div>
+              <Layout isLoading={industryLoading}>
+                <MoziTreeMap
+                  // list={mock_hotbankuai.data}
+                  list={hot_industry}
+                  name='section'
+                  desc='changes'
+                />
+              </Layout>
+            </div>
+          </ScrollView>
+        ) : (
+          <View className='topics-content'>
+            <View className='topic-item'>
+              <View className='topic-title'>#热门话题1</View>
+              <View className='topic-desc'>讨论数: 1234</View>
+            </View>
+            <View className='topic-item'>
+              <View className='topic-title'>#热门话题2</View>
+              <View className='topic-desc'>讨论数: 856</View>
+            </View>
+            <View className='topic-item'>
+              <View className='topic-title'>#热门话题3</View>
+              <View className='topic-desc'>讨论数: 632</View>
+            </View>
+          </View>
+        )}
       </MoziCard>
 
       {/* 自选 */}
@@ -455,6 +490,7 @@ export default function Index() {
                     colName={colNameArr[activeArr.indexOf(rankActiveKey)]}
                     gridContent={footerArr[activeArr.indexOf(rankActiveKey)]}
                     callback={(gridCon) => {jump2Detail(gridCon.key)}}
+                    gridTitleBgColor='#F6F6F6'
                   />
                   <View className='list-more' onClick={go2List}>查看更多 <IconFont name='right' /></View>
                 </View>

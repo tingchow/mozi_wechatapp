@@ -12,6 +12,8 @@ let isClick = false;
 
 export const AddMonitor = (props) => {
 
+  const { unselectedColor = '#C7C9CD', ...otherProps } = props;
+
   const [ isOwn, setOwn ] = useState(props.isOwn);
 
 
@@ -23,7 +25,7 @@ export const AddMonitor = (props) => {
 
   return (
     <View className='monitor' onClick={changeOwn} catchMove={true}>
-      <IconFont name='bell-fill' size={40} />
+      <IconFont name='bell-fill' color={unselectedColor} size={40} />
     </View>
   );
 };
