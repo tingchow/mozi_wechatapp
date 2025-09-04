@@ -15,6 +15,7 @@ import { HighlightArea } from '../../components/HighlightArea';
 import { MoziTreeMap } from '../../components/MoziChart/TreeMap';
 import { PageLogin } from '../../components/PageLogin';
 import { Popup } from '../../components/PopLogin'
+import { MarketDistribution } from '../../components/MarketDistribution';
 import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
@@ -496,6 +497,9 @@ export default function Index() {
           </ScrollView>
         )}
       </MoziCard>
+
+      {/* 涨跌分布 */}
+      <MarketDistribution />
 
       {/* 自选 */}
       {/* <View className='own-box'> */}
