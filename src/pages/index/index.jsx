@@ -450,10 +450,18 @@ export default function Index() {
             </div>
           </ScrollView>
         ) : (
-          <View className='topics-content'>
-            <View className='topic-cards'>
+          <ScrollView 
+            scrollX 
+            scrollWithAnimation 
+            className="topics-scroll"
+            style={{whiteSpace: 'nowrap'}}
+          >
+            <View className='topics-content'>
+              <View className='topic-cards'>
               <View className='topic-card'>
-                <View className='topic-rank'>🥇</View>
+                <View className='topic-rank'>
+                  <Image src={require('@/assets/icon/gold.png')} className='rank-medal' mode='aspectFit' />
+                </View>
                 <View className='topic-title'>行情讨论</View>
                 <View className='topic-desc'>全链技术分析</View>
                 <View className='topic-stats'>
@@ -462,7 +470,9 @@ export default function Index() {
                 </View>
               </View>
               <View className='topic-card'>
-                <View className='topic-rank'>🥈</View>
+                <View className='topic-rank'>
+                  <Image src={require('@/assets/icon/silver.png')} className='rank-medal' mode='aspectFit' />
+                </View>
                 <View className='topic-title'>价格讨论</View>
                 <View className='topic-desc'>BTC价格方向</View>
                 <View className='topic-stats'>
@@ -471,7 +481,9 @@ export default function Index() {
                 </View>
               </View>
               <View className='topic-card'>
-                <View className='topic-rank'>🥉</View>
+                <View className='topic-rank'>
+                  <Image src={require('@/assets/icon/copper.png')} className='rank-medal' mode='aspectFit' />
+                </View>
                 <View className='topic-title'>行情讨论</View>
                 <View className='topic-desc'>全链技术分析</View>
                 <View className='topic-stats'>
@@ -481,6 +493,7 @@ export default function Index() {
               </View>
             </View>
           </View>
+          </ScrollView>
         )}
       </MoziCard>
 
