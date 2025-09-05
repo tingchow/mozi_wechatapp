@@ -1,4 +1,4 @@
-import { View, Image, Button } from '@tarojs/components';
+import { View, Image, Button, ScrollView } from '@tarojs/components';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Taro, { useDidShow, useDidHide, useLoad, useShareAppMessage } from '@tarojs/taro';
 import { Grid } from 'antd-mobile';
@@ -15,6 +15,7 @@ import { Interface, LOOPTIME } from '../../utils/constants';
 import { request } from '../../utils/request';
 import { AddCollect } from '../../components/AddCollect';
 import { AddMonitor } from '../../components/AddMonitor';
+import { MarketOverview } from '../../components/MarketOverview';
 import { isEmpty } from 'lodash';
 
 
@@ -749,8 +750,12 @@ export default function Find() {
       }
       {
         pageActiveKey === 'market' && (
-        <View className='marketBox'>
-          <Layout isLoading={marketLoading} isError={isMarketError}>
+        <>
+          {/* 市场概况横向滑动卡片 - 独立在marketBox上方 */}
+          <MarketOverview />
+          
+          <View className='marketBox'>   
+            <Layout isLoading={marketLoading} isError={isMarketError}>
             <Grid className='gridTitle' columns={3}>
               {
                 ['币种/市值', '最新价格/24H价格变化', '24H价格变化'].map((colNameItem, colNameIndex) => {
@@ -769,7 +774,8 @@ export default function Find() {
             />
 
           </Layout>
-        </View>
+          </View>
+        </>
         )
       }
       {

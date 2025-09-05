@@ -56,23 +56,21 @@
   }
 
   .marketBox {
-    height: 100vh;
     .scroll {
-      margin-top: 8vh;
+      margin-top: 0; /* 移除顶部间距 */
     }
 
     .gridTitle {
       font-size: 20px;
       color: #898989;
       // padding-left: 24px;
-      margin-bottom: 10px;
-      position: fixed;
-      top: 60px;
-      background-color: #efefef;
+      margin: 0; /* 移除所有margin */
+      background-color: #fff; /* 设置背景色为白色 */
       z-index: 200;
       align-items: center;
       padding: 10px 20px;
       box-sizing: border-box;
+      border-radius: 20px 20px 0 0; /* 顶部圆角，底部直角 */
     
       .text {
         text-align: right;

@@ -1,0 +1,193 @@
+.market-overview {
+  padding: 20px; /* 添加上下左右padding */
+  background-color: transparent;
+  margin-top: 60px; /* 为TabBar留出空间 */
+  
+  .market-cards-scroll {
+    width: 100%;
+    white-space: nowrap;
+  }
+  
+  .market-cards-content {
+    // padding: 0 20px 0 20px; /* 确保只有左右padding */
+    
+    .market-cards {
+      display: flex;
+      gap: 16px;
+      
+      .market-card {
+        width: 165px;
+        height: 150px;
+        flex-shrink: 0;
+        background-color: #fff;
+        border-radius: 16px;
+        padding: 20px 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* 使内容在垂直方向上均匀分布 */
+        border: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+        
+        &:active {
+          transform: scale(0.98);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px; /* 添加底部间距 */
+          
+          .card-title {
+            font-size: 24px; /* 进一步增大标题字体 */
+            color: #666;
+            line-height: 1.2;
+            margin-left: 8px; /* 添加左侧间距 */
+          }
+        }
+        
+        .card-icon {
+          .icon-circle {
+            width: 40px; /* 明确图标圈的宽度 */
+            height: 40px; /* 明确图标圈的高度 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // font-size: 20px; /* 移除字体大小 */
+            // font-weight: bold; /* 移除字体加粗 */
+            
+            .icon-image {
+              width: 100%;
+              height: 100%;
+            }
+            
+            &.green {
+              background-color: transparent;
+            }
+            
+            &.blue {
+              background-color: transparent;
+            }
+            
+            &.orange {
+              background-color: transparent;
+            }
+            
+            &.purple {
+              background-color: transparent;
+            }
+          }
+        }
+        
+        .card-info {
+          flex: 1; /* 确保card-info占据剩余空间 */
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          
+          .card-value {
+            font-size: 26px; /* 调整数值字体稍微小一点 */
+            font-weight: 600;
+            color: #333; /* 确保数值有颜色 */
+            line-height: 1.2;
+            font-family: PingFang SC;
+            margin-left: 15px;
+            margin-top: 5px;
+            display: flex; /* 使文本和百分比在同一行 */
+            align-items: baseline;
+
+            .card-value-text {
+              color: #333;
+            }
+
+            .card-value-percentage {
+              margin-left: 5px;
+              &.positive {
+                color: #11B787;
+              }
+              &.negative {
+                color: #FA5F5F;
+              }
+            }
+          }
+        }
+        
+        .card-change,
+        .card-action,
+        .card-desc {
+          font-size: 26px; /* 统一底部文字字体大小 */
+          // font-weight: 500;
+          line-height: 1.2;
+          margin-top: auto; /* 将这些元素推到底部 */
+          // margin-left: 5px;
+        }
+        
+        .card-change {
+          display: flex; /* 使图标和文本在同一行 */
+          align-items: center; /* 垂直居中对齐 */
+          margin-left: 15px; /* 图标整体左侧间距 */
+          margin-bottom: 10px;
+          
+          &.positive {
+            color: #11B787;
+          }
+          
+          &.negative {
+            color: #FA5F5F;
+          }
+          
+          .change-icon {
+            width: 16px; /* 图标大小 */
+            height: 16px; /* 图标大小 */
+            margin-right: 4px; /* 图标与文字的间距 */
+          }
+        }
+
+        .card-action {
+          width: 100%;
+          font-size: 22px; /* 统一底部文字字体大小 */
+          line-height: 1; /* 调整行高 */
+          margin-top: auto; /* 将这些元素推到底部 */
+          align-self: center; /* 水平居中 */
+          color: #333333; /* 确保操作有蓝色 */
+          border: 1px solid #C6C6C6; /* 添加边框 */
+          border-radius: 10px; /* 添加圆角 */
+          padding: 12px; /* 添加内边距 */
+          display: inline-block; /* 使padding和border生效 */
+          box-sizing: border-box; /* 边框和内边距包含在宽度内 */
+          text-align: center; /* 文字居中 */
+          
+          
+          &:active {
+            opacity: 0.7;
+          }
+        }
+
+        .card-desc {
+          font-size: 26px; /* 统一底部文字字体大小 */
+          font-weight: 500;
+          line-height: 1.2;
+          margin-top: auto; /* 将这些元素推到底部 */
+          // margin-left: 5px;
+          color: #999; /* 确保描述有颜色 */
+          
+          &.card-action-button {
+            width: 100%;
+            font-size: 22px; /* 统一底部文字字体大小 */
+            line-height: 1; /* 调整行高 */
+            align-self: center; /* 水平居中 */
+            color: #333333; /* 确保操作有蓝色 */
+            border: 1px solid #C6C6C6; /* 添加边框 */
+            border-radius: 10px; /* 添加圆角 */
+            padding: 12px; /* 添加内边距 */
+            display: inline-block; /* 使padding和border生效 */
+            box-sizing: border-box; /* 边框和内边距包含在宽度内 */
+            text-align: center; /* 文字居中 */
+          }
+        }
+      }
+    }
+  }
+}
