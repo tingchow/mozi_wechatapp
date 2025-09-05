@@ -787,7 +787,7 @@ export default function Find() {
           <Layout isLoading={isExchangeLoading} isError={isExchangeError}>
             <MoziCard
               title={<View className='rank-title'><View>交易所排行榜</View><View className='rank-title-time'>实时更新</View></View>}
-              type='select'
+              type='tabs'
               selectArr={exchangeData.exchangeSelect}
               callback={() => {
                 jump2List({

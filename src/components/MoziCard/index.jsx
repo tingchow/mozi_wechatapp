@@ -73,6 +73,25 @@ const CardExtra = (props) => {
         </View>
       </Picker>
     )
+  } else if (type === 'tabs') {
+    return (
+      <View className='tabs-container'>
+        {selectArr.map((item, index) => (
+          <View 
+            key={index}
+            className={`tab-item ${selected === item ? 'tab-active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setSelected(item);
+              props.pickChange(index);
+            }}
+          >
+            {item}
+          </View>
+        ))}
+      </View>
+    )
   } else {
     return null;
   }
