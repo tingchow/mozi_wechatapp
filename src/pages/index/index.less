@@ -220,22 +220,31 @@
   width: 80%;
   display: inline-block;
   margin-right: 20px;
+  min-height: 500px; /* 设置最小高度，防止内容加载时跳动 */
+  vertical-align: top; /* 防止基线对齐导致的跳动 */
 
   .treemapTitle {
     margin-bottom: 10px;
     font-weight: 600;;
   }
   
-  &.content-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+&.content-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 }
 
 .last {
   margin-right: 0;
+}
+
+// 投资机会滚动容器样式
+.investment-scroll {
+  min-height: 240px; /* 设置最小高度，防止刷新时跳动 */
+  height: auto;
+  overflow: hidden;
 }
 
 // 投资机会tab样式

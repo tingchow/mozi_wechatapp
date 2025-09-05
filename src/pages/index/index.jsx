@@ -380,7 +380,7 @@ export default function Index() {
         className="investment-card"
       >
         {investmentTab === 'opportunity' ? (
-          <ScrollView scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}}>
+          <ScrollView scrollX scrollWithAnimation className="investment-scroll" style={{whiteSpace: 'nowrap'}}>
             
             <div className='treemapBox content-card' onClick={() => {jump2List({
               interFace: Interface.hot_coin,
