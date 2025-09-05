@@ -164,26 +164,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
   margin-bottom: 15px;
+  position: relative; /* 添加相对定位作为参照 */
 }
 
 .indicator-title {
-  font-size: 22px;
+  font-size: 28px; /* 进一步调大到28px */
   color: #333;
-  font-weight: 500;
 }
 
 .info-icon {
-  font-size: 12px;
-  color: #999;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute; /* 绝对定位 */
+  top: 5px; /* 顶部对齐 */
+  right: 0; /* 右侧对齐 */
+  width: 28px;
+  height: 28px;
+  /* 移除其他不必要的样式 */
 }
 
 // 恐慌贪婪指数
@@ -267,7 +263,7 @@
 }
 
 .btc-percentage {
-  font-size: 28px;
+  font-size: 50px; /* 从28px调大到50px */
   font-weight: bold;
   color: #333;
   line-height: 1;
@@ -288,10 +284,10 @@
 }
 
 .change-icon {
-  font-size: 12px;
+  font-size: 20px; /* 进一步调大到20px */
 }
 
 .change-text {
-  font-size: 14px;
+  font-size: 24px; /* 进一步调大到24px */
   font-weight: 500;
 }

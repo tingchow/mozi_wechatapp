@@ -1,7 +1,8 @@
-import { View, Text } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import { useState, useEffect } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
+import warnIcon from '../../assets/icon/warn.png';
 import './index.less';
 
 export function MarketDistribution({ title = '涨跌分布', showUpdateTime = true }) {
@@ -146,7 +147,7 @@ export function MarketDistribution({ title = '涨跌分布', showUpdateTime = tr
           <View className='indicator-item'>
             <View className='indicator-header'>
               <Text className='indicator-title'>恐慌贪婪指数</Text>
-              <View className='info-icon'>ⓘ</View>
+              <Image className='info-icon' src={warnIcon} />
             </View>
             <View className='fear-greed-container'>
               <View className='fear-greed-chart'>
@@ -173,7 +174,7 @@ export function MarketDistribution({ title = '涨跌分布', showUpdateTime = tr
           <View className='indicator-item'>
             <View className='indicator-header'>
               <Text className='indicator-title'>BTC市场占有率</Text>
-              <View className='info-icon'>ⓘ</View>
+              <Image className='info-icon' src={warnIcon} />
             </View>
             <View className='btc-market-share'>
               <View className='btc-percentage'>{distributionData.btcMarketShare.percentage}</View>
