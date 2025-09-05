@@ -57,7 +57,8 @@ export function MarketDistribution({ title = '涨跌分布', showUpdateTime = tr
 
   // 计算柱状图高度
   const getBarHeight = (value) => {
-    return Math.max((value / maxValue) * 100, 5); // 最小高度5%
+    const maxHeight = 150; // 与CSS中的max-height保持一致
+    return Math.min(Math.max((value / maxValue) * 100, 5), maxHeight); // 最小高度5%，最大高度150px
   };
 
   // 获取恐慌贪婪指数的颜色

@@ -25,6 +25,7 @@ import bullBearRatioIcon from '../../assets/icon/bull-bear-ratio.png';
 import inventoryIcon from '../../assets/icon/inventory.png';
 import fundingRateIcon from '../../assets/icon/funding-rate.png';
 import volumeTransactionIcon from '../../assets/icon/volume-transaction.png';
+import HomeAlertIcon from '../../assets/icon/home-alert.png'; // 导入新的提醒图标
 
 const area = {
   derivativeArea: {
@@ -308,7 +309,7 @@ export default function Index() {
         <View className='searchBox'>
           <View className='searchInput'>请输入搜索的币种</View>
           <View className='searchCancel'>
-            <IconFont name='search' size={52} color='#fff' />
+            <IconFont name='search' size={42} color='#fff' />
             搜索
           </View>
         </View>
@@ -329,7 +330,7 @@ export default function Index() {
           content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
           color='alert'
           wrap
-          icon={<IconFont name='bell-fill' size={30} color='#ff6430' />}
+          icon={<Image src={HomeAlertIcon} className='notice-icon' />}
         />
       </View>
       {/* 合约专区 */}
