@@ -398,7 +398,7 @@ export default function Find() {
       }
     });
   };
-  const downPickArr = ['1天', '3天', '5天', '7天', '15天', '1个月', '3个月', '6个月', '1年']
+  const downPickArr = ['1天', '3天', '5天', '7天', '15天', '1月', '3个月', '6个月', '1年']
   // 涨幅详情
   const [downData, setDownData] = useState({
     downSelect: [],
@@ -553,7 +553,7 @@ export default function Find() {
       }
     });
   }
-  const tradePickArr = ['今日', '7天', '15天', '1个月'];
+  const tradePickArr = ['今日', '7天', '15天', '1月'];
   const [tradeData, setTradeData] = useState({
     tradeSelect: [],
     tradeArr: []

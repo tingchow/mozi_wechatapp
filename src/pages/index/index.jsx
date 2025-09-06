@@ -233,8 +233,8 @@ export default function Index() {
     }, {
       intervals: '1_month'
     }];
-    const selectArr = ['今日', '1天', '3天', '7天', '15天', '1个月'];
-    const selectbiaoshengArr = ['1天', '3天', '7天', '15天', '1个月'];
+    const selectArr = ['今日', '1天', '3天', '7天', '15天', '1月'];
+    const selectbiaoshengArr = ['1天', '3天', '7天', '15天', '1月'];
     // const  = footerArr[activeArr.indexOf(rankActiveKey)];
     jump2List({
       interFace: footerIfList[arrIndex].interface,
