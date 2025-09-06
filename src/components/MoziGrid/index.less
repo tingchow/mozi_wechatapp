@@ -9,6 +9,9 @@
   }
 }
 
+// 当有排名布局时，使标题和内容列对齐：隐藏占位列，改为整体左侧留白
+/* 移除 gridTitle--with-ranking 的样式，因为标题已被放入 content-column 内部，天然对齐 */
+
 .gridListItem {
   padding-left: 0;
 }
@@ -29,13 +32,13 @@
 
 // 排名相关样式
 .ranking-header {
-  width: 80px !important;
-  flex: 0 0 80px !important;
+  width: 150px !important;
+  flex: 0 0 150px !important;
 }
 
 .ranking-item {
-  width: 80px !important;
-  flex: 0 0 80px !important;
+  width: 150px !important;
+  flex: 0 0 150px !important;
   justify-content: center;
 }
 
@@ -81,7 +84,7 @@
     width: 150px;
     flex: 0 0 150px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     padding: 10px;
     box-sizing: border-box;
@@ -111,4 +114,44 @@
   justify-content: center;
   font-size: 48px;
   color: #666;
+}
+
+// 交易所排行榜的特定紧凑布局
+.exchange-ranking-grid {
+  // 标题行向右偏移与logo对齐（160px logo列 + 16px 间距）
+  // .gridTitle {
+  //   // padding-left: 176px !important;
+  // }
+
+  .ranking-layout {
+    .ranking-column {
+      width: 160px !important;
+      flex: 0 0 160px !important;
+      margin-left: 20px;
+      margin-right: 8px;
+    }
+
+    .content-column {
+      flex: 1;
+      // 使右侧更紧凑些
+      .gridContent {
+        column-gap: 0;
+        .gridConItem {
+          padding: 0 8px !important;
+          font-size: 22px !important;
+        }
+        // 统一右侧列表中的logo尺寸（仅限交易所排行榜）
+        .gridText {
+          display: flex;
+          align-items: center;
+          // gap: 8px;
+        }
+        .gridText .gridIcon {
+          width: 30px !important;
+          height: 30px !important;
+          flex: 0 0 30px; // 防止被压缩
+        }
+      }
+    }
+  }
 }

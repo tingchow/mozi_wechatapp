@@ -4,24 +4,21 @@ import './index.less';
 // import IconFont from '../iconfont';
 
 export const MoziGrid = (props) => {
-  const { gridTitleBgColor = '#F6F6F6', showRanking = false } = props;
+  const { gridTitleBgColor = '#F6F6F6', showRanking = false, className = '' } = props;
   
   return (
-    <View>
+    <View className={className}>
       {
-        !props?.hideTitle && (
+        !props?.hideTitle && !showRanking && (
         <Grid 
           className='gridTitle' 
-          columns={showRanking ? props.length + 1 : props.length}
+          columns={props.length}
           style={{ backgroundColor: gridTitleBgColor }}
         >
-          {showRanking && (
-            <Grid.Item className='gridTitleItem ranking-header'></Grid.Item>
-          )}
           {
-            props.colName.map((colNameItem, colNameIndex) => {
-              return <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
-            })
+            props.colName.map((colNameItem, colNameIndex) => (
+              <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+            ))
           }
         </Grid>
         )
@@ -45,6 +42,21 @@ export const MoziGrid = (props) => {
               )}
             </View>
             <View className='content-column'>
+              {
+                !props?.hideTitle && (
+                  <Grid 
+                    className='gridTitle' 
+                    columns={props.length}
+                    style={{ backgroundColor: gridTitleBgColor }}
+                  >
+                    {
+                      props.colName.map((colNameItem, colNameIndex) => (
+                        <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+                      ))
+                    }
+                  </Grid>
+                )
+              }
               <List>
                 {
                   props.gridContent.map((gridCon, index) => {
