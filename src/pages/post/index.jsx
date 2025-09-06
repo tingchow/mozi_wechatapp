@@ -757,6 +757,18 @@ export default function PostPage() {
         </Button>
       </View>
 
+      {/* 底部发布按钮 - 固定在页面底部 */}
+      <View className='post-submit-footer' style={{ bottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '48px' }}>
+        <Button 
+          className='submit-big-btn'
+          onClick={publishPost}
+          disabled={publishing}
+          loading={publishing}
+        >
+          {isUpdate ? '更新' : '发布'}
+        </Button>
+      </View>
+
       {/* 币种选择弹出层 */}
       {showCoinSelect && (
         <View className='coin-popup'>

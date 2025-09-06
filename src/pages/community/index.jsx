@@ -1019,7 +1019,7 @@ export default function CommunityPage() {
   };
 
   return (
-    <View className="community-container">
+    <View className={`community-container ${mainTab === 'hot' ? 'hot-mode' : ''}`}>
       {/* 主导航 */}
       <View className="main-tabs">
         <View className="tabs-left">
@@ -1289,7 +1289,7 @@ export default function CommunityPage() {
       {/* 添加悬浮发帖按钮 */}
       <View className="float-post-btn">
         <Button className="post-btn" onClick={handlePost}>
-          <Text className="icon-plus">+</Text>
+          <Image className="post-icon-img" src={require('../../assets/image/community/publish.png')} mode="widthFix" />
         </Button>
       </View>
 

@@ -151,6 +151,7 @@
       align-items: flex-start;
       padding: 20px 0;
       border-bottom: 1px solid #f5f5f5;
+      background: #fff;
 
       .topic-rank {
         width: 40px;
@@ -404,19 +405,20 @@
     z-index: 101;
 
     .post-btn {
-      width: 100px;
-      height: 100px;
-      border-radius: 50px;
-      background: #45e87f;
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0;
+      border: none;
 
-      .icon-plus {
-        font-size: 48px;
-        color: #fff;
-        line-height: 0;
+      .post-icon-img {
+        width: 132px;
+        height: 132px;
+        display: block;
       }
 
       &:after {
@@ -563,6 +565,12 @@
       }
     }
   }
+}
+
+/* 热门榜单模式去掉两侧内边距 */
+.community-container.hot-mode {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .hot-search-bar {
