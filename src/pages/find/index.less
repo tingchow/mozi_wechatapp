@@ -95,6 +95,8 @@
 
     .adm-tab-bar-item {
       color: #000;
+      min-width: 120px; // 增加每个tab的最小宽度
+      flex: 1; // 让tab平均分布空间
     }
 
     
@@ -184,5 +186,12 @@
 .gridText {
   display: flex;
   align-items: center;
+}
+
+// 成交额榜特殊样式 - 增加tab宽度
+.trade-rank-card {
+  .tabs-container {
+    width: 320px !important; // 专门为成交额榜设置更宽的tab容器
+  }
 }
 

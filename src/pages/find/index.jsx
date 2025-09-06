@@ -284,14 +284,17 @@ export default function Find() {
   const exchangePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    setExchangeData({
-      ...exchangeData,
-      exchangeArr: exchangeArr.current[idx],
-    });
+    // 添加防护性检查，确保数组和索引都存在
+    if (exchangeArr.current && exchangeArr.current[idx]) {
+      setExchangeData({
+        ...exchangeData,
+        exchangeArr: exchangeArr.current[idx],
+      });
+    }
   };
 
   // 涨幅排行
-  const dimArr = ['1_day', '3_day', '5_day', '7_day', '15_day', '1_month', '3_month', '6_month', '1_year'];
+  const dimArr = ['1_day', '1_week', '1_month', '1_year'];
   const dimRequestData = () => {
     return dimArr.map((item) => {
       return {
@@ -299,7 +302,7 @@ export default function Find() {
       }
     });
   };
-  const pickArr = ['1天', '3天', '5天', '7天', '15天', '1个月', '3个月', '6个月', '1年']
+  const pickArr = ['1天', '1周', '1月', '1年']
   // 涨幅详情
   const [priceData, setPriceData] = useState({
     priceSelect: [],
@@ -314,6 +317,9 @@ export default function Find() {
 
   // 涨幅
   const upPriceRequest = async () => {
+    priceArr.current = []; // 清空数组
+    const tempPriceSelect = [];
+    
     for (let i = 0; i < dimArr.length; i++) {
       const price = await request({
         url: Interface.price_change,
@@ -336,7 +342,7 @@ export default function Find() {
       }
       if (tempPrice) {
         priceArr.current.push(tempPrice);
-        priceSelect.push(pickArr[i]);
+        tempPriceSelect.push(pickArr[i]);
       }
       
     }
@@ -346,7 +352,7 @@ export default function Find() {
     }
     setPriceData({
       priceArr: priceArr.current[0],
-      priceSelect,
+      priceSelect: tempPriceSelect,
     });
     setPriceLoading(false);
     setTimeout(() => {
@@ -360,10 +366,13 @@ export default function Find() {
   const pricePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    setPriceData({
-      ...priceData,
-      priceArr: priceArr.current[idx],
-    });
+    // 添加防护性检查，确保数组和索引都存在
+    if (priceArr.current && priceArr.current[idx]) {
+      setPriceData({
+        ...priceData,
+        priceArr: priceArr.current[idx],
+      });
+    }
   };
 
   // 跌幅排行
@@ -389,6 +398,9 @@ export default function Find() {
   const downSelect = [];
   // 跌幅
   const downPriceRequest = async () => {
+    downArr.current = []; // 清空数组
+    const tempDownSelect = [];
+    
     for (let i = 0; i < dimArr.length; i++) {
       const price = await request({
         url: Interface.PRICE_DOWNCHANGE,
@@ -411,7 +423,7 @@ export default function Find() {
       }
       if (tempPrice) {
         downArr.current.push(tempPrice);
-        downSelect.push(pickArr[i]);
+        tempDownSelect.push(pickArr[i]);
       }
       
     }
@@ -421,7 +433,7 @@ export default function Find() {
     }
     setDownData({
       downArr: downArr.current[0],
-      downSelect,
+      downSelect: tempDownSelect,
     });
     setDownLoading(false);
 
@@ -437,10 +449,13 @@ export default function Find() {
     // console.log('pick', e);
     // setExchangeIndex(idx);
     // console.log('priceArr', priceArr);
-    setDownData({
-      ...downData,
-      downArr: downArr.current[idx],
-    });
+    // 添加防护性检查，确保数组和索引都存在
+    if (downArr.current && downArr.current[idx]) {
+      setDownData({
+        ...downData,
+        downArr: downArr.current[idx],
+      });
+    }
   };
 
   // 波幅详情
@@ -457,6 +472,9 @@ export default function Find() {
 
   // 波幅
   const waveRequest = async () => {
+    waveArr.current = []; // 清空数组
+    const tempWaveSelect = [];
+    
     for (let i = 0; i < dimArr.length; i++) {
       const wave = await request({
         url: Interface.price_wave,
@@ -479,7 +497,7 @@ export default function Find() {
       }
       if (tempWave) {
         waveArr.current.push(tempWave);
-        waveSelect.push(pickArr[i]);
+        tempWaveSelect.push(pickArr[i]);
       }
       
     }
@@ -489,7 +507,7 @@ export default function Find() {
     }
     setWaveData({
       waveArr: waveArr.current[0],
-      waveSelect,
+      waveSelect: tempWaveSelect,
     });
     setWaveLoading(false);
     setTimeout(() => {
@@ -503,14 +521,17 @@ export default function Find() {
   const wavePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    setWaveData({
-      ...waveData,
-      waveArr: waveArr.current[idx],
-    });
+    // 添加防护性检查，确保数组和索引都存在
+    if (waveArr.current && waveArr.current[idx]) {
+      setWaveData({
+        ...waveData,
+        waveArr: waveArr.current[idx],
+      });
+    }
   };
 
   // 交易额榜
-  const intervalsArr = ['today', '3_day', '7_day', '15_day', '1_month'];
+  const intervalsArr = ['today', '7_day', '15_day', '1_month'];
   const tradeRequestData = () => {
     return intervalsArr.map((item) => {
       return {
@@ -518,7 +539,7 @@ export default function Find() {
       }
     });
   }
-  const tradePickArr = ['今日', '3天', '7天', '15天', '1个月'];
+  const tradePickArr = ['今日', '7天', '15天', '1个月'];
   const [tradeData, setTradeData] = useState({
     tradeSelect: [],
     tradeArr: []
@@ -532,6 +553,9 @@ export default function Find() {
 
   // 交易额
   const tradeRequest = async () => {
+    tradeArr.current = []; // 清空数组
+    const tempTradeSelect = [];
+    
     for (let i = 0; i < intervalsArr.length; i++) {
       const trade = await request({
         url: Interface.coin_trade,
@@ -554,7 +578,7 @@ export default function Find() {
       }
       if (tempTrade) {
         tradeArr.current.push(tempTrade);
-        tradeSelect.push(tradePickArr[i]);
+        tempTradeSelect.push(tradePickArr[i]);
       }
       
     }
@@ -564,7 +588,7 @@ export default function Find() {
     }
     setTradeData({
       tradeArr: tradeArr.current[0],
-      tradeSelect,
+      tradeSelect: tempTradeSelect,
     });
     setTradeLoading(false);
     setTimeout(() => {
@@ -578,10 +602,13 @@ export default function Find() {
   const tradePickChange = (idx) => {
     // console.log('pick', e);
     // setExchangeIndex(idx);
-    setTradeData({
-      ...tradeData,
-      tradeArr: tradeArr.current[idx],
-    });
+    // 添加防护性检查，确保数组和索引都存在
+    if (tradeArr.current && tradeArr.current[idx]) {
+      setTradeData({
+        ...tradeData,
+        tradeArr: tradeArr.current[idx],
+      });
+    }
   };
 
   // 新币榜
@@ -655,6 +682,8 @@ export default function Find() {
 
   // 飙升请求
   const upTradeRequest = async () => {
+    upTradeArr.current = []; // 清空数组
+    const tempUpTradeSelect = [];
     for (let i = 0; i < dimArr.length; i++) {
       const wave = await request({
         url: Interface.PRICE_UPTRADE,
@@ -677,7 +706,7 @@ export default function Find() {
       }
       if (tempWave) {
         upTradeArr.current.push(tempWave);
-        upTradeSelect.push(tradePickArr[i]);
+        tempUpTradeSelect.push(tradePickArr[i]);
       }
       
     }
@@ -687,7 +716,7 @@ export default function Find() {
     }
     setUpTradeData({
       upTradeArr: upTradeArr.current[0],
-      upTradeSelect,
+      upTradeSelect: tempUpTradeSelect,
     });
     setUpTradeLoading(false);
     setTimeout(() => {
@@ -702,10 +731,13 @@ export default function Find() {
     // console.log('pick', e);
     // setExchangeIndex(idx);
     // console.log('waveArr', waveArr);
-    setUpTradeData({
-      ...upTradeData,
-      upTradeArr: upTradeArr.current[idx],
-    });
+    // 添加防护性检查，确保数组和索引都存在
+    if (upTradeArr.current && upTradeArr.current[idx]) {
+      setUpTradeData({
+        ...upTradeData,
+        upTradeArr: upTradeArr.current[idx],
+      });
+    }
   };
 
 
@@ -869,7 +901,7 @@ export default function Find() {
           <Layout isLoading={isPriceLoading} isError={isPriceError}>
             <MoziCard
               title={<View className='rank-title'><View>涨幅榜</View><View className='rank-title-time'>实时更新</View></View>}
-              type='select'
+              type='tabs'
               selectArr={priceData.priceSelect}
               callback={() => {
                 jump2List({
@@ -953,7 +985,7 @@ export default function Find() {
           <Layout isLoading={isDownLoading} isError={isDownError}>
             <MoziCard
               title={<View className='rank-title'><View>跌幅榜</View><View className='rank-title-time'>实时更新</View></View>}
-              type='select'
+              type='tabs'
               selectArr={downData.downSelect}
               callback={() => {
                 jump2List({
@@ -1037,7 +1069,7 @@ export default function Find() {
           <Layout isLoading={isWaveLoading} isError={isWaveError}>
             <MoziCard
               title={<View className='rank-title'><View>波幅榜</View><View className='rank-title-time'>实时更新</View></View>}
-              type='select'
+              type='tabs'
               selectArr={waveData.waveSelect}
               callback={() => {
                 jump2List({
@@ -1120,7 +1152,9 @@ export default function Find() {
           <Layout isLoading={isTradeLoading} isError={isTradeError}>
             <MoziCard
               title={<View className='rank-title'><View>成交额榜</View><View className='rank-title-time'>每天更新</View></View>}
-              type='select'
+              type='tabs'
+              customStyle={{ '--tabs-width': '320px' }}
+              className='trade-rank-card'
               selectArr={tradeData.tradeSelect}
               callback={() => {
                 jump2List({
@@ -1280,7 +1314,7 @@ export default function Find() {
           <Layout isLoading={isUpTradeLoading} isError={isUpTradeError}>
             <MoziCard
               title={<View className='rank-title'><View>飙升榜</View><View className='rank-title-time'>每天更新</View></View>}
-              type='select'
+              type='tabs'
               selectArr={upTradeData.upTradeSelect}
               callback={() => {
                 jump2List({
