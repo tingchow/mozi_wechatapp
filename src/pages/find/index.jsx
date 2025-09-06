@@ -234,7 +234,8 @@ export default function Find() {
           exchange: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.exchange}</View>,
           usd: item.usd,
           markets: item.markets,
-          coins: item.coins
+          coins: item.coins,
+          img: item.url // 添加img字段用于排名显示
         };
       });
     }
@@ -244,7 +245,8 @@ export default function Find() {
           exchange: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.exchange}</View>,
           usd: item.usd,
           markets: item.markets,
-          coins: item.coins
+          coins: item.coins,
+          img: item.url // 添加img字段用于排名显示
         }
       });
     }
@@ -888,6 +890,8 @@ export default function Find() {
                 <MoziGrid
                   length={4}
                   colName={['交易所', '24H交易量', '市场', '货币']}
+                  gridTitleBgColor='transparent'
+                  showRanking={true}
                   // hideTitle={false}
                   gridContent={exchangeData.exchangeArr}
                 >

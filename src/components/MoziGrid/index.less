@@ -26,3 +26,89 @@
     text-align: right;
   }
 }
+
+// 排名相关样式
+.ranking-header {
+  width: 80px !important;
+  flex: 0 0 80px !important;
+}
+
+.ranking-item {
+  width: 80px !important;
+  flex: 0 0 80px !important;
+  justify-content: center;
+}
+
+// 排名第一的logo显示
+.ranking-logo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.first-place-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.logo-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #666;
+}
+
+.ranking-placeholder {
+  width: 50px;
+  height: 50px;
+}
+
+// 新的跨三行排名布局
+.ranking-layout {
+  display: flex;
+  
+  .ranking-column {
+    width: 150px;
+    flex: 0 0 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
+    // margin:0 40px 0 20px;
+  }
+  
+  .content-column {
+    flex: 1;
+  }
+}
+
+.ranking-logo-full {
+  width: 130px;
+  height: 130px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.logo-placeholder-full {
+  width: 130px;
+  height: 130px;
+  border-radius: 12px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #666;
+}

@@ -1,10 +1,10 @@
 import { Grid, List } from 'antd-mobile';
-import { View, Text, ScrollView } from '@tarojs/components';
+import { View, Text, ScrollView, Image } from '@tarojs/components';
 import './index.less';
 // import IconFont from '../iconfont';
 
 export const MoziGrid = (props) => {
-  const { gridTitleBgColor = '#F6F6F6' } = props;
+  const { gridTitleBgColor = '#F6F6F6', showRanking = false } = props;
   
   return (
     <View>
@@ -12,12 +12,15 @@ export const MoziGrid = (props) => {
         !props?.hideTitle && (
         <Grid 
           className='gridTitle' 
-          columns={props.length}
+          columns={showRanking ? props.length + 1 : props.length}
           style={{ backgroundColor: gridTitleBgColor }}
         >
+          {showRanking && (
+            <Grid.Item className='gridTitleItem ranking-header'></Grid.Item>
+          )}
           {
             props.colName.map((colNameItem, colNameIndex) => {
-              return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+              return <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
             })
           }
         </Grid>
@@ -25,30 +28,76 @@ export const MoziGrid = (props) => {
       }
       
       <View className='list'>
-        <List>
-          {
-            props.gridContent.map((gridCon) => {
-              return (
-                <List.Item className='gridListItem' onClick={(e) => { e.stopPropagation; props.callback && props.callback(gridCon) }} clickable={false}>
-                  <Grid className='gridContent' columns={props.length}>
-                    {
-                      Object.keys(gridCon).map((gridConItem, girdConIndex) => {
-                        if (gridConItem === 'key' || gridConItem === 'img') {
-                          return null;
-                        }
-                        return (
-                          <Grid.Item className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
-                            {gridCon[gridConItem]}
-                          </Grid.Item>
-                        )
-                      })
-                    }
-                  </Grid>
-                </List.Item>
-              )
-            })
-          }
-        </List>
+        {showRanking ? (
+          // 当显示排名时，使用自定义布局让logo跨越三行
+          <View className='ranking-layout'>
+            <View className='ranking-column'>
+              {props.gridContent.length > 0 && props.gridContent[0].img ? (
+                <Image 
+                  src={props.gridContent[0].img} 
+                  mode='aspectFit' 
+                  className='ranking-logo-full'
+                  onError={(e) => console.log('图片加载失败:', e, props.gridContent[0].img)}
+                  onLoad={() => console.log('图片加载成功:', props.gridContent[0].img)}
+                />
+              ) : (
+                <View className='logo-placeholder-full'>🏆</View>
+              )}
+            </View>
+            <View className='content-column'>
+              <List>
+                {
+                  props.gridContent.map((gridCon, index) => {
+                    return (
+                      <List.Item key={index} className='gridListItem' onClick={(e) => { e.stopPropagation; props.callback && props.callback(gridCon) }} clickable={false}>
+                        <Grid className='gridContent' columns={props.length}>
+                          {
+                            Object.keys(gridCon).map((gridConItem, girdConIndex) => {
+                              if (gridConItem === 'key' || gridConItem === 'img') {
+                                return null;
+                              }
+                              return (
+                                <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
+                                  {gridCon[gridConItem]}
+                                </Grid.Item>
+                              )
+                            })
+                          }
+                        </Grid>
+                      </List.Item>
+                    )
+                  })
+                }
+              </List>
+            </View>
+          </View>
+        ) : (
+          // 原有的普通布局
+          <List>
+            {
+              props.gridContent.map((gridCon, index) => {
+                return (
+                  <List.Item key={index} className='gridListItem' onClick={(e) => { e.stopPropagation; props.callback && props.callback(gridCon) }} clickable={false}>
+                    <Grid className='gridContent' columns={props.length}>
+                      {
+                        Object.keys(gridCon).map((gridConItem, girdConIndex) => {
+                          if (gridConItem === 'key' || gridConItem === 'img') {
+                            return null;
+                          }
+                          return (
+                            <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
+                              {gridCon[gridConItem]}
+                            </Grid.Item>
+                          )
+                        })
+                      }
+                    </Grid>
+                  </List.Item>
+                )
+              })
+            }
+          </List>
+        )}
       </View>
     </View>
   );
