@@ -10,6 +10,9 @@ import { GardenLoading } from '../../components/Loading';
 import { isEmpty } from 'lodash';
 import IconFont from '../../components/iconfont';
 import './index.less'
+import BullBearVote from '../../components/BullBearVote'
+import recommendationImg from '../../assets/image/community/community-recommend.png'
+import hotListImg from '../../assets/image/community/community-hot-list.png'
 
 export default function CommunityPage() {
   // 接口定义
@@ -37,6 +40,7 @@ export default function CommunityPage() {
   const [showActionSheet, setShowActionSheet] = useState(false)
   const [selectedPost, setSelectedPost] = useState(null)
   const [pullRefresh, setPullRefresh] = useState(false)
+  const [voteChoice, setVoteChoice] = useState(null)
   // const [showActionSheet, setShowActionSheet] = useState(false)
   // const [selectedPost, setSelectedPost] = useState(null)
 
@@ -334,6 +338,13 @@ export default function CommunityPage() {
 
   // 监听页面显示
   Taro.useDidShow(() => {
+    // 设置当前页面导航栏背景色（仅社区页生效）
+    try {
+      Taro.setNavigationBarColor({
+        frontColor: '#000000',
+        backgroundColor: '#EEF0F3'
+      });
+    } catch (e) {}
     // 获取当前用户ID
     getCurrentUserId();
     console.log('进入社区页面');
@@ -1012,58 +1023,58 @@ export default function CommunityPage() {
       {/* 主导航 */}
       <View className="main-tabs">
         <View className="tabs-left">
-          <Text 
-            className={`tab-item ${mainTab === 'recommend' ? 'active' : ''}`}
+          <View
+            className={`tab-card ${mainTab === 'recommend' ? 'active' : ''}`}
             onClick={() => setMainTab('recommend')}
           >
-            推荐
-          </Text>
-          <Text 
-            className={`tab-item ${mainTab === 'hot' ? 'active' : ''}`}
+            <Image className="tab-image" src={recommendationImg} mode="aspectFill" />
+          </View>
+          <View
+            className={`tab-card ${mainTab === 'hot' ? 'active' : ''}`}
             onClick={() => setMainTab('hot')}
           >
-            热榜
-          </Text>
+            <Image className="tab-image" src={hotListImg} mode="aspectFill" />
+          </View>
         </View>
       </View>
 
-      {/* 子导航 */}
+      {/* 子导航 + 币种行 统一容器 */}
       {mainTab === 'recommend' && (
-        <ScrollView className="sub-tabs" scrollX>
-          {subTabs.map(item => (
-            <Text
-              key={item.key}
-              className={`sub-tab ${subTab === item.key ? 'active' : ''}`}
-              onClick={() => handleSubTabChange(item.key)}
-            >
-              {item.title}
-            </Text>
-          ))}
-        </ScrollView>
-      )}
-
-      {/* 币种子标签 */}
-      {mainTab === 'recommend' && subTab === 'currency' && (
-        <ScrollView className="coin-tabs" scrollX>
-          {coinTabs.map(item => (
-            <Text
-              key={item.key}
-              className={`coin-tab ${selectedCoin === item.key ? 'active' : ''}`}
-              onClick={() => handleCoinSelect(item.key)}
-            >
-              {item.title}
-            </Text>
-          ))}
-          {dynamicCoin && (
-            <Text
-              className={`coin-tab ${selectedCoin === dynamicCoin ? 'active' : ''}`}
-              onClick={() => handleCoinSelect(dynamicCoin)}
-            >
-              {dynamicCoin}
-            </Text>
+        <View className="tabs-wrapper">
+          <ScrollView className="sub-tabs" scrollX>
+            {subTabs.map(item => (
+              <Text
+                key={item.key}
+                className={`sub-tab ${subTab === item.key ? 'active' : ''}`}
+                onClick={() => handleSubTabChange(item.key)}
+              >
+                {item.title}
+              </Text>
+            ))}
+          </ScrollView>
+          {subTab === 'currency' && (
+            <ScrollView className="coin-tabs" scrollX>
+              {coinTabs.map(item => (
+                <Text
+                  key={item.key}
+                  className={`coin-tab ${selectedCoin === item.key ? 'active' : ''}`}
+                  onClick={() => handleCoinSelect(item.key)}
+                >
+                  {item.title}
+                </Text>
+              ))}
+              {dynamicCoin && (
+                <Text
+                  className={`coin-tab ${selectedCoin === dynamicCoin ? 'active' : ''}`}
+                  onClick={() => handleCoinSelect(dynamicCoin)}
+                >
+                  {dynamicCoin}
+                </Text>
+              )}
+              <Text className="coin-tab more" onClick={handleMoreCoins}>更多</Text>
+            </ScrollView>
           )}
-          <Text className="coin-tab more" onClick={handleMoreCoins}>更多</Text>
-        </ScrollView>
+        </View>
       )}
 
       {/* 热榜搜索和创建 */}
@@ -1121,6 +1132,16 @@ export default function CommunityPage() {
           </View>
         ) : (
           <View>
+            {subTab === 'currency' && (
+              <View className="vote-wrapper">
+                <BullBearVote
+                  title={`您对今天的${selectedCoin}有何看法?`}
+                  participants={5445}
+                  selected={voteChoice}
+                  onSelect={(type) => setVoteChoice(type)}
+                />
+              </View>
+            )}
             {
               pullRefresh && (
                 <View className="loading-more">

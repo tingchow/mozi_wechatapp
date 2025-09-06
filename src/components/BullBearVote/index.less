@@ -1,0 +1,72 @@
+.bbv-container {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+
+  &.is-disabled {
+    opacity: 0.7;
+  }
+
+  .bbv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .bbv-title {
+      font-size: 28px;
+      color: #333;
+    }
+
+    .bbv-count {
+      font-size: 22px;
+      color: #999;
+    }
+  }
+
+  .bbv-body {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff; /* 组件内部背景与卡片一致 */
+    align-items: stretch;
+
+    .bbv-btn {
+      flex: 1;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+
+      &.bull {
+        background: url('../../assets/image/community/community-up.png') no-repeat center;
+        background-size: 100% 100%;
+        border-radius: 12px 0 0 12px;
+      }
+
+      &.bear {
+        background: url('../../assets/image/community/community-down.png') no-repeat center;
+        background-size: 100% 100%;
+        border-radius: 0 12px 12px 0;
+      }
+
+      &.active {
+        filter: brightness(1.05);
+        font-weight: 600;
+      }
+    }
+
+    // /* 中间斜向虚线分隔条 */
+    // .bbv-divider {
+    //   width: 16px; /* 间隔宽度 */
+    //   background: #fff; /* 与卡片背景一致，形成空隙 */
+    //   position: relative;
+    //   overflow: hidden; /* 移除虚线，仅保留留白 */
+    // }
+  }
+}
+
+
