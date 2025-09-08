@@ -47,6 +47,8 @@ export default function PostPage() {
   const [hotTopicsAllLoaded, setHotTopicsAllLoaded] = useState(false)
   const [showAskTips, setShowAskTips] = useState(false) // 控制"不懂就问"提示弹窗的显示
   const [showCommunityRules, setShowCommunityRules] = useState(false) // 控制社区公约弹窗的显示
+  const [images, setImages] = useState([]) // 已选择图片
+  const [activeButton, setActiveButton] = useState('') // 当前激活的按钮
 
   // 加载热门话题
   const loadHotTopics = async () => {
@@ -238,9 +240,9 @@ export default function PostPage() {
 
   // 发布或更新内容
   const publishPost = async () => {
-    // 检查用户是否登录
-    const userInfo = Taro.getStorageSync('userInfo');
-    if (!userInfo || !userInfo.userId) {
+    // 检查用户是否登录（以 token 为准，避免 userInfo 被覆盖缺少 userId 导致误判）
+    const token = Taro.getStorageSync('token');
+    if (!token) {
       Taro.showToast({
         title: '请先登录',
         icon: 'none',
@@ -273,7 +275,8 @@ export default function PostPage() {
         tags: selectedCoins.length > 0 ? selectedCoins.map(coin => {
           // 确保tags数组只包含币种的symbol
           return coin.symbol || (typeof coin === 'string' ? coin : '')
-        }).filter(Boolean) : []
+        }).filter(Boolean) : [],
+        images
       }
       
       // 如果有投票信息，添加到postData中
@@ -323,6 +326,22 @@ export default function PostPage() {
     } finally {
       // 无论成功失败，都恢复按钮状态
       setPublishing(false);
+    }
+  }
+
+  // 选择图片
+  const handleChooseImage = async () => {
+    try {
+      const res = await Taro.chooseImage({
+        count: 9 - images.length,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      })
+      if (res?.tempFilePaths) {
+        setImages([...images, ...res.tempFilePaths])
+      }
+    } catch (e) {
+      console.error('选择图片失败', e)
     }
   }
 
@@ -487,6 +506,7 @@ export default function PostPage() {
   const selectTemplate = (template) => {
     setSelectedTemplate(template)
     setShowTemplates(false)
+    setActiveButton('')
     setShowAskTips(false);
     // 如果选择了"不懂就问"模板，显示提示弹窗
     if (template === '不懂就问') {
@@ -529,6 +549,7 @@ export default function PostPage() {
     setHasVote(true)
     // 关闭投票弹窗
     setShowVote(false)
+    setActiveButton('')
     
     Taro.showToast({
       title: '投票已添加',
@@ -553,6 +574,7 @@ export default function PostPage() {
   const selectTopic = (topic) => {
     setSelectedTopic(topic)
     setShowTopicSelect(false)
+    setActiveButton('')
   }
 
   // 搜索币种
@@ -610,6 +632,7 @@ export default function PostPage() {
       setSelectedCoins([...selectedCoins, coin]);
     }
     setShowCoinSelect(false);
+    setActiveButton('');
   }
   
   // 移除已选择的币种
@@ -635,14 +658,6 @@ export default function PostPage() {
       <View className='user-info'>
         <Image className='avatar' src={userInfo?.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
         <Text className='nickname'>{userInfo?.nickName || ''}</Text>
-        <Button 
-          className='publish-btn' 
-          onClick={publishPost} 
-          disabled={publishing}
-          loading={publishing}
-        >
-          {isUpdate ? '更新' : '发布'}
-        </Button>
       </View>
 
       {/* 标题输入区 */}
@@ -651,7 +666,7 @@ export default function PostPage() {
           className='title-input'
           value={title}
           onInput={e => e.detail.value.length <= 20 && setTitle(e.detail.value)}
-          placeholder={selectedTemplate === '普通' ? '标题（选填）' : selectedTemplate === '发现好币' ? '请输入标题（选填）': '请输入问题'}
+          placeholder={selectedTemplate === '普通' ? '请输入标题（选填）' : selectedTemplate === '发现好币' ? '请输入标题（选填）': '请输入问题'}
           maxLength={20}
         />
         <Text className='word-count'>{title.length}/20</Text>
@@ -668,6 +683,16 @@ export default function PostPage() {
             maxlength={300}
           />
         )}
+        {/* 图片上传区 */}
+        <View className='image-uploader'>
+          {images.map((src, idx) => (
+            <Image key={idx} className='uploaded-img' src={src} mode='aspectFill' />
+          ))}
+          {images.length < 9 && (
+            <View className='upload-tile' onClick={handleChooseImage}>+
+            </View>
+          )}
+        </View>
 
         {selectedTemplate === '发现好币' && (
           <View className='discovery-form'>
@@ -725,40 +750,56 @@ export default function PostPage() {
       }}>
         <Button 
           className='template-btn'
-          onClick={() => setShowTemplates(true)}
+          onClick={() => {
+            setActiveButton('template')
+            setShowTemplates(true)
+          }}
         >
-          <View className='template-box'>
-          模板
+          <View className={`template-box ${activeButton === 'template' ? 'active' : ''}`}>
+            <Image className='button-icon' src={require('../../assets/icon/community/template.png')} />
+            模板
           </View>
         </Button>
         <Button 
           className='template-btn vote-btn'
-          onClick={() => setShowVote(true)}
+          onClick={() => {
+            setActiveButton('vote')
+            setShowVote(true)
+          }}
         >
-          <View className='template-box'>
-          投票
+          <View className={`template-box ${activeButton === 'vote' ? 'active' : ''}`}>
+            <Image className='button-icon' src={require('../../assets/icon/community/vote.png')} />
+            投票
           </View>
         </Button>
         <Button 
           className='template-btn coin-btn'
-          onClick={() => setShowCoinSelect(true)}
+          onClick={() => {
+            setActiveButton('coin')
+            setShowCoinSelect(true)
+          }}
         >
-          <View className='template-box'>
-          币种
+          <View className={`template-box ${activeButton === 'coin' ? 'active' : ''}`}>
+            <Image className='button-icon' src={require('../../assets/icon/community/currency.png')} />
+            币种
           </View>
         </Button>
         <Button 
           className='template-btn topic-btn'
-          onClick={() => setShowTopicSelect(true)}
+          onClick={() => {
+            setActiveButton('topic')
+            setShowTopicSelect(true)
+          }}
         >
-          <View className='template-box'>
-          话题
+          <View className={`template-box ${activeButton === 'topic' ? 'active' : ''}`}>
+            <Image className='button-icon' src={require('../../assets/icon/community/topic.png')} />
+            话题
           </View>
         </Button>
       </View>
 
-      {/* 底部发布按钮 - 固定在页面底部 */}
-      <View className='post-submit-footer' style={{ bottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '48px' }}>
+      {/* 底部发布按钮 - 跟随内容滚动 */}
+      <View className='post-submit-footer'>
         <Button 
           className='submit-big-btn'
           onClick={publishPost}
@@ -772,7 +813,10 @@ export default function PostPage() {
       {/* 币种选择弹出层 */}
       {showCoinSelect && (
         <View className='coin-popup'>
-          <View className='popup-mask' onClick={() => setShowCoinSelect(false)} />
+          <View className='popup-mask' onClick={() => {
+            setShowCoinSelect(false)
+            setActiveButton('')
+          }} />
           <View className='popup-content'>
             <View className='coin-header'>
               <View className='search-box'>
@@ -786,7 +830,10 @@ export default function PostPage() {
                   onConfirm={(e) => searchCoin(e.detail.value)}
                 />
               </View>
-              <Button className='cancel-btn' onClick={() => setShowCoinSelect(false)}>
+              <Button className='cancel-btn' onClick={() => {
+                setShowCoinSelect(false)
+                setActiveButton('')
+              }}>
                 取消
               </Button>
             </View>
@@ -820,7 +867,10 @@ export default function PostPage() {
       {/* 话题选择弹出层 */}
       {showTopicSelect && (
         <View className='topic-popup'>
-          <View className='popup-mask' onClick={() => setShowTopicSelect(false)} />
+          <View className='popup-mask' onClick={() => {
+            setShowTopicSelect(false)
+            setActiveButton('')
+          }} />
           <View className='popup-content'>
             <View className='topic-header'>
               <View className='search-box'>
@@ -837,7 +887,10 @@ export default function PostPage() {
               <Button className="create-topic-btn" onClick={() => setShowCreateTopic(true)}>
                 创建话题
               </Button>
-              <Button className='cancel-btn' onClick={() => setShowTopicSelect(false)}>
+              <Button className='cancel-btn' onClick={() => {
+                setShowTopicSelect(false)
+                setActiveButton('')
+              }}>
                 取消
               </Button>
             </View>
@@ -870,13 +923,19 @@ export default function PostPage() {
       {/* 投票弹出层 */}
       {showVote && (
         <View className='vote-popup'>
-          <View className='popup-mask' onClick={() => setShowVote(false)} />
+          <View className='popup-mask' onClick={() => {
+            setShowVote(false)
+            setActiveButton('')
+          }} />
           <View className='popup-content'>
             <View className='popup-header'>
               <Text>创建投票</Text>
               <View className='header-btns'>
                 <Button className='create-btn' onClick={createVote}>创建</Button>
-                <Button className='close-btn' onClick={() => setShowVote(false)}>取消</Button>
+                <Button className='close-btn' onClick={() => {
+                  setShowVote(false)
+                  setActiveButton('')
+                }}>取消</Button>
               </View>
             </View>
             <View className='vote-form'>
@@ -918,11 +977,17 @@ export default function PostPage() {
       {/* 模板选择弹出层 */}
       {showTemplates && (
         <View className='template-popup'>
-          <View className='popup-mask' onClick={() => setShowTemplates(false)} />
+          <View className='popup-mask' onClick={() => {
+            setShowTemplates(false)
+            setActiveButton('')
+          }} />
           <View className='popup-content'>
             <View className='popup-header'>
               <Text>选择模板</Text>
-              <Text className='close-btn' onClick={() => setShowTemplates(false)}>×</Text>
+              <Text className='close-btn' onClick={() => {
+                setShowTemplates(false)
+                setActiveButton('')
+              }}>×</Text>
             </View>
             <View className='template-list'>
                 {templates.map((item, index) => (
