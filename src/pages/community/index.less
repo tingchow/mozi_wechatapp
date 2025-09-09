@@ -204,6 +204,17 @@
       margin: 12px 0;
     }
 
+    /* 发现好币卡片容器 */
+    .discovery-cards-container {
+      font-size: 0; /* 消除inline-block元素间的空隙 */
+      display: block;
+      width: 100%;
+      
+      .comment-card {
+        font-size: 28px; /* 恢复字体大小 */
+      }
+    }
+
     /* 固定在 tabs-wrapper 下方的投票组件占位（视觉在 tabs-wrapper 内） */
     .vote-fixed { display: none; }
 
@@ -214,6 +225,27 @@
       background: #fff;
       border-radius: 20px;
       margin-bottom: 20px;
+
+      /* 发现好币专用卡片样式 - 两列布局 */
+      &.discovery-card {
+        padding: 20px;
+        background: #fff;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        width: calc(50% - 8px);
+        height: 370px;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 16px;
+        border-bottom: none;
+        box-sizing: border-box;
+        
+        /* 每行第二个卡片不需要右边距 */
+        &:nth-child(2n) {
+          margin-right: 0;
+        }
+      }
   
       .edit-actions {
         position: absolute;
@@ -290,10 +322,6 @@
         width: 44px; /* 默认图标大小，应用于已激活点赞、分享、评论 */
         height: 44px;
 
-        &.like-no-active-size {
-          width: 36px; /* 未激活点赞图标的大小 */
-          height: 36px;
-        }
       }
 
       .content-tag {
@@ -308,7 +336,7 @@
 
       .title {
         display: block;
-        font-size: 32px;
+        font-size: 30px;
         color: #333;
         margin-bottom: 12px; // 标题与描述之间的间距
         margin-left: 90px;
@@ -426,6 +454,134 @@
           &:after {
             display: none;
           }
+        }
+      }
+
+      /* 发现好币卡片 - 用户信息 */
+      .discovery-user-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .discovery-avatar {
+          width: 56px;
+          height: 56px;
+          border-radius: 28px;
+          margin-right: 12px;
+          flex-shrink: 0;
+        }
+
+        .discovery-user-content {
+          flex: 1;
+
+          .discovery-nickname {
+            font-size: 26px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            display: block;
+          }
+
+          .discovery-time {
+            font-size: 22px;
+            color: #999;
+            display: block;
+          }
+        }
+      }
+
+      /* 发现好币卡片 - 币种信息区域 */
+      .coin-info-section {
+        margin-bottom: 20px;
+
+        .coin-info-row {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
+
+          &:last-child {
+            margin-bottom: 0;
+            align-items: flex-start;
+          }
+
+          .coin-info-icon {
+            font-size: 24px;
+            margin-right: 8px;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+          }
+
+          .coin-info-icon-img {
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+            flex-shrink: 0;
+          }
+
+          .coin-info-label {
+            font-size: 24px;
+            color: #666;
+            margin-right: 6px;
+            flex-shrink: 0;
+          }
+
+          .coin-info-value {
+            font-size: 24px;
+            color: #9A9DA0;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+          }
+        }
+      }
+
+      /* 发现好币卡片 - 操作按钮 */
+      .discovery-action-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        margin: 0 -10px;
+
+        .discovery-action-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 0;
+          background: none;
+          border: none;
+          margin: 0;
+          font-size: 22px;
+
+          &:after {
+            display: none;
+          }
+
+          .discovery-action-icon {
+            width: 44px;
+            height: 44px;
+          }
+
+          .action-count {
+            font-size: 22px;
+            color: #666;
+            font-weight: 500;
+          }
+
+          &.like-btn {
+            &.liked {
+              .action-count {
+                color: #11B787;
+              }
+            }
+          }
+
+
         }
       }
     }

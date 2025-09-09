@@ -5,6 +5,9 @@ import { request } from '../../utils/request'
 import { Interface } from '../../utils/constants'
 import IconFont from '../../components/iconfont'
 import { GardenLoading } from '../../components/Loading'
+import likeActiveIcon from '../../assets/icon/community/like-active.png';
+import likeNoActiveIcon from '../../assets/icon/community/like-no-active.png';
+import shareIcon from '../../assets/icon/community/share.png';
 import './index.less'
 
 // 确保接口定义存在
@@ -62,6 +65,14 @@ export default function CommentInfo() {
   const [focused, setFocused] = useState(false)
 
   useLoad(() => {
+    // 设置导航栏背景色
+    try {
+      Taro.setNavigationBarColor({
+        frontColor: '#000000',
+        backgroundColor: '#EEF0F3'
+      });
+    } catch (e) {}
+    
     // 获取路由参数中的评论ID
     const { id } = router.params;
     if (id) {
@@ -680,11 +691,15 @@ export default function CommentInfo() {
             <Text className="time">{(detail.createdAt|| '').replace('T', '    ')}</Text>
             <View className="action-group">
               <View className="like-btn" onClick={handlePostLike}>
-                <IconFont name='heart-fill' color={detail.isLikedByCurrentUser || likedPosts[detail.id] ? 'red' : ''} size={30} />
-                <Text className={`likes ${likedPosts[detail.id] ? 'liked' : ''}`}>{detail.likeCnt || 0} 点赞</Text>
+                <Image 
+                  className="like-icon" 
+                  src={detail.isLikedByCurrentUser || likedPosts[detail.id] ? likeActiveIcon : likeNoActiveIcon} 
+                  mode="widthFix" 
+                />
+                <Text className={`likes ${likedPosts[detail.id] ? 'liked' : ''}`}>{detail.likeCnt || 0}</Text>
               </View>
               <Button className="share-btn" openType="share" data-post-id={detail.id} data-post-title={detail.title}>
-                <IconFont name='share' size={30} />
+                <Image className="share-icon" src={shareIcon} mode="widthFix" />
                 <Text className="share-text">分享</Text>
               </Button>
             </View>
@@ -705,86 +720,94 @@ export default function CommentInfo() {
               <Text className="count">共{list.length}条回复</Text>
             </View>
 
-            {list.map(item => (
-              <View key={item.id} className="second-comment">
-                <View className="comment-header">
-                  <Image className="avatar" src={item.user.avatar} />
-                  <Text className="nickname">{item.user.nickname}</Text>
-                  {currentUser && currentUser.userId === item.user.id && (
-                    <View className="comment-handle" onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPost(item);
-                      setShowActionSheet(true);
-                    }}>
-                      <IconFont name='ellipsis' size={40} />
+            <View className="comments-container">
+              {list.map(item => (
+                <View key={item.id} className="second-comment">
+                  <View className="comment-header">
+                    <Image className="avatar" src={item.user.avatar} />
+                    <Text className="nickname">{item.user.nickname}</Text>
+                    <View className="header-right">
+                      <View className="like-btn" onClick={(e) => {
+                        e.stopPropagation();
+                        handleCommentLike(item.id);
+                      }}>
+                        <Image 
+                          className="comment-like-icon" 
+                          src={likedComments[item.id] ? likeActiveIcon : likeNoActiveIcon} 
+                          mode="widthFix" 
+                        />
+                        <Text className={`like-count ${likedComments[item.id] ? 'liked' : ''}`}>{item.likeCount || 0}</Text>
+                      </View>
+                      {currentUser && currentUser.userId === item.user.id && (
+                        <View className="comment-handle" onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedPost(item);
+                          setShowActionSheet(true);
+                        }}>
+                          <IconFont name='ellipsis' size={40} />
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  
+                  <View className="comment-content" onClick={() => handleReply(item, item.user)}>
+                    <Text className="text">{item.content}</Text>
+                    <View className="meta">
+                      <Text className="time">{item.createdAt.replace('T', '   ')}</Text>
+                    </View>
+                  </View>
+
+                  {/* 回复列表 */}
+                  {item.replies.length > 0 && item.replies?.slice(0, expandedComments[item.id] ? undefined : 3).map(reply => (
+                    <View key={reply.commentId} className="third-comment">
+                      <View className="comment-header">
+                        <Image className="avatar" src={reply.user.avatar} />
+                        <Text className="nickname">{reply.user.nickname}</Text>
+                        {/* {currentUser && currentUser.userId === reply.user.id && (
+                          <Text className="delete-btn" onClick={() => handleDeleteComment(reply.commentId)}>删除</Text>
+                        )} */}
+                      </View>
+                      
+                      <View className="comment-content">
+                        <View onClick={() => handleReply(item, reply.user)}>
+                          {reply.replyToUser && (
+                            <Text className="reply-hint">回复@{reply.replyToUser.nickname}：</Text>
+                          )}
+                          <Text className="text">{reply.content}</Text>
+                        </View>
+                        {/* <View className="meta">
+                          <Text className="time">{reply?.createdAt}</Text>
+                          <View className="like-btn" onClick={(e) => {
+                            e.stopPropagation();
+                            handleCommentLike(reply.commentId);
+                          }}>
+                            <IconFont name='heart-fill' color={likedComments[reply.commentId] ? 'red' : ''} size={24} />
+                            <Text className={`like-count ${likedComments[reply.commentId] ? 'liked' : ''}`}>{reply.likeCount || 0}</Text>
+                          </View>
+                        </View> */}
+                      </View>
+                    </View>
+                  ))}
+                  {item.replies && item.replies.length > 3 && !expandedComments[item.id] && (
+                    <View className="view-more" onClick={() => setExpandedComments(prev => ({ ...prev, [item.id]: true }))}>
+                      查看更多回复 ({item.replies.length - 3})
+                    </View>
+                  )}
+                  {item.replies && item.replies.length > 3 && expandedComments[item.id] && (
+                    <View className="view-more" onClick={() => setExpandedComments(prev => ({ ...prev, [item.id]: false }))}>
+                      收起回复
                     </View>
                   )}
                 </View>
-                
-                <View className="comment-content" onClick={() => handleReply(item, item.user)}>
-                  <Text className="text">{item.content}</Text>
-                  <View className="meta">
-                    <Text className="time">{item.createdAt.replace('T', '   ')}</Text>
-                    <View className="like-btn" onClick={(e) => {
-                      e.stopPropagation();
-                      handleCommentLike(item.id);
-                    }}>
-                      <IconFont name='heart-fill' color={likedComments[item.id] ? 'red' : ''} size={24} />
-                      <Text className={`like-count ${likedComments[item.id] ? 'liked' : ''}`}>{item.likeCount || 0}</Text>
-                    </View>
-                  </View>
+              ))}
+
+              {/* 加载更多状态 */}
+              {loadingMore && (
+                <View className="loading-more">
+                  <GardenLoading />
                 </View>
-
-                {/* 回复列表 */}
-                {item.replies.length > 0 && item.replies?.slice(0, expandedComments[item.id] ? undefined : 3).map(reply => (
-                  <View key={reply.commentId} className="third-comment">
-                    <View className="comment-header">
-                      <Image className="avatar" src={reply.user.avatar} />
-                      <Text className="nickname">{reply.user.nickname}</Text>
-                      {/* {currentUser && currentUser.userId === reply.user.id && (
-                        <Text className="delete-btn" onClick={() => handleDeleteComment(reply.commentId)}>删除</Text>
-                      )} */}
-                    </View>
-                    
-                    <View className="comment-content">
-                      <View onClick={() => handleReply(item, reply.user)}>
-                        {reply.replyToUser && (
-                          <Text className="reply-hint">回复@{reply.replyToUser.nickname}：</Text>
-                        )}
-                        <Text className="text">{reply.content}</Text>
-                      </View>
-                      {/* <View className="meta">
-                        <Text className="time">{reply?.createdAt}</Text>
-                        <View className="like-btn" onClick={(e) => {
-                          e.stopPropagation();
-                          handleCommentLike(reply.commentId);
-                        }}>
-                          <IconFont name='heart-fill' color={likedComments[reply.commentId] ? 'red' : ''} size={24} />
-                          <Text className={`like-count ${likedComments[reply.commentId] ? 'liked' : ''}`}>{reply.likeCount || 0}</Text>
-                        </View>
-                      </View> */}
-                    </View>
-                  </View>
-                ))}
-                {item.replies && item.replies.length > 3 && !expandedComments[item.id] && (
-                  <View className="view-more" onClick={() => setExpandedComments(prev => ({ ...prev, [item.id]: true }))}>
-                    查看更多回复 ({item.replies.length - 3})
-                  </View>
-                )}
-                {item.replies && item.replies.length > 3 && expandedComments[item.id] && (
-                  <View className="view-more" onClick={() => setExpandedComments(prev => ({ ...prev, [item.id]: false }))}>
-                    收起回复
-                  </View>
-                )}
-              </View>
-            ))}
-
-            {/* 加载更多状态 */}
-            {loadingMore && (
-              <View className="loading-more">
-                <GardenLoading />
-              </View>
-            )}
+              )}
+            </View>
           </View>
         </>
       )}

@@ -13,6 +13,13 @@ import shareIcon from '../../assets/icon/community/share.png';
 import likeActiveIcon from '../../assets/icon/community/like-active.png';
 import commentIcon from '../../assets/icon/community/comment.png';
 import likeNoActiveIcon from '../../assets/icon/community/like-no-active.png';
+import messagesCommentIcon from '../../assets/icon/community/messages-comment.png';
+import messagesLikeActiveIcon from '../../assets/icon/community/messages-like-active.png';
+import messagesLikeNoActivedIcon from '../../assets/icon/community/messages-like-no-actived.png';
+import messagesShareIcon from '../../assets/icon/community/messages-share.png';
+import reasonIcon from '../../assets/icon/community/reason.png';
+import plateIcon from '../../assets/icon/community/plate.png';
+import integralIcon from '../../assets/icon/community/integral.png';
 import './index.less'
 import BullBearVote from '../../components/BullBearVote'
 import QuestionButtons from '../../components/QuestionButtons'
@@ -1192,9 +1199,13 @@ export default function CommunityPage() {
                     </View>
               )
             }
-            {posts.map(item => {
-                return (
-                  <View key={item.id} className="comment-card" onClick={() => navigateToCommentInfo(item.id)}>
+            <View className={subTab === 'discovery' ? 'discovery-cards-container' : ''}>
+              {posts.map(item => {
+                  // 根据当前标签页决定使用哪种卡片样式
+                  const isDiscoveryCard = subTab === 'discovery';
+                  
+                  return (
+                    <View key={item.id} className={`comment-card ${isDiscoveryCard ? 'discovery-card' : ''}`} onClick={() => navigateToCommentInfo(item.id)}>
                     {/* 用户自己的帖子显示编辑按钮 */}
                     {item.userId === currentUserId && (
                       <View className="edit-actions">
@@ -1219,101 +1230,175 @@ export default function CommunityPage() {
                           <View className="action-sheet-item" onClick={(e) => {e.stopPropagation();handleActionClick('delete')}}>
                             <Text>删除</Text>
                           </View>
-                          {/* <View className="action-sheet-cancel" onClick={() => setShowActionSheet(false)}>
-                            <Text>取消</Text>
-                          </View> */}
                         </View>
                       </View>
                     )}
-                    {/* 用户信息 */}
-                    <View className="user-info">
-                      <Image src={item.avatar} className="avatar" />
-                      <View className="user-content-wrapper">
-                        <View className="user-nickname-tag-wrapper">
-                          <Text className="nickname">{item.nickname}</Text>
-                          {/* 内容标签 */}
-                          <Text className="content-tag">{item.tag}</Text>
-                        </View>
-                        {/* 时间信息盒子 */}
-                        <View className="time-info">
-                          <Text className="time">{formatTimeAgo(item.updatedAt)}</Text>
-                        </View>
-                      </View>
-                    </View>
 
-                   
-  
-                    
-  
-                    {/* 标题 */}
-                    <Text className="title">{item.title}</Text>
-  
-                    {/* 描述 */}
-                    <Text className="description">{item.content}</Text>
-                    
-                    {/* 币种和话题标签 */}
-                    {(item.tags?.length > 0 || item.topics?.length > 0) && (
-                      <View className="tags-topics-container">
-                        {/* 币种标签 */}
-                        {item.tags?.map(tag => (
-                          <Text 
-                            key={`tag-${tag.id}`} 
-                            className="coin-tag"
-                            onClick={(e) => {
-                              e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
-                              Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` });
-                            }}
+                    {isDiscoveryCard ? (
+                      /* 发现好币专用卡片样式 */
+                      <>
+                        {/* 用户信息 - 顶部 */}
+                        <View className="discovery-user-info">
+                          <Image src={item.avatar} className="discovery-avatar" />
+                          <View className="discovery-user-content">
+                            <Text className="discovery-nickname">{item.nickname}</Text>
+                            <Text className="discovery-time">{formatTimeAgo(item.updatedAt)}</Text>
+                          </View>
+                        </View>
+
+                        {/* 币种信息区域 */}
+                        <View className="coin-info-section">
+                          <View className="coin-info-row">
+                            <Image className="coin-info-icon-img" src={integralIcon} mode="widthFix" />
+                            <Text className="coin-info-label">币种名称：</Text>
+                            <Text className="coin-info-value">
+                              {item.tags && item.tags.length > 0 ? item.tags[0].name : 'Bitcoin'}
+                            </Text>
+                          </View>
+                          
+                          <View className="coin-info-row">
+                            <Image className="coin-info-icon-img" src={plateIcon} mode="widthFix" />
+                            <Text className="coin-info-label">所属板块：</Text>
+                            <Text className="coin-info-value">
+                              {item.tags && item.tags.length > 0 ? 'Cash' : 'DeFi'}
+                            </Text>
+                          </View>
+                          
+                          <View className="coin-info-row">
+                            <Image className="coin-info-icon-img" src={reasonIcon} mode="widthFix" />
+                            <Text className="coin-info-label">推荐理由：</Text>
+                            <Text className="coin-info-value">
+                              {item.content || '大饼即将上涨，请注意'}
+                            </Text>
+                          </View>
+                        </View>
+
+                        {/* 操作按钮 - 发现好币样式 */}
+                        <View className="discovery-action-buttons">
+                          <Button 
+                            className={`discovery-action-btn like-btn ${likedPosts[item.id] ? 'liked' : ''}`}
+                            onClick={(e) => handleLike(e, item.id)}
                           >
-                            ${tag.name}$
-                          </Text>
-                        ))}
+                            <Image 
+                              className="discovery-action-icon" 
+                              src={likedPosts[item.id] ? messagesLikeActiveIcon : messagesLikeNoActivedIcon} 
+                              mode="widthFix" 
+                            />
+                            <Text className="action-count">{item.likes || 284}</Text>
+                          </Button>
+                          
+                          <Button 
+                            className="discovery-action-btn share-btn"
+                            openType='share' 
+                            data-post-id={item.id} 
+                            data-post-title={item.title}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Image 
+                              className="discovery-action-icon" 
+                              src={messagesShareIcon} 
+                              mode="widthFix" 
+                            />
+                          </Button>
+                          
+                          <Button className="discovery-action-btn comment-btn">
+                            <Image 
+                              className="discovery-action-icon" 
+                              src={messagesCommentIcon} 
+                              mode="widthFix" 
+                            />
+                            <Text className="action-count">{item.comments || 2}</Text>
+                          </Button>
+                        </View>
+                      </>
+                    ) : (
+                      /* 原有的普通卡片样式 */
+                      <>
+                        {/* 用户信息 */}
+                        <View className="user-info">
+                          <Image src={item.avatar} className="avatar" />
+                          <View className="user-content-wrapper">
+                            <View className="user-nickname-tag-wrapper">
+                              <Text className="nickname">{item.nickname}</Text>
+                              {/* 内容标签 */}
+                              <Text className="content-tag">{item.tag}</Text>
+                            </View>
+                            {/* 时间信息盒子 */}
+                            <View className="time-info">
+                              <Text className="time">{formatTimeAgo(item.updatedAt)}</Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        {/* 标题 */}
+                        <Text className="title">{item.title}</Text>
+
+                        {/* 描述 */}
+                        <Text className="description">{item.content}</Text>
                         
-                        {/* 话题标签 */}
-                        {item.topics?.map(topic => (
-                          <Text 
-                            key={`topic-${topic.id}`} 
-                            className="topic-tag"
-                            onClick={(e) => {
-                              e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
-                              Taro.navigateTo({ url: `/pages/topicinfo/index?id=${topic.id}` });
-                            }}
-                          >
-                            #{topic.name}
-                          </Text>
-                        ))}
-                      </View>
-                    )}
+                        {/* 币种和话题标签 */}
+                        {(item.tags?.length > 0 || item.topics?.length > 0) && (
+                          <View className="tags-topics-container">
+                            {/* 币种标签 */}
+                            {item.tags?.map(tag => (
+                              <Text 
+                                key={`tag-${tag.id}`} 
+                                className="coin-tag"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
+                                  Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` });
+                                }}
+                              >
+                                ${tag.name}$
+                              </Text>
+                            ))}
+                            
+                            {/* 话题标签 */}
+                            {item.topics?.map(topic => (
+                              <Text 
+                                key={`topic-${topic.id}`} 
+                                className="topic-tag"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
+                                  Taro.navigateTo({ url: `/pages/topicinfo/index?id=${topic.id}` });
+                                }}
+                              >
+                                #{topic.name}
+                              </Text>
+                            ))}
+                          </View>
+                        )}
 
-                    {/* 操作按钮 */}
-                    <View className="action-buttons">
-                      <Button 
-                        className="action-btn" 
-                        openType='share' 
-                        data-post-id={item.id} 
-                        data-post-title={item.title}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Image className="post-icon-img" src={shareIcon} mode="widthFix" />
-                        <Text className="icon-share"></Text>
-                        {/* 分享 */}
-                      </Button>
-                      <Button className="action-btn">
-                        <Image className="post-icon-img" src={commentIcon} mode="widthFix" />
-                        {/* <Text className="icon-comment">评论</Text> */}
-                        {item.comments}
-                      </Button>
-                      <Button 
-                        className={`action-btn ${likedPosts[item.id] ? 'liked' : ''}`}
-                        onClick={(e) => handleLike(e, item.id)}
-                      >
-                        <Image className={`post-icon-img ${likedPosts[item.id] ? '' : 'like-no-active-size'}`} src={likedPosts[item.id] ? likeActiveIcon : likeNoActiveIcon} mode="widthFix" />
-                        {/* <Text className="icon-like">喜欢</Text> */}
-                        {item.likes}
-                      </Button>
-                    </View>
+                        {/* 操作按钮 */}
+                        <View className="action-buttons">
+                          <Button 
+                            className="action-btn" 
+                            openType='share' 
+                            data-post-id={item.id} 
+                            data-post-title={item.title}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Image className="post-icon-img" src={shareIcon} mode="widthFix" />
+                            <Text className="icon-share"></Text>
+                          </Button>
+                          <Button className="action-btn">
+                            <Image className="post-icon-img" src={commentIcon} mode="widthFix" />
+                            {item.comments}
+                          </Button>
+                          <Button 
+                            className={`action-btn ${likedPosts[item.id] ? 'liked' : ''}`}
+                            onClick={(e) => handleLike(e, item.id)}
+                          >
+                            <Image className="post-icon-img" src={likedPosts[item.id] ? likeActiveIcon : likeNoActiveIcon} mode="widthFix" />
+                            {item.likes}
+                          </Button>
+                        </View>
+                      </>
+                    )}
                   </View>
                 )
               })}
+            </View>
             {loading && !pullRefresh && (
               <View className="loading-container">
                 <GardenLoading />
