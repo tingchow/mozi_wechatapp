@@ -8,6 +8,7 @@ import { GardenLoading } from '../../components/Loading'
 import likeActiveIcon from '../../assets/icon/community/like-active.png';
 import likeNoActiveIcon from '../../assets/icon/community/like-no-active.png';
 import shareIcon from '../../assets/icon/community/share.png';
+import editIcon from '../../assets/icon/edit.png';
 import './index.less'
 
 // 确保接口定义存在
@@ -671,7 +672,7 @@ export default function CommentInfo() {
                   className="coin-tag"
                   onClick={() => Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` })}
                 >
-                  ${tag.name}$
+                  @{tag.name}
                 </Text>
               ))}
               
@@ -771,9 +772,13 @@ export default function CommentInfo() {
                       <View className="comment-content">
                         <View onClick={() => handleReply(item, reply.user)}>
                           {reply.replyToUser && (
-                            <Text className="reply-hint">回复@{reply.replyToUser.nickname}：</Text>
+                            <View className="reply-hint">
+                              <Text style={{ color: '#000000' }}>回复</Text>
+                              <Text style={{ color: '#888888' }}>@{reply.replyToUser.nickname}：</Text>
+                              <Text className="text">{reply.content}</Text>
+                            </View>
                           )}
-                          <Text className="text">{reply.content}</Text>
+                          
                         </View>
                         {/* <View className="meta">
                           <Text className="time">{reply?.createdAt}</Text>
@@ -826,7 +831,7 @@ export default function CommentInfo() {
           className="comment-input"
           value={commentContent}
           onInput={e => {setCommentContent(e.detail.value); setFocused(true)}}
-          placeholder={replyTo ? `回复 @${replyTo.nickname}...` : "写下你的评论..."}
+          placeholder={replyTo ? `回复 @${replyTo.nickname}...` : "  写下你的评论..."}
           maxlength={200}
           focus={focused}
           adjustPosition={false}

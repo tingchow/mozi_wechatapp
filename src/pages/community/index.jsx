@@ -27,6 +27,7 @@ import recommendationImg from '../../assets/image/community/community-recommend.
 import hotListImg from '../../assets/image/community/community-hot-list.png'
 import hotListActivedImg from '../../assets/image/community/hot-list-actived.png'
 import recommendNoActivedImg from '../../assets/image/community/recommend-no-actived.png'
+import findBestCoinIcon from '../../assets/icon/community/find-best-coin.png'
 
 // 时间格式化函数
 const formatTimeAgo = (timestamp) => {
@@ -1206,6 +1207,9 @@ export default function CommunityPage() {
                   
                   return (
                     <View key={item.id} className={`comment-card ${isDiscoveryCard ? 'discovery-card' : ''}`} onClick={() => navigateToCommentInfo(item.id)}>
+                    {/* 发现好币背景图片 */}
+                    <Image src={findBestCoinIcon} className="find-best-coin-bg" />
+                    
                     {/* 用户自己的帖子显示编辑按钮 */}
                     {item.userId === currentUserId && (
                       <View className="edit-actions">
