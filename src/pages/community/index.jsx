@@ -9,10 +9,46 @@ import { GardenLoading } from '../../components/Loading';
 
 import { isEmpty } from 'lodash';
 import IconFont from '../../components/iconfont';
+import shareIcon from '../../assets/icon/community/share.png';
+import likeActiveIcon from '../../assets/icon/community/like-active.png';
+import commentIcon from '../../assets/icon/community/comment.png';
+import likeNoActiveIcon from '../../assets/icon/community/like-no-active.png';
 import './index.less'
 import BullBearVote from '../../components/BullBearVote'
+import QuestionButtons from '../../components/QuestionButtons'
 import recommendationImg from '../../assets/image/community/community-recommend.png'
 import hotListImg from '../../assets/image/community/community-hot-list.png'
+import hotListActivedImg from '../../assets/image/community/hot-list-actived.png'
+import recommendNoActivedImg from '../../assets/image/community/recommend-no-actived.png'
+
+// 时间格式化函数
+const formatTimeAgo = (timestamp) => {
+  const now = new Date();
+  const date = new Date(timestamp);
+  const seconds = Math.floor((now - date) / 1000);
+
+  let interval = seconds / 31536000; // years
+  if (interval > 1) {
+    return Math.floor(interval) + " 年前";
+  }
+  interval = seconds / 2592000; // months
+  if (interval > 1) {
+    return Math.floor(interval) + " 月前";
+  }
+  interval = seconds / 86400; // days
+  if (interval > 1) {
+    return Math.floor(interval) + " 天前";
+  }
+  interval = seconds / 3600; // hours
+  if (interval > 1) {
+    return Math.floor(interval) + " 小时前";
+  }
+  interval = seconds / 60; // minutes
+  if (interval > 1) {
+    return Math.floor(interval) + " 分钟前";
+  }
+  return Math.floor(seconds) + " 秒前";
+};
 
 export default function CommunityPage() {
   // 接口定义
@@ -606,10 +642,11 @@ export default function CommunityPage() {
 
       if (response?.code === 0) {
         // 更新点赞状态
-        setLikedPosts(prev => ({
-          ...prev,
-          [postId]: !isLiked
-        }))
+        setLikedPosts(prev => {
+          const newLikedPosts = { ...prev };
+          newLikedPosts[postId] = !isLiked;
+          return newLikedPosts;
+        })
         
         // 更新点赞数
         setPosts(prev => prev.map(post => {
@@ -1027,13 +1064,13 @@ export default function CommunityPage() {
             className={`tab-card ${mainTab === 'recommend' ? 'active' : ''}`}
             onClick={() => setMainTab('recommend')}
           >
-            <Image className="tab-image" src={recommendationImg} mode="aspectFill" />
+            <Image className="tab-image" src={mainTab === 'recommend' ? recommendationImg : recommendNoActivedImg} mode="aspectFill" />
           </View>
           <View
             className={`tab-card ${mainTab === 'hot' ? 'active' : ''}`}
             onClick={() => setMainTab('hot')}
           >
-            <Image className="tab-image" src={hotListImg} mode="aspectFill" />
+            <Image className="tab-image" src={mainTab === 'hot' ? hotListActivedImg : hotListImg} mode="aspectFill" />
           </View>
         </View>
       </View>
@@ -1132,6 +1169,12 @@ export default function CommunityPage() {
           </View>
         ) : (
           <View>
+            {subTab === 'question' && (
+              <QuestionButtons 
+                onAskQuestion={handlePost}
+                onAnswerQuestion={handlePost}
+              />
+            )}
             {subTab === 'currency' && (
               <View className="vote-wrapper">
                 <BullBearVote
@@ -1185,11 +1228,22 @@ export default function CommunityPage() {
                     {/* 用户信息 */}
                     <View className="user-info">
                       <Image src={item.avatar} className="avatar" />
-                      <Text className="nickname">{item.nickname}</Text>
+                      <View className="user-content-wrapper">
+                        <View className="user-nickname-tag-wrapper">
+                          <Text className="nickname">{item.nickname}</Text>
+                          {/* 内容标签 */}
+                          <Text className="content-tag">{item.tag}</Text>
+                        </View>
+                        {/* 时间信息盒子 */}
+                        <View className="time-info">
+                          <Text className="time">{formatTimeAgo(item.updatedAt)}</Text>
+                        </View>
+                      </View>
                     </View>
+
+                   
   
-                    {/* 内容标签 */}
-                    <Text className="content-tag">{item.tag}</Text>
+                    
   
                     {/* 标题 */}
                     <Text className="title">{item.title}</Text>
@@ -1230,8 +1284,6 @@ export default function CommunityPage() {
                       </View>
                     )}
 
-                    <Text className="time">{(item.updatedAt|| '').replace('T', '    ')}</Text>
-                    
                     {/* 操作按钮 */}
                     <View className="action-buttons">
                       <Button 
@@ -1241,21 +1293,21 @@ export default function CommunityPage() {
                         data-post-title={item.title}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <IconFont name='share' size={40} />
+                        <Image className="post-icon-img" src={shareIcon} mode="widthFix" />
                         <Text className="icon-share"></Text>
-                        分享
+                        {/* 分享 */}
                       </Button>
                       <Button className="action-btn">
-                        <IconFont name='message' size={30} />
-                        <Text className="icon-comment">评论</Text>
+                        <Image className="post-icon-img" src={commentIcon} mode="widthFix" />
+                        {/* <Text className="icon-comment">评论</Text> */}
                         {item.comments}
                       </Button>
                       <Button 
                         className={`action-btn ${likedPosts[item.id] ? 'liked' : ''}`}
                         onClick={(e) => handleLike(e, item.id)}
                       >
-                        <IconFont name='heart-fill' color={item.isLikedByCurrentUser || likedPosts[item.id]? 'red': ''} size={30} />
-                        <Text className="icon-like">喜欢</Text>
+                        <Image className={`post-icon-img ${likedPosts[item.id] ? '' : 'like-no-active-size'}`} src={likedPosts[item.id] ? likeActiveIcon : likeNoActiveIcon} mode="widthFix" />
+                        {/* <Text className="icon-like">喜欢</Text> */}
                         {item.likes}
                       </Button>
                     </View>

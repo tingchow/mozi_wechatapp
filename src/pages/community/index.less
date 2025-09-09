@@ -244,7 +244,7 @@
   
       .user-info {
         display: flex;
-        align-items: center;
+        align-items: flex-start; /* 调整为顶部对齐 */
         margin-bottom: 16px;
 
         .avatar {
@@ -252,6 +252,21 @@
           height: 80px;
           border-radius: 40px;
           margin-right: 16px;
+          flex-shrink: 0;
+        }
+
+        .user-content-wrapper {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          flex-grow: 1;
+        }
+
+        .user-nickname-tag-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 4px; /* 昵称和时间之间的间距 */
         }
 
         .nickname {
@@ -260,15 +275,35 @@
         }
       }
 
+      .time-info {
+        margin-left: 0; /* 在新的布局中不再需要这个 */
+        margin-bottom: 0; /* 在新的布局中不再需要这个 */
+
+        .time {
+          font-size: 24px;
+          color: #999;
+          display: block;
+        }
+      }
+
+      .post-icon-img {
+        width: 44px; /* 默认图标大小，应用于已激活点赞、分享、评论 */
+        height: 44px;
+
+        &.like-no-active-size {
+          width: 36px; /* 未激活点赞图标的大小 */
+          height: 36px;
+        }
+      }
+
       .content-tag {
         display: inline-block;
-        padding: 4px 12px;
-        font-size: 24px;
-        color: #45e87f;
-        background: #e6fff0;
-        border-radius: 12px;
-        margin-bottom: 16px; // 增加分类与标题之间的间距
-        margin-right: 10px;
+        padding: 6px 12px;
+        font-size: 22px;
+        color:#FF8B2D;
+        background: #FFF0E4;
+        border-radius: 6px;
+        margin-left: 10px;
       }
 
       .title {
@@ -276,12 +311,14 @@
         font-size: 32px;
         color: #333;
         margin-bottom: 12px; // 标题与描述之间的间距
+        margin-left: 90px;
       }
 
       .description {
         font-size: 28px;
         color: #666;
         margin-bottom: 16px; // 描述与标签之间的间距
+        margin-left: 90px;
         display: block; // 确保描述在标题下方
       }
       
@@ -289,6 +326,7 @@
         display: flex;
         flex-wrap: wrap;
         margin-bottom: 12px; // 标签与按钮之间的间距
+        margin-left: 90px;
         
         .coin-tag,
         .topic-tag {
@@ -318,12 +356,6 @@
         }
       }
 
-      .time {
-        font-size: 24px;
-        color: #999;
-        display: block;
-        margin-bottom: 16px;
-      }
 
       .action-sheet-mask {
         position: fixed;
@@ -389,6 +421,7 @@
           background: none;
           padding: 0;
           line-height: 1;
+          margin-left: 90px;
 
           &:after {
             display: none;
