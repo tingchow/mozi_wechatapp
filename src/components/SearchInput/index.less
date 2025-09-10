@@ -6,23 +6,47 @@
   background-color: #fff;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
+  padding: 0 0 0 40px;
   box-sizing: border-box;
 
-  .searchIcon {
-    // flex: 1;
-    margin-right: 20px;
+  .searchInput {
+    flex: 1;
   }
 
-  .searchInput {
-    flex: 4;
+  .searchButton {
+    height: 60px;
+    width: 115px;
+    padding: 0 20px;
+    background-color: #11B787;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 10px;
+    cursor: pointer;
+    
+    .searchIconImg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .searchText {
+      color: #fff;
+      font-size: 28px;
+      margin-left: 8px;
+    }
+    
+    &:active {
+      opacity: 0.8;
+    }
   }
 
   .searchCancel {
     height: 100%;
-    width: 80px;
+    width: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #fff;
   }
 }

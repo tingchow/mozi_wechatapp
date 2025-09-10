@@ -1438,7 +1438,7 @@ export default function CommunityPage() {
       {showCoinSelector && (
         <View className="coin-selector-fullscreen">
           <View className="selector-header">
-            <Text className="header-title">选择币种</Text>
+            <Text className="header-title">搜索币种</Text>
             <Text className="close" onClick={() => setShowCoinSelector(false)}>取消</Text>
           </View>
           <View className="selector-search">
@@ -1461,9 +1461,9 @@ export default function CommunityPage() {
                 >
                   <Image className="coin-icon" src={coin.url} mode="aspectFit" />
                   <Text className="coin-name">{coin.symbol}</Text>
-                  {selectedCoin === coin.symbol && (
-                    <Text className="selected-icon">✓</Text>
-                  )}
+                  {/* {selectedCoin === coin.symbol && (
+                    // <Text className="selected-icon">✓</Text>
+                  )} */}
                 </View>
               ))
             ) : searchKeyword ? (
