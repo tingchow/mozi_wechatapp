@@ -18,6 +18,10 @@ import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
 import towxml from '../../towxml';
 import { isEmpty } from 'lodash';
+import communityIcon from '../../assets/icon/community-no-actived.png';
+import shareIcon from '../../assets/icon/community/share.png';
+import upIcon from '../../assets/icon/up.png';
+import downIcon from '../../assets/icon/down.png';
 // import '~taro-parse/dist/style/main.scss'
 // import TaroParser from 'taro-parse'
 
@@ -498,7 +502,7 @@ export default function Detail() {
                 )
               }
               <View className='coin-info-caret' onClick={changeShow}>
-                <IconFont name={`${infoShow? 'caret-up': 'caret-down'}`} size={30} />
+                <Image className='arrow-icon' src={infoShow? upIcon : downIcon} mode='aspectFit' />
               </View>
             </View>
           )
@@ -520,10 +524,10 @@ export default function Detail() {
       <div className='box chart-box'>
         <div className='f2Box'>
           <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
-            <TabBar.Item key='hour' title='小时' />
-            <TabBar.Item key='day' title='日' />
-            <TabBar.Item key='week' title='周' />
-            <TabBar.Item key='month' title='月' />
+            <TabBar.Item key='hour' title='1H' />
+            <TabBar.Item key='day' title='1日' />
+            <TabBar.Item key='week' title='1周' />
+            <TabBar.Item key='month' title='1月' />
           </TabBar>
           <View className='chartBox'>
             <View className='chart-arrawsalt' onClick={jump2Land}>
@@ -604,16 +608,16 @@ export default function Detail() {
             <AddCollect isOwn={coinInfo?.isSelfSelected || false} symbol={symbol} />
             <View>加自选</View>
           </View>
-          <Button className='footer-item' openType='share'>
-            <IconFont name='share' size={40} />
-            <View>分享</View>
-          </Button>
           <View className='footer-item' onClick={() => {jump2NoTab('addwarn', {symbol})}}>
-            <IconFont name='bell-fill' size={40} />
+            <IconFont name='bell-fill' size={40} color='#C7C9CD' />
             <View>告警</View>
           </View>
+          <Button className='footer-item' openType='share'>
+            <Image className='footer-icon' src={shareIcon} mode='aspectFit' />
+            <View>分享</View>
+          </Button>
           <View className='footer-item' onClick={jump2Community}>
-            <IconFont name='shequ' size={40} />
+            <Image className='footer-icon' src={communityIcon} mode='aspectFit' />
             <View>社区</View>
           </View>
         </View>

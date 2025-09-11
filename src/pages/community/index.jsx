@@ -1152,10 +1152,10 @@ export default function CommunityPage() {
                 <View className="topic-info">
                   <Text className="topic-title">{topic.name}</Text>
                   <Text className="topic-desc">{topic.description || '暂无描述'}</Text>
-                  <View className="topic-stats">
-                    <Text className="stat-item">热度 {topic.score || 0}</Text>
-                    <Text className="stat-item">{topic.createdAt.replace('T', '    ')}</Text>
-                  </View>
+                </View>
+                <View className="topic-right-info">
+                  <Text className="heat-text">热度 {topic.score || 0}</Text>
+                  <Text className="time-text">{topic.createdAt.replace('T', '    ')}</Text>
                 </View>
               </View>
             ))}

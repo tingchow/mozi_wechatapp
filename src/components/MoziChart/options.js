@@ -44,6 +44,7 @@ export const handleOptions = (data, type, msg) => {
 
     return {
       legend: {
+        show: false,
         type: 'scroll',
         data: ['K线', 'MA5', 'MA10', 'MA20', 'MA30'],
         selected: {
@@ -67,23 +68,36 @@ export const handleOptions = (data, type, msg) => {
       animation: false,
       animationDurationUpdate: 0,
       grid: {
-        // left: '10%',
-        // right: '10%',
-        // bottom: '15%'
+        top: '5%',
+        left: '15%',
+        right: '5%',
+        bottom: '25%'
       },
       xAxis: {
         type: 'category',
         data: data.categoryData,
-        boundaryGap: false,
-        axisLine: { onZero: false },
+        boundaryGap: true,
+        axisLine: { 
+          onZero: false,
+          lineStyle: {
+            color: '#D8D8D8'
+          }
+        },
         splitLine: { show: false },
+        axisTick: { show: false },
         min: 'dataMin',
-        max: 'dataMax'
+        max: 'dataMax',
+        axisLabel: {
+          color: '#8E8E8E'
+        }
       },
       yAxis: {
         scale: true,
         splitArea: {
           show: true
+        },
+        axisLabel: {
+          color: '#8E8E8E'
         },
         // 科学记数法
         // axisLabel: {
@@ -172,78 +186,78 @@ export const handleOptions = (data, type, msg) => {
             borderColor: upBorderColor,
             borderColor0: downBorderColor
           },
-          markPoint: {
-            label: {
-              formatter: function (param) {
-                return param != null ? Math.round(param.value) + '' : '';
-              }
-            },
-            data: [
-              {
-                name: 'highest value',
-                type: 'max',
-                valueDim: 'highest'
-              },
-              {
-                name: 'lowest value',
-                type: 'min',
-                valueDim: 'lowest'
-              },
-            ],
-            tooltip: {
-              triggerOn: 'none',
-              formatter: function (param) {
-                return param.name + '<br>' + (param.data.coord || '');
-              },
-              confine: true
-            }
-          },
-          markLine: {
-            symbol: ['none', 'none'],
-            data: [
-              [
-                {
-                  name: 'from lowest to highest',
-                  type: 'min',
-                  valueDim: 'lowest',
-                  symbol: 'circle',
-                  symbolSize: 10,
-                  label: {
-                    show: false
-                  },
-                  emphasis: {
-                    label: {
-                      show: false
-                    }
-                  }
-                },
-                {
-                  type: 'max',
-                  valueDim: 'highest',
-                  symbol: 'circle',
-                  symbolSize: 10,
-                  label: {
-                    show: false
-                  },
-                  emphasis: {
-                    label: {
-                      show: false
-                    }
-                  }
-                }
-              ],
-              {
-                name: 'min line on close',
-                type: 'min',
-                valueDim: 'close'
-              },
-              {
-                name: 'max line on close',
-                type: 'max',
-                valueDim: 'close'
-              }
-            ]
-          }
+          // markPoint: {
+          //   label: {
+          //     formatter: function (param) {
+          //       return param != null ? Math.round(param.value) + '' : '';
+          //     }
+          //   },
+          //   data: [
+          //     {
+          //       name: 'highest value',
+          //       type: 'max',
+          //       valueDim: 'highest'
+          //     },
+          //     {
+          //       name: 'lowest value',
+          //       type: 'min',
+          //       valueDim: 'lowest'
+          //     },
+          //   ],
+          //   tooltip: {
+          //     triggerOn: 'none',
+          //     formatter: function (param) {
+          //       return param.name + '<br>' + (param.data.coord || '');
+          //     },
+          //     confine: true
+          //   }
+          // },
+          // markLine: {
+          //   symbol: ['none', 'none'],
+          //   data: [
+          //     [
+          //       {
+          //         name: 'from lowest to highest',
+          //         type: 'min',
+          //         valueDim: 'lowest',
+          //         symbol: 'circle',
+          //         symbolSize: 10,
+          //         label: {
+          //           show: false
+          //         },
+          //         emphasis: {
+          //           label: {
+          //             show: false
+          //           }
+          //         }
+          //       },
+          //       {
+          //         type: 'max',
+          //         valueDim: 'highest',
+          //         symbol: 'circle',
+          //         symbolSize: 10,
+          //         label: {
+          //           show: false
+          //         },
+          //         emphasis: {
+          //           label: {
+          //             show: false
+          //           }
+          //         }
+          //       }
+          //     ],
+          //     {
+          //       name: 'min line on close',
+          //       type: 'min',
+          //       valueDim: 'close'
+          //     },
+          //     {
+          //       name: 'max line on close',
+          //       type: 'max',
+          //       valueDim: 'close'
+          //     }
+          //   ]
+          // }
         },
         {
           name: 'MA5',

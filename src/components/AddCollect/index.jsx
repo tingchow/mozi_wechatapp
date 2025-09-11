@@ -99,7 +99,7 @@ export const AddCollect = (props) => {
   return (
     <View>
       <View className='collect' onClick={changeOwn} catchMove={true}>
-        <IconFont name='heart-fill' color={curOwn? '#E86965': unselectedColor} size={40} />
+        <IconFont name='heart-fill' color={curOwn? '#FA5F5F': unselectedColor} size={40} />
       </View>
       { showLogin && <PopLogin hideCb={() => {setShowLogin(false)}} /> }
     </View>
