@@ -28,6 +28,10 @@ import hotListImg from '../../assets/image/community/community-hot-list.png'
 import hotListActivedImg from '../../assets/image/community/hot-list-actived.png'
 import recommendNoActivedImg from '../../assets/image/community/recommend-no-actived.png'
 import findBestCoinIcon from '../../assets/icon/community/find-best-coin.png'
+import nov1Icon from '../../assets/icon/community/Nov1.png'
+import nov2Icon from '../../assets/icon/community/Nov2.png'
+import nov3Icon from '../../assets/icon/community/Nov3.png'
+import hotIcon from '../../assets/icon/community/hot.png'
 
 // 时间格式化函数
 const formatTimeAgo = (timestamp) => {
@@ -1148,13 +1152,26 @@ export default function CommunityPage() {
           <View className="hot-topics">
             {hotTopics.length > 0 && hotTopics.map((topic, index) => (
               <View key={topic.id} className="hot-topic-item" onClick={() => navigateToTopicInfo(topic.id, topic.name, topic.description)}>
-                <View className="topic-rank">{index + 1}</View>
+                <View className={`topic-rank ${index < 3 ? 'medal-rank' : ''}`}>
+                  {index === 0 ? (
+                    <Image className="rank-medal" src={nov1Icon} mode='aspectFit' />
+                  ) : index === 1 ? (
+                    <Image className="rank-medal" src={nov2Icon} mode='aspectFit' />
+                  ) : index === 2 ? (
+                    <Image className="rank-medal" src={nov3Icon} mode='aspectFit' />
+                  ) : (
+                    index + 1
+                  )}
+                </View>
                 <View className="topic-info">
                   <Text className="topic-title">{topic.name}</Text>
                   <Text className="topic-desc">{topic.description || '暂无描述'}</Text>
                 </View>
                 <View className="topic-right-info">
-                  <Text className="heat-text">热度 {topic.score || 0}</Text>
+                  <View className="heat-text">
+                    <Image className="heat-icon" src={hotIcon} mode='aspectFit' />
+                    <Text className="heat-value">{topic.score || 0}</Text>
+                  </View>
                   <Text className="time-text">{topic.createdAt.replace('T', '    ')}</Text>
                 </View>
               </View>
