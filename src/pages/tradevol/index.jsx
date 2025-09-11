@@ -152,7 +152,7 @@ export default function Tradevol() {
       return {
         ...item,
         itemStyle: {
-          color: item.state === 1? '#02c076': '#ff3333'
+          color: item.state === 1? '#11B787': '#FA5F5F'
         }
       };
     });
@@ -216,9 +216,9 @@ export default function Tradevol() {
           </View>
         ))}
       </View>
+      
+      <View className='section-header'>当前成交额</View>
       <View className='currentPCR'>
-        <View className='header'>当前成交额</View>
-          
         <View className='currentPCRChart'>
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
@@ -226,19 +226,21 @@ export default function Tradevol() {
           <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec1}></ec-canvas>
         </View>
       </View>
+      
+      <View className='section-header'>历史成交额</View>
       <View className='currentPCR'>
-        <View className='header'>历史成交额
-          {/* <View></View> */}
-          {/* <View className='pickerList'> */}
+        {/* <View className='header'>历史成交额
+          <View></View>
+          <View className='pickerList'>
             
-            {/* <Picker mode='selector' range={coinList} onChange={onCoinChange}>
+            <Picker mode='selector' range={coinList} onChange={onCoinChange}>
               <View className='pickerSelect'>
                 <View className='selectIcon'>{coinSelected}</View>
                 <IconFont name='caret-down' />
               </View>
-            </Picker> */}
-          {/* </View> */}
-        </View>
+            </Picker>
+          </View>
+        </View> */}
           
         <View className='currentPCRChart'>
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>

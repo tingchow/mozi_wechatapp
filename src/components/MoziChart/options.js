@@ -300,7 +300,8 @@ export const handleOptions = (data, type, msg) => {
   }
 
   if (type === 'treemap') {
-    return {
+    // 为成交量界面添加特殊的布局配置
+    const baseConfig = {
       series: [
         {
           type: 'treemap',
@@ -335,12 +336,14 @@ export const handleOptions = (data, type, msg) => {
             //   console.log('color', info.data?.state === 1? '#02c076': '#ff3333');
             //   return info.data?.state === 1? '#02c076': '#ff3333'
             // }
-            borderColor: '#fff'
+            borderColor: '#fff',
+            borderRadius: 2
           },
           levels: [{
             itemStyle: {
               borderWidth: 0,
-              gapWidth: 1
+              gapWidth: 1,
+              borderRadius: 2
             }
           }],
           breadcrumb: {
@@ -369,7 +372,29 @@ export const handleOptions = (data, type, msg) => {
         },
         confine: true
       },
+    };
+    
+    // 如果是成交量界面，添加特殊的grid配置让图表占满
+    if (msg === '成交量') {
+      baseConfig.grid = {
+        top: '5%',
+        left: '1%',
+        right: '1%',
+        bottom: '5%',
+        containLabel: false
+      };
+      baseConfig.series[0] = {
+        ...baseConfig.series[0],
+        top: '5%',
+        left: '1%',
+        right: '1%',
+        bottom: '5%',
+        width: '98%',
+        height: '90%'
+      };
     }
+    
+    return baseConfig;
   }
 
   if (type === 'pie') {
@@ -485,7 +510,7 @@ export const handleOptions = (data, type, msg) => {
   }
 
   if (type === 'linebar') {
-    return {
+    const baseConfig = {
       tooltip: {
         trigger: 'axis',
         formatter: function (info) {
@@ -516,13 +541,31 @@ export const handleOptions = (data, type, msg) => {
         {
           type: 'value',
           axisLabel: {
-            formatter: (value) => data.yAxisLeftSlot.replace('{}', value) ?? value
+            formatter: (value) => {
+              if (msg === '成交额') {
+                // 只针对成交额页面去掉$符号
+                let formattedValue = data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
+                return formattedValue.toString().replace('$', '');
+              } else {
+                // 其他页面保持原来的格式
+                return data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
+              }
+            }
           }
         },
         {
           type: 'value',
           axisLabel: {
-            formatter: (value) => data.yAxisRightSlot.replace('{}', value) ?? value
+            formatter: (value) => {
+              if (msg === '成交额') {
+                // 只针对成交额页面转换为万单位
+                let tenThousandValue = (value / 10000).toFixed(1);
+                return tenThousandValue + '万';
+              } else {
+                // 其他页面保持原来的格式
+                return data.yAxisRightSlot ? data.yAxisRightSlot.replace('{}', value) : value;
+              }
+            }
           }
         }
       ],
@@ -530,13 +573,22 @@ export const handleOptions = (data, type, msg) => {
         {
           name: msg,
           type: 'bar',
-          data: data.barData
+          data: data.barData,
+          itemStyle: {
+            color: '#11B787'
+          }
         },
         {
           name: '价格',
           type: 'line',
           yAxisIndex: 1,
-          data: data.lineData
+          data: data.lineData,
+          lineStyle: {
+            color: '#FF9A37'
+          },
+          itemStyle: {
+            color: '#FF9A37'
+          }
         }
       ],
       dataZoom: [
@@ -556,6 +608,19 @@ export const handleOptions = (data, type, msg) => {
         }
       ],
     };
+    
+    // 只针对成交额页面添加grid配置
+    if (msg === '成交额') {
+      baseConfig.grid = {
+        left: '15%',
+        right: '15%',
+        top: '5%',
+        bottom: '25%',
+        containLabel: false
+      };
+    }
+    
+    return baseConfig;
   }
 
   if (type === 'updownbarline') {
