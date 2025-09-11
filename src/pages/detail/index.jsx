@@ -402,9 +402,11 @@ export default function Detail() {
               <View className='headerBox'>
                 <div className='left'>
                   <View className='coinInfo'>
-                    <Image className='coinIcon' src={coinInfo.url} mode='aspectFit' />
-                    <View className='coin-symbol'>{coinInfo.symbol}</View>
-                    <View className='coin-price'>{coinInfo.currentPrice}</View>
+                    <View className='top-row'>
+                      <Image className='coinIcon' src={coinInfo.url} mode='aspectFit' />
+                      <View className='coin-symbol'>{coinInfo.symbol}</View>
+                    </View>
+                    <View className={`coin-price ${coinInfo.priceChange_24h.includes('-') ? 'price-down' : 'price-up'}`}>{coinInfo.currentPrice}</View>
                   </View>
                   {coinInfo.priceChange_24h.includes('-') ? (
                     <div className='caretBox'>
