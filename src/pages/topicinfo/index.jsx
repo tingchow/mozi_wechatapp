@@ -7,6 +7,10 @@ import { request } from '../../utils/request'
 import { Interface } from '../../utils/constants'
 import { GardenLoading } from '../../components/Loading'
 import IconFont from '../../components/iconfont'
+import shareIcon from '../../assets/icon/community/share.png'
+import commentIcon from '../../assets/icon/community/messages-comment.png'
+import likeIcon from '../../assets/icon/community/like-no-active.png'
+import likeActiveIcon from '../../assets/icon/community/like-active.png'
 
 export default function TopicInfo() {
   const router = useRouter();
@@ -355,18 +359,18 @@ export default function TopicInfo() {
                 data-post-title={item.title}
                 onClick={(e) => e.stopPropagation()}
               >
-                <IconFont name='share' size={40} />
+                <Image className='action-icon' src={shareIcon} mode='aspectFit' />
                 分享
               </Button>
               <Button className="action-btn">
-                <IconFont name='message' size={30} />
+                <Image className='action-icon' src={commentIcon} mode='aspectFit' />
                 {item.comments}
               </Button>
               <Button 
                 className={`action-btn ${likedPosts[item.id] ? 'liked' : ''}`}
                 onClick={(e) => handleLike(e, item.id)}
               >
-                <IconFont name='heart-fill' color={likedPosts[item.id]? 'red': ''} size={30} />
+                <Image className='action-icon' src={likedPosts[item.id] ? likeActiveIcon : likeIcon} mode='aspectFit' />
                 {item.likes}
               </Button>
             </View>

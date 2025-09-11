@@ -9,6 +9,7 @@
     background-color: #fff;
     padding: 30px;
     margin-bottom: 20px;
+    border-radius: 0 0 40px 40px;
 
     .title-section {
       margin-bottom: 20px;
@@ -43,7 +44,7 @@
     .list-header {
       background-color: #fff;
       padding: 20px 30px;
-      border-bottom: 1px solid #eee;
+      border-radius: 40px 40px 0 0;
 
       .total {
         font-size: 28px;
@@ -58,6 +59,7 @@
       padding: 30px;
       margin-bottom: 20px;
       position: relative;
+      border-radius: 0 0 40px 40px;
 
       /* 编辑操作按钮 */
       .edit-actions {
@@ -161,7 +163,7 @@
       .action-buttons {
         display: flex;
         justify-content: space-between;
-        border-top: 1px solid #eee;
+        // border-top: 1px solid #eee;
         padding-top: 20px;
 
         .action-btn {
@@ -182,6 +184,18 @@
 
           &::after {
             border: none;
+          }
+
+          .action-icon {
+            width: 44px;
+            height: 44px;
+            margin-right: 8px;
+          }
+
+          // 针对消息图标单独调整尺寸
+          &:nth-child(2) .action-icon {
+            width: 50px;
+            height: 50px;
           }
 
           &.liked {

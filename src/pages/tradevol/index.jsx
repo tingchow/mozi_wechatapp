@@ -111,6 +111,11 @@ export default function Tradevol() {
     getData({exchange: cexArr[e.detail.value]});
   };
 
+  const onExchangeTabClick = (exchange) => {
+    setCexSelected(exchange);
+    getData({exchange});
+  };
+
   useLoad(async () => {
 
     Taro.showShareMenu({
@@ -197,16 +202,19 @@ export default function Tradevol() {
             </View>
           </Picker>
         </View>
-        <View className='picker-item'>
-          <View className='picker-title'>交易所</View>
-          
-          <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
-            <View className='pickerSelect'>
-              <View className='selectIcon'>{cexSelected}</View>
-              <IconFont name='caret-down' />
-            </View>
-          </Picker>
-        </View>
+      </View>
+      
+      {/* 交易所Tab切换 */}
+      <View className='exchange-tabs'>
+        {cexArr.map((exchange, index) => (
+          <View 
+            key={index} 
+            className={`exchange-tab ${cexSelected === exchange ? 'active' : ''}`}
+            onClick={() => onExchangeTabClick(exchange)}
+          >
+            {exchange}
+          </View>
+        ))}
       </View>
       <View className='currentPCR'>
         <View className='header'>当前成交额</View>
