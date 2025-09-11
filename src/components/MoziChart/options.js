@@ -4,11 +4,11 @@ export const handleOptions = (data, type, msg) => {
   if (type === 'kline') {
     // 币圈遵循国外 绿涨红跌 原则
     // const upColor = '#00da3c';  // 阳线颜色
-    const upColor = '#02c076';  // 阳线颜色
-    const upBorderColor = '#008F28'; // 阳线边框颜色
+    const upColor = '#11B787';  // 阳线颜色
+    const upBorderColor = '#11B787'; // 阳线边框颜色
     // const downColor = '#ec0000'; // 阴线颜色
-    const downColor = '#ff3333'; // 阴线颜色
-    const downBorderColor = '#8A0000'; // 阴线边框颜色
+    const downColor = '#FA5F5F'; // 阴线颜色
+    const downBorderColor = '#FA5F5F'; // 阴线边框颜色
 
     // 处理传入数据
     const handleData = (data) => {

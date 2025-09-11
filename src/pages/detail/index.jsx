@@ -517,7 +517,7 @@ export default function Detail() {
 
 
       {/* 折线图区域 */}
-      <div className='box'>
+      <div className='box chart-box'>
         <div className='f2Box'>
           <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
             <TabBar.Item key='hour' title='小时' />
@@ -572,6 +572,7 @@ export default function Detail() {
               length={5}
               colName={['交易所', '最新价', '24H涨幅', '24H成交量', '24小时成交额']}
               gridContent={coinMarket.data}
+              gridTitleBgColor="transparent"
               // callback={(gridCon) => {jump2Detail(gridCon.key)}}
             >
 
