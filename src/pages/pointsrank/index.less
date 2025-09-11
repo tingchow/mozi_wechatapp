@@ -1,0 +1,246 @@
+.points-rank-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+
+  // 头部背景
+  .header-bg {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .title {
+        color: #fff;
+        font-size: 36px;
+        font-weight: 600;
+      }
+      
+      .trophy-icon {
+        font-size: 60px;
+        transform: rotate(15deg);
+      }
+    }
+  }
+
+  // Tab容器
+  .tab-container {
+    margin-top: -30px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+    
+    .adm-tab-bar {
+      background: #fff;
+      border-radius: 25px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      
+      .adm-tab-bar-wrap {
+        display: flex;
+        
+        .adm-tab-bar-item {
+          flex: 1;
+          padding: 20px;
+          text-align: center;
+          color: #666;
+          font-size: 28px;
+          transition: all 0.3s ease;
+          
+          &.adm-tab-bar-item-active {
+            background: #11B787;
+            color: #fff;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  // 内容区域
+  .content-area {
+    height: calc(100vh - 200px);
+    padding: 30px 20px;
+  }
+
+  // 前三名展示区域
+  .top-three-container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 20px 15px;
+      border-radius: 15px;
+      background: #f8f9fa;
+      min-width: 120px;
+      
+      .rank-badge {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        
+        .rank-icon {
+          width: 50px;
+          height: 50px;
+        }
+      }
+      
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 20px 0 10px;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .name {
+        font-size: 26px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+      
+      .points {
+        display: flex;
+        align-items: center;
+        color: #f39c12;
+        font-size: 24px;
+        font-weight: 600;
+        
+        .points-icon {
+          margin-right: 4px;
+          font-size: 26px;
+        }
+      }
+      
+      &.first {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        transform: translateY(-20px);
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        
+        .avatar {
+          width: 90px;
+          height: 90px;
+          border-color: #ffd700;
+        }
+      }
+      
+      &.second {
+        background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+        transform: translateY(-10px);
+        box-shadow: 0 6px 20px rgba(192, 192, 192, 0.3);
+        
+        .avatar {
+          border-color: #c0c0c0;
+        }
+      }
+      
+      &.third {
+        background: linear-gradient(135deg, #cd7f32 0%, #deb887 100%);
+        box-shadow: 0 4px 15px rgba(205, 127, 50, 0.3);
+        
+        .avatar {
+          border-color: #cd7f32;
+        }
+      }
+    }
+  }
+
+  // 排行榜列表
+  .rank-list {
+    .rank-item {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+      
+      &.me {
+        background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+        border: 2px solid #11B787;
+      }
+      
+      .rank-number {
+        font-size: 32px;
+        font-weight: 600;
+        color: #666;
+        min-width: 60px;
+        text-align: center;
+      }
+      
+      .avatar-small {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 0 20px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .user-info {
+        flex: 1;
+        
+        .name {
+          font-size: 28px;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 5px;
+        }
+        
+        .special-badge {
+          .special-text {
+            color: #11B787;
+            font-size: 22px;
+            background: rgba(17, 183, 135, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+          }
+        }
+      }
+      
+      .points-area {
+        display: flex;
+        align-items: center;
+        
+        .points-icon {
+          font-size: 28px;
+          margin-right: 6px;
+        }
+        
+        .points-text {
+          font-size: 28px;
+          font-weight: 600;
+          color: #f39c12;
+        }
+      }
+    }
+  }
+}

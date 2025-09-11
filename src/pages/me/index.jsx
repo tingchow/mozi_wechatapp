@@ -441,7 +441,7 @@ export default function Index() {
                          当前排名：总榜第 <Text style={{color: '#000', fontWeight: 'bold'}}>23</Text> 名
           </Text>
         </View>
-        <View className='pointsAction' onClick={() => jump2NoTab('ranklist')}>
+        <View className='pointsAction' onClick={() => jump2NoTab('pointsrank')}>
           <Text className='pointsButton'>积分榜单</Text>
           <IconFont name='right' size={24} color='#fff'/>
         </View>

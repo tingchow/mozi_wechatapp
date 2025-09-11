@@ -41,7 +41,8 @@ export default defineAppConfig({
     'pages/mywarn/index',
     // 话题搜索页
     'pages/topicsearch/index',
-    
+    // 积分榜单页
+    'pages/pointsrank/index',
   ],
   // subpackages: [
   //   {
