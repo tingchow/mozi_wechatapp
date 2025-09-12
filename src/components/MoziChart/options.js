@@ -670,7 +670,7 @@ export const handleOptions = (data, type, msg) => {
           // name: '',
           type: 'bar',
           stack: 'one',
-          color: '#02c076',
+          color: '#11B787',
           data: data.upData
         },
         {
@@ -684,7 +684,13 @@ export const handleOptions = (data, type, msg) => {
           // name: '价格',
           type: 'line',
           yAxisIndex: 1,
-          data: data.coinFee
+          data: data.coinFee,
+          lineStyle: {
+            color: '#FF9A37'
+          },
+          itemStyle: {
+            color: '#FF9A37'
+          }
         }
       ],
       dataZoom: [

@@ -39,6 +39,7 @@ export default function Fundingrate() {
   });
 
   const [showMore, setShowMore] = useState(false);
+  const [showChart, setShowChart] = useState(true);
   // const [hisPCRData, setHisPCRData] = useState({
   //   loading: true,
   //   close: false,
@@ -50,6 +51,40 @@ export default function Fundingrate() {
   const chartRef = useRef(null)
   const chartData = useRef(null)
 
+  // 监听图表显示状态，重新设置数据
+  useEffect(() => {
+    if (showChart && chartRef.current && chartData.current) {
+      setTimeout(() => {
+        try {
+          const options = handleOptions(chartData.current.data, chartData.current.type);
+          // 为资金费率图表添加特殊的 grid 配置
+          if (chartData.current.type === 'updownbarline') {
+            options.grid = {
+              left: '17%',
+              right: '17%',
+              top: '5%',
+              bottom: '25%',
+              containLabel: false
+            };
+            // 去掉纵坐标的$符号，但保留其他单位
+            options.yAxis[0].axisLabel.formatter = (value) => {
+              const originalFormat = chartData.current.data.yAxisLeftSlot?.replace('{}', value) ?? value;
+              return originalFormat.replace(/\$/g, '');
+            };
+            options.yAxis[1].axisLabel.formatter = (value) => {
+              const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', value) ?? value;
+              return originalFormat.replace(/\$/g, '');
+            };
+          }
+          chartRef.current.setOption(options);
+          console.log('图表数据重新设置完成');
+        } catch (error) {
+          console.log('重新设置图表数据失败:', error);
+        }
+      }, 50);
+    }
+  }, [showChart]);
+
   useShareAppMessage(() => {
     return {
       title: '你能用微信盯盘啦！'
@@ -57,7 +92,7 @@ export default function Fundingrate() {
   });
 
   const initChart = (canvas, width, height, dpr) => {
-    console.log('初始化');
+    console.log('初始化图表');
     const chart = echarts.init(canvas, null, {
       width: width,
       height: height,
@@ -65,11 +100,33 @@ export default function Fundingrate() {
     });
     canvas.setChart(chart);
 
-    // console.log(handleOptions(hisData, 'samebar'));
-    // canvas.setOption();
-    
     chartRef.current = chart;
-    console.log('chartRef.current', chartRef.current);
+    
+    // 如果有数据，立即设置
+    if (chartData.current) {
+      const options = handleOptions(chartData.current.data, chartData.current.type);
+      // 为资金费率图表添加特殊的 grid 配置
+      if (chartData.current.type === 'updownbarline') {
+        options.grid = {
+          left: '17%',
+          right: '17%',
+          top: '5%',
+          bottom: '25%',
+          containLabel: false
+        };
+        // 去掉纵坐标的$符号，但保留其他单位
+        options.yAxis[0].axisLabel.formatter = (value) => {
+          const originalFormat = chartData.current.data.yAxisLeftSlot?.replace('{}', value) ?? value;
+          return originalFormat.replace(/\$/g, '');
+        };
+        options.yAxis[1].axisLabel.formatter = (value) => {
+          const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', value) ?? value;
+          return originalFormat.replace(/\$/g, '');
+        };
+      }
+      chart.setOption(options);
+      console.log('图表初始化时设置数据完成');
+    }
 
     return chart;
   }
@@ -109,6 +166,11 @@ export default function Fundingrate() {
     setCexSelected(cexArr[e.detail.value]);
 
     getData({exchange: cexArr[e.detail.value]});
+  };
+
+  const onExchangeTabClick = (exchange) => {
+    setCexSelected(exchange);
+    getData({exchange});
   };
 
   useLoad(async () => {
@@ -190,7 +252,25 @@ export default function Fundingrate() {
       type: 'updownbarline'
     };
 
-    chartRef.current.setOption(handleOptions(frHisData.data, 'updownbarline'));
+    const options = handleOptions(frHisData.data, 'updownbarline');
+    // 为资金费率图表添加特殊的 grid 配置
+    options.grid = {
+      left: '17%',
+      right: '17%',
+      top: '5%',
+      bottom: '25%',
+      containLabel: false
+    };
+    // 去掉纵坐标的$符号，但保留其他单位
+    options.yAxis[0].axisLabel.formatter = (value) => {
+      const originalFormat = frHisData.data.yAxisLeftSlot?.replace('{}', value) ?? value;
+      return originalFormat.replace(/\$/g, '');
+    };
+    options.yAxis[1].axisLabel.formatter = (value) => {
+      const originalFormat = frHisData.data.yAxisRightSlot?.replace('{}', value) ?? value;
+      return originalFormat.replace(/\$/g, '');
+    };
+    chartRef.current.setOption(options);
   };
 
   const jump2Land = () => {
@@ -203,18 +283,8 @@ export default function Fundingrate() {
         <TabBar.Item key='currentRatio' title='当前费率' />
         <TabBar.Item key='historyRatio' title='历史费率' />
       </TabBar>
+      <View className='currentRateTitle'>当前费率</View>
       <View className='currentPCR'>
-        <View className='header'>
-          <View>当前费率</View>
-          {/* <View className='pickerList'>
-            <Picker mode='selector' range={exchangeList} onChange={onExchangeChange}>
-              <View className='pickerSelect'>
-                <View className='selectIcon'>{exchangeSelected}</View>
-                <IconFont name='caret-down' />
-              </View>
-            </Picker>
-          </View> */}
-        </View>
           
         <View className='currentPCRChart'>
           <Layout isLoading={curFundData.loading} isClose={curFundData.close}>
@@ -259,46 +329,75 @@ export default function Fundingrate() {
               </View>
             </ScrollView>
             {
-              !showMore && <View className='show-more-btn' onClick={() => {setShowMore(true)}}>
+              !showMore && <View className='show-more-btn' onClick={() => {
+                setShowMore(true);
+                // 先隐藏图表
+                setShowChart(false);
+                // 延迟1秒后重新显示图表
+                setTimeout(() => {
+                  setShowChart(true);
+                }, 100);
+              }}>
                 <View className='more'>查看更多</View>
                 <IconFont name='caret-down' />
+              </View>
+            }
+            {
+              showMore && <View className='show-more-btn' onClick={() => {
+                setShowMore(false);
+                // 先隐藏图表
+                setShowChart(false);
+                // 延迟1秒后重新显示图表
+                setTimeout(() => {
+                  setShowChart(true);
+                }, 100);
+              }}>
+                <View className='more'>收起</View>
+                <IconFont name='caret-up' />
               </View>
             }
           </Layout>
           
         </View>
       </View>
+      <View className='currentRateTitle'>历史费率</View>
+      
+      {/* 历史费率的选择器 */}
+      <View className='pickerList'>
+        <View className='picker-item'>
+          <View className='picker-title'>币种</View>
+          <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
+            <View className='pickerSelect'>
+              <View className='selectIcon'>{coinSelected}</View>
+              <IconFont name='caret-down' />
+            </View>
+          </Picker>
+        </View>
+      </View>
+      
+      {/* 交易所Tab切换 */}
+      <View className='exchange-tabs'>
+        {cexArr.map((exchange, index) => (
+          <View 
+            key={index} 
+            className={`exchange-tab ${cexSelected === exchange ? 'active' : ''}`}
+            onClick={() => onExchangeTabClick(exchange)}
+          >
+            {exchange}
+          </View>
+        ))}
+      </View>
+      
       <View className='currentPCR hisFR'>
-        <View className='header'>
-          <View>历史费率</View>
-          <View className='pickerList'>
-            <View className='picker-item'>
-              <View className='picker-title'>币种</View>
-              <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
-                <View className='pickerSelect'>
-                  <View className='selectIcon'>{coinSelected}</View>
-                  <IconFont name='caret-down' />
-                </View>
-              </Picker>
-            </View>
-            <View className='picker-item'>
-              <View className='picker-title'>交易所</View>
-              <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
-                <View className='pickerSelect'>
-                  <View className='selectIcon'>{cexSelected}</View>
-                  <IconFont name='caret-down' />
-                </View>
-              </Picker>
-            </View>
-          </View>
-        </View>
           
-        <View className='currentChart'>
-          <View className='chart-arrawsalt' onClick={jump2Land}>
-            <IconFont name='arrawsalt' size={30} color='#fff' />
+        {showChart && (
+          <View className='currentChart'>
+            <View className='chart-arrawsalt' onClick={jump2Land}>
+              <IconFont name='arrawsalt' size={30} color='#fff' />
+            </View>
+            <ec-canvas className='chart' canvas-id="mychart-updownbarline" ec={{onInit: initChart}}></ec-canvas>
           </View>
-          <ec-canvas className='chart' canvas-id="mychart-updownbarline" ec={{onInit: initChart}}></ec-canvas>
-        </View>
+        )}
       </View>
     </View>
   )
