@@ -48,8 +48,8 @@ export function MarketDistribution({ title = '涨跌分布', showUpdateTime = tr
   // 获取颜色
   const getBarColor = (type) => {
     switch (type) {
-      case 'up': return '#02c076';
-      case 'down': return '#ff3333';
+      case 'up': return '#11B787';
+      case 'down': return '#FA5F5F';
       case 'neutral': return '#999';
       default: return '#999';
     }
@@ -63,9 +63,9 @@ export function MarketDistribution({ title = '涨跌分布', showUpdateTime = tr
 
   // 获取恐慌贪婪指数的颜色
   const getFearGreedColor = (index) => {
-    if (index >= 75) return '#ff3333'; // 贪婪 - 红色
+    if (index >= 75) return '#FA5F5F'; // 贪婪 - 红色
     if (index >= 50) return '#ffa500'; // 中性 - 橙色
-    return '#02c076'; // 恐慌 - 绿色
+    return '#11B787'; // 恐慌 - 绿色
   };
 
   // 获取恐慌贪婪指数的描述

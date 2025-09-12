@@ -104,6 +104,12 @@ export default function Putcallratio() {
     getData({ratioTypeSelected, exchange: cexArr[e.detail.value], getType: 'his'});
   };
 
+  const onRatioTabClick = (ratio) => {
+    setRatioSelected(ratio);
+    const ratioTypeSelected = ratioTypeArr[ratioArr.indexOf(ratio)];
+    getData({ratioTypeSelected});
+  };
+
   useLoad(async () => {
 
     Taro.showShareMenu({
@@ -216,47 +222,49 @@ export default function Putcallratio() {
             </View>
           </Picker>
         </View>
-        <View className='picker-item'>
-          <View className='picker-title'>类型</View>
-          <Picker mode='selector' range={ratioArr} onChange={onRatioChange}>
-            <View className='pickerSelect'>
-              <View className='selectIcon'>{ratioSelected}</View>
-              <IconFont name='caret-down' />
-            </View>
-          </Picker>
-        </View>
       </View>
+      
+      {/* 类型Tab切换 */}
+      <View className='ratio-tabs'>
+        {ratioArr.map((ratio, index) => (
+          <View 
+            key={index} 
+            className={`ratio-tab ${ratioSelected === ratio ? 'active' : ''}`}
+            onClick={() => onRatioTabClick(ratio)}
+          >
+            {ratio}
+          </View>
+        ))}
+      </View>
+      <View className='section-header'>当前多空比</View>
       <Layout isLoading={curPCRData.loading} isClose={curPCRData.close}>
-        
         <View className='currentPCR'>
-          <View className='header-title'>当前多空比</View>
           <MoziPCRColChart
             data={curPCRData.data?.list}
           />
         </View>
       </Layout>
-      {/* <Layout isLoading={hisPCRData.loading} isClose={hisPCRData.close}> */}
-        <View className='currentPCR'>
-          <View className='header'>
-            <View className='header-title'>历史多空比</View>
-            <View>
-              <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
-                <View className='pickerSelect'>
-                  <View className='selectIcon'>{cexSelected}</View>
-                  <IconFont name='caret-down' />
-                </View>
-              </Picker>
-            </View>
-          </View>
-          
-          <View className='currentPCRChart'>
-            <View className='chart-arrawsalt' onClick={jump2Land}>
-              <IconFont name='arrawsalt' size={30} color='#fff' />
-            </View>
-            <ec-canvas className='chart' canvas-id="mychart-pcr" ec={ec}></ec-canvas>
+      
+      <View className='section-header'>历史多空比</View>
+      <View className='currentPCR'>
+        <View className='header'>
+          <View>
+            <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
+              <View className='pickerSelect'>
+                <View className='selectIcon'>{cexSelected}</View>
+                <IconFont name='caret-down' />
+              </View>
+            </Picker>
           </View>
         </View>
-      {/* </Layout> */}
+        
+        <View className='currentPCRChart'>
+          <View className='chart-arrawsalt' onClick={jump2Land}>
+            <IconFont name='arrawsalt' size={30} color='#fff' />
+          </View>
+          <ec-canvas className='chart' canvas-id="mychart-pcr" ec={ec}></ec-canvas>
+        </View>
+      </View>
     </View>
   )
 }

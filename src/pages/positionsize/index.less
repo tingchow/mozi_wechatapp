@@ -18,19 +18,103 @@
 
   .pickerList {
     display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    background: #fff;
-    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px 0px 20px;
+    margin-bottom: 0;
 
     .picker-item {
-      display: flex;
+      background: #f8f9fa;
+      border-radius: 25px;
+      border: 1px solid #e9ecef;
+      width: 100%;
+      position: relative;
 
       .picker-title {
-        font-weight: bold;
-        margin-right: 10px;
+        font-weight: 400;
+        font-size: 28px;
+        color: #81858C;
+        margin-right: 0;
+        position: absolute;
+        left: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      picker {
+        width: 100%;
+        min-height: 60px;
+        
+        .pickerSelect {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          color: #333;
+          font-weight: 600;
+          font-size: 28px;
+          padding: 15px 25px;
+          min-height: 60px;
+          box-sizing: border-box;
+
+          .selectIcon {
+            margin-right: 8px;
+          }
+        }
       }
     }
+  }
+
+  // 交易所Tab切换样式
+  .exchange-tabs {
+    display: flex;
+    background:#EEF0F3;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    
+    .exchange-tab {
+      flex: 1;
+      padding: 20px 10px;
+      font-size: 26px;
+      color: #999;
+      background: transparent;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      
+      &.active {
+        color: #11B787;
+        font-weight: bold;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 36px;
+          height: 8px;
+          background-color: #11B787;
+          border-radius: 4px;
+        }
+      }
+      
+      &:not(.active):hover {
+        color: #666;
+      }
+    }
+  }
+
+  // 外部标题样式
+  .section-header {
+    font-weight: 600;
+    font-size: 32px;
+    color: #333;
+    padding: 20px;
+    padding-bottom: 10px;
+    background: transparent;
   }
 
   .currentPCR {
@@ -38,32 +122,14 @@
     background-color: #fff;
     margin-bottom: 20px;
   
-    // .pickerList {
-    //   display: flex;
-    //   justify-content: space-around;
-    //   height: 50px;
-
-    //   .pickerSelect {
-    //     display: flex;
-    //     align-items: center;
-    //     height: 50px;
-      
-    //     .selectIcon {
-    //       margin-right: 10px;
-    //     }
-    //   }
-    // }
-
     .header {
-      // display: flex;
-      // justify-content: space-between;
       font-weight: bold;
     }
 
     .currentPCRChart {
       width: 100%;
       height: 600px;
-      padding: 0 20px;
+      padding: 0;
       position: relative;
 
       .chart-arrawsalt {

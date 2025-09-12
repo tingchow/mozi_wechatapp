@@ -115,6 +115,11 @@ export default function Positionsize() {
     getData({exchange: cexArr[e.detail.value]});
   };
 
+  const onExchangeTabClick = (exchange) => {
+    setCexSelected(exchange);
+    getData({exchange});
+  };
+
   useLoad(async () => {
 
     Taro.showShareMenu({
@@ -151,7 +156,7 @@ export default function Positionsize() {
       return {
         ...item,
         itemStyle: {
-          color: item.state === 1? '#02c076': '#ff3333',
+          color: item.state === 1? '#11B787': '#FA5F5F',
           // borderColor: '#fff'
         }
       };
@@ -203,20 +208,22 @@ export default function Positionsize() {
             </View>
           </Picker>
         </View>
-        <View className='picker-item'>
-          <View className='picker-title'>交易所</View>
-          
-          <Picker mode='selector' range={cexArr} onChange={onExchangeChange}>
-            <View className='pickerSelect'>
-              <View className='selectIcon'>{cexSelected}</View>
-              <IconFont name='caret-down' />
-            </View>
-          </Picker>
-        </View>
       </View>
+      
+      {/* 交易所Tab切换 */}
+      <View className='exchange-tabs'>
+        {cexArr.map((exchange, index) => (
+          <View 
+            key={index} 
+            className={`exchange-tab ${cexSelected === exchange ? 'active' : ''}`}
+            onClick={() => onExchangeTabClick(exchange)}
+          >
+            {exchange}
+          </View>
+        ))}
+      </View>
+      <View className='section-header'>当前持仓量</View>
       <View className='currentPCR'>
-        <View className='header'>当前持仓量</View>
-          
         <View className='currentPCRChart'>
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
@@ -224,9 +231,9 @@ export default function Positionsize() {
           <ec-canvas className='chart' canvas-id="mychart-pscur" ec={ec}></ec-canvas>
         </View>
       </View>
+      
+      <View className='section-header'>历史持仓量</View>
       <View className='currentPCR'>
-        <View className='header'>历史持仓量</View>
-          
         <View className='currentPCRChart'>
           <View className='chart-arrawsalt' onClick={() => {jump2Land('his')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />

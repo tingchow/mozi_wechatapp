@@ -333,8 +333,8 @@ export const handleOptions = (data, type, msg) => {
           data,
           itemStyle: {
             // color: (info) => {
-            //   console.log('color', info.data?.state === 1? '#02c076': '#ff3333');
-            //   return info.data?.state === 1? '#02c076': '#ff3333'
+            //   console.log('color', info.data?.state === 1? '#11B787': '#FA5F5F');
+            //   return info.data?.state === 1? '#11B787': '#FA5F5F'
             // }
             borderColor: '#fff',
             borderRadius: 2
@@ -377,20 +377,41 @@ export const handleOptions = (data, type, msg) => {
     // 如果是成交量界面，添加特殊的grid配置让图表占满
     if (msg === '成交量') {
       baseConfig.grid = {
-        top: '5%',
+        top: '3%',
         left: '1%',
         right: '1%',
-        bottom: '5%',
+        bottom: '3%',
         containLabel: false
       };
       baseConfig.series[0] = {
         ...baseConfig.series[0],
-        top: '5%',
+        top: '3%',
         left: '1%',
         right: '1%',
-        bottom: '5%',
+        bottom: '3%',
         width: '98%',
-        height: '90%'
+        height: '94%'
+      };
+    }
+    
+    // 如果是持仓量界面，添加特殊的grid配置让图表更大
+    if (msg === '持仓量') {
+      console.log('持仓量配置生效:', msg);
+      baseConfig.grid = {
+        top: '3%',
+        left: '1%',
+        right: '1%',
+        bottom: '3%',
+        containLabel: false
+      };
+      baseConfig.series[0] = {
+        ...baseConfig.series[0],
+        top: '3%',
+        left: '1%',
+        right: '1%',
+        bottom: '3%',
+        width: '98%',
+        height: '94%'
       };
     }
     
@@ -482,14 +503,14 @@ export const handleOptions = (data, type, msg) => {
           //   show: true,
           //   formatter: (params) => params.value *100 + '%'
           // },
-          color: '#ff3333',
+          color: '#FA5F5F',
           data: data.shortData
         },
         {
           name: '多',
           type: 'bar',
           stack: 'total',
-          color: '#02c076',
+          color: '#11B787',
           // label: {
           //   show: true,
           //   formatter: (params) => params.value* 100 + '%'
@@ -546,6 +567,10 @@ export const handleOptions = (data, type, msg) => {
                 // 只针对成交额页面去掉$符号
                 let formattedValue = data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
                 return formattedValue.toString().replace('$', '');
+              } else if (msg === '持仓') {
+                // 针对历史持仓量页面去掉$符号
+                let formattedValue = data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
+                return formattedValue.toString().replace('$', '');
               } else {
                 // 其他页面保持原来的格式
                 return data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
@@ -561,6 +586,10 @@ export const handleOptions = (data, type, msg) => {
                 // 只针对成交额页面转换为万单位
                 let tenThousandValue = (value / 10000).toFixed(1);
                 return tenThousandValue + '万';
+              } else if (msg === '持仓') {
+                // 针对历史持仓量页面去掉$符号
+                let formattedValue = data.yAxisRightSlot ? data.yAxisRightSlot.replace('{}', value) : value;
+                return formattedValue.toString().replace('$', '');
               } else {
                 // 其他页面保持原来的格式
                 return data.yAxisRightSlot ? data.yAxisRightSlot.replace('{}', value) : value;
@@ -614,6 +643,17 @@ export const handleOptions = (data, type, msg) => {
       baseConfig.grid = {
         left: '15%',
         right: '15%',
+        top: '5%',
+        bottom: '25%',
+        containLabel: false
+      };
+    }
+    
+    // 针对持仓量页面添加grid配置，增加右侧边距
+    if (msg === '持仓') {
+      baseConfig.grid = {
+        left: '10%',
+        right: '15%',  // 增加右侧边距，确保Y轴标签显示完整
         top: '5%',
         bottom: '25%',
         containLabel: false
@@ -677,7 +717,7 @@ export const handleOptions = (data, type, msg) => {
           // name: '',
           type: 'bar',
           stack: 'one',
-          color: '#ff3333',
+          color: '#FA5F5F',
           data: data.downData
         },
         {

@@ -14,8 +14,8 @@ export const MoziPCRColChart = (props) => {
       <View className='PCRDesc'>
         <View className='PCRDescName'>交易所</View>
         <View className='PCRDescContent'>
-          <View>多</View>
-          <View>空</View>
+          <View className='pcr-long-text'>多</View>
+          <View className='pcr-short-text'>空</View>
         </View>
       </View>
       <View className='PCRList'>
@@ -31,8 +31,8 @@ export const MoziPCRColChart = (props) => {
                 <View className='pcrItemRatio'>
                   <View className='pcrItemLeft' style={{width: pcrItem.long}}></View>
                   <View className='pcrItemDesc'>
-                    <View>{pcrItem.long}</View>
-                    <View>{pcrItem.short}</View>
+                    <View className='pcr-long-value'>{pcrItem.long}</View>
+                    <View className='pcr-short-value'>{pcrItem.short}</View>
                   </View>
                 </View>
               </View>

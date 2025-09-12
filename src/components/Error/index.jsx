@@ -18,7 +18,7 @@ export const Error = (props) => {
   // if (props.isRefresh) {
   //   return (
   //     <View className='errorBox'>
-  //       <IconFont name='info-circle-fill' color='#ff3333' size={200} />
+  //       <IconFont name='info-circle-fill' color='#FA5F5F' size={200} />
   //       <View className='errorText'>{COMMON_MSG}</View>
   //       <Button className='errorBtn' onClick={reload}>刷新</Button>
   //     </View>
@@ -27,7 +27,7 @@ export const Error = (props) => {
 
   return (
     <View className='errorBox'>
-      <IconFont name='info-circle-fill' color='#ff3333' size={200} />
+      <IconFont name='info-circle-fill' color='#FA5F5F' size={200} />
       <View className='errorText'>{props.errMsg || COMMON_MSG}</View>
       {/* <Button className='errorBtn' onClick={reload}>刷新</Button> */}
     </View>

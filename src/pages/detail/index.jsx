@@ -414,7 +414,7 @@ export default function Detail() {
                   </View>
                   {coinInfo.priceChange_24h.includes('-') ? (
                     <div className='caretBox'>
-                      <IconFont name='caret-down' size={50} color='#ff3333' />
+                      <IconFont name='caret-down' size={50} color='#FA5F5F' />
                       <View className='downPercent precentBox'>
                         <View className='priceItem'>{coinInfo.priceChange_24h}</View>
                         <View>({coinInfo.priceChangePercentage_24h})</View>
@@ -422,7 +422,7 @@ export default function Detail() {
                     </div>
                     ): (
                       <div className='caretBox'>
-                        <IconFont name='caret-up' size={50} color='#02c076' />
+                        <IconFont name='caret-up' size={50} color='#11B787' />
                         <View className='upPercent precentBox'>
                           <View className='priceItem'>{coinInfo.priceChange_24h}</View>
                           <View>({coinInfo.priceChangePercentage_24h})</View>

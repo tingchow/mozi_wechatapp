@@ -271,7 +271,7 @@ export default function Mywarn() {
                               type='digit'
                             />
                             <View className='confirm-btn' onClick={() => confirmEdit(item.code, index)}>
-                              <IconFont name='check' size={40} color='#02c076' />
+                              <IconFont name='check' size={40} color='#11B787' />
                             </View>
                             {/* <Button 
                               className='confirm-btn'

@@ -18,25 +18,126 @@
 
   .pickerList {
     display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    background: #fff;
-    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px 0px 20px;
+    margin-bottom: 0;
 
     .picker-item {
-      display: flex;
+      background: #f8f9fa;
+      border-radius: 25px;
+      border: 1px solid #e9ecef;
+      width: 100%;
+      position: relative;
 
       .picker-title {
-        font-weight: bold;
-        margin-right: 10px;
+        font-weight: 400;
+        font-size: 28px;
+        color: #81858C;
+        margin-right: 0;
+        position: absolute;
+        left: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      picker {
+        width: 100%;
+        min-height: 60px;
+        
+        .pickerSelect {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          color: #333;
+          font-weight: 600;
+          font-size: 28px;
+          padding: 15px 25px;
+          min-height: 60px;
+          box-sizing: border-box;
+
+          .selectIcon {
+            margin-right: 8px;
+          }
+        }
       }
     }
+  }
+
+  // 类型Tab切换样式
+  .ratio-tabs {
+    display: flex;
+    background:#EEF0F3;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    
+    // 隐藏滚动条样式
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
+    // 兼容火狐浏览器
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    .ratio-tab {
+      flex: 0 0 auto;
+      min-width: 120px;
+      padding: 20px 15px;
+      font-size: 24px;
+      color: #999;
+      background: transparent;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      white-space: nowrap;
+      
+      &.active {
+        color: #11B787;
+        font-weight: bold;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 36px;
+          height: 8px;
+          background-color: #11B787;
+          border-radius: 4px;
+        }
+      }
+      
+      &:not(.active):hover {
+        color: #666;
+      }
+    }
+  }
+
+  // 外部标题样式
+  .section-header {
+    font-weight: 600;
+    font-size: 32px;
+    color: #333;
+    padding: 20px;
+    padding-bottom: 10px;
+    background: transparent;
   }
 
   .currentPCR {
     padding: 20px;
     background-color: #fff;
-    margin-bottom: 20px;
+    margin: 0 20px 20px 20px;
+    border-radius: 20px;
 
     
   

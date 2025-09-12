@@ -7,7 +7,7 @@ export const TopBtn = ({isShow}) => {
   if (isShow) {
     return (
       <View className='topBtn'>
-        <IconFont name='caret-up' size={50} color='#02c076' />
+        <IconFont name='caret-up' size={50} color='#11B787' />
       </View>
     );
   }
