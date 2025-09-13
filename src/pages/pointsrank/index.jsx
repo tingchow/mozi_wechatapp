@@ -15,13 +15,13 @@ export default function PointsRank() {
     daily: [
       { id: 1, name: '张三', avatar: 'https://images.unsplash.com/photo-1494790108755-2616c5e91d5f?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 1 },
       { id: 2, name: '张三', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 2 },
-      { id: 3, name: '张三', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 3 },
-      { id: 4, name: '张三', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 4 },
+      { id: 3, name: 'GGBond', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 3 },
+      { id: 4, name: '超人强', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 4 },
       { id: 5, name: '张三', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 5 },
       { id: 6, name: '张三', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 6 },
       { id: 7, name: '张三', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 7, special: '查看更多朋友圈' },
       { id: 8, name: '张三', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 8 },
-      { id: 25, name: '我', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 25, isMe: true }
+      { id: 25, name: '牛爷爷', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&crop=face', points: 2000, rank: 25, isMe: true }
     ],
     monthly: [
       // 月榜数据...
@@ -82,6 +82,12 @@ export default function PointsRank() {
   };
 
   const listData = rankData[activeTab] || [];
+  // 前三名用于叠加到背景的三个槽位
+  const top1 = (rankData[activeTab] || []).find((i) => i.rank === 1);
+  const top2 = (rankData[activeTab] || []).find((i) => i.rank === 2);
+  const top3 = (rankData[activeTab] || []).find((i) => i.rank === 3);
+  const myRank = (rankData[activeTab] || []).find((i) => i.isMe);
+  const restList = (rankData[activeTab] || []).filter((i) => i.rank > 3);
 
   return (
     <View className='points-rank-container'>
@@ -121,27 +127,57 @@ export default function PointsRank() {
         </View>
       </View>
 
-      {/* 大Tab已移除，顶部使用迷你切换 */}
+      {/* 仅过渡背景 + Top3 叠加信息 */}
+      <View className='transition-top3'>
+        <View className='transition-bg' />
+        <View className='top3-overlay'>
+          {top2 && (
+            <View className='overlay-slot second'>
+              <Image src={top2.avatar} className='ov-avatar' mode='aspectFill' />
+              <View className='ov-name'>{top2.name}</View>
+              <View className='ov-points'>
+                <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                <Text className='ov-points-text'>{top2.points}</Text>
+              </View>
+            </View>
+          )}
+          {top1 && (
+            <View className='overlay-slot first'>
+              <Image src={top1.avatar} className='ov-avatar' mode='aspectFill' />
+              <View className='ov-name'>{top1.name}</View>
+              <View className='ov-points'>
+                <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                <Text className='ov-points-text'>{top1.points}</Text>
+              </View>
+            </View>
+          )}
+          {top3 && (
+            <View className='overlay-slot third'>
+              <Image src={top3.avatar} className='ov-avatar' mode='aspectFill' />
+              <View className='ov-name'>{top3.name}</View>
+              <View className='ov-points'>
+                <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                <Text className='ov-points-text'>{top3.points}</Text>
+              </View>
+            </View>
+          )}
+        </View>
+      </View>
 
       {/* 内容区域 */}
       <ScrollView scrollY className='content-area'>
         <Layout isLoading={loading}>
           {/* 排名列表 */}
           <View className='rank-list'>
-            {listData.map((item) => (
-              <View key={item.id} className={`rank-item ${item.isMe ? 'me' : ''}`}>
+            {restList.map((item) => (
+              <View key={item.id} className={`rank-item`}>
                 <View className='rank-number'>{item.rank}</View>
                 <Image src={item.avatar} className='avatar-small' mode='aspectFit' />
                 <View className='user-info'>
                   <View className='name'>{item.name}</View>
-                  {item.special && (
-                    <View className='special-badge'>
-                      <View className='special-text'>✅ {item.special}</View>
-                    </View>
-                  )}
                 </View>
                 <View className='points-area'>
-                  <Text className='points-icon'>🪙</Text>
+                  <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
                   <Text className='points-text'>{item.points}</Text>
                 </View>
               </View>
@@ -149,6 +185,23 @@ export default function PointsRank() {
           </View>
         </Layout>
       </ScrollView>
+
+      {/* 我的排名悬浮卡片 */}
+      {myRank && (
+        <View className='my-rank-overlay'>
+          <View className='rank-item me'>
+            <View className='rank-number'>{myRank.rank}</View>
+            <Image src={myRank.avatar} className='avatar-small' mode='aspectFit' />
+            <View className='user-info'>
+              <View className='name'>{myRank.name}</View>
+            </View>
+            <View className='points-area'>
+              <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+              <Text className='points-text'>{myRank.points}</Text>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   )
 }
