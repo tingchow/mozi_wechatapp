@@ -524,7 +524,13 @@ export const handleOptions = (data, type, msg) => {
           name: '多空比',
           type: 'line',
           yAxisIndex: 1,
-          data: data.longShortData
+          data: data.longShortData,
+          lineStyle: {
+            color: '#FF9A37'
+          },
+          itemStyle: {
+            color: '#FF9A37'
+          }
         }
       ]
     }

@@ -1,5 +1,5 @@
 import { View, Text, Input, Button, Image, PageContainer } from '@tarojs/components'
-import { useLoad, getCurrentInstance, useRouter, useShareAppMessage, useDidShow, useDidHide } from '@tarojs/taro';
+import Taro, { useLoad, getCurrentInstance, useRouter, useShareAppMessage, useDidShow, useDidHide } from '@tarojs/taro';
 import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
 import { Interface, LOOPTIME } from '../../utils/constants';
@@ -16,12 +16,19 @@ import { GardenLoading } from '../../components/Loading';
 import { HighlightArea } from '../../components/HighlightArea';
 import { PageLogin } from '../../components/PageLogin';
 import { isEmpty } from 'lodash';
+import leftArrowIcon from '../../assets/icon/left-arrow.png';
 import './index.less';
 // let $instance = null;
+
+// 页面配置 - 使用自定义导航栏
+definePageConfig({
+  navigationStyle: 'custom'
+})
 
 export default function Search() {
   const [showType, setShowType] = useState('none');
   const [searchValue, setSearchValue] = useState('');
+  const [systemInfo, setSystemInfo] = useState({ statusBarHeight: 44, navigationBarHeight: 88 });
 
   const [infoData, setInfoData] = useState({
     length: 0,
@@ -267,6 +274,19 @@ export default function Search() {
     };
   });
 
+  // 获取系统信息
+  useEffect(() => {
+    Taro.getSystemInfo({
+      success: (res) => {
+        const menuButtonInfo = Taro.getMenuButtonBoundingClientRect();
+        setSystemInfo({
+          statusBarHeight: res.statusBarHeight,
+          navigationBarHeight: menuButtonInfo.top + menuButtonInfo.height + (menuButtonInfo.top - res.statusBarHeight)
+        });
+      }
+    });
+  }, []);
+
   const spotColNameList = [
     ['现货交易对', '交易所', '最新价', '24H变化'],
     ['衍生品交易对', '交易所', '最新价', '24H变化'],
@@ -275,24 +295,76 @@ export default function Search() {
   console.log('spotData', spotData);
   return (
     <View className='indexBox'>
-      <View className='header'>
-        <SearchInput reloadFun={reload} />
-      </View>
+      {/* 自定义导航栏和搜索区域 */}
+      <View className='top-area' style={{ paddingTop: `${systemInfo.statusBarHeight}px` }}>
+        {/* 自定义导航栏 */}
+        <View className='custom-navbar'>
+          <View className='navbar-left' onClick={() => Taro.switchTab({ url: '/pages/index/index' })}>
+            <Image src={leftArrowIcon} className='navbar-left-icon' />
+          </View>
+          <View className='navbar-title'>搜索</View>
+          <View className='navbar-right'>
+            <IconFont name='more' size={28} color='#ffffff' />
+          </View>
+        </View>
+        
+        {/* 搜索框区域 */}
+        <View className='header'>
+          <SearchInput reloadFun={reload} />
+        </View>
+        
+          <View className='coin-header-info'>
+          {showType === 'valid' && (
+            <View className='coin-header-item' onClick={() => {
+              if (infoData.length > 3) {
+                jump2List({
+                  interFace: Interface.COIN_INFO,
+                  requestData: {
+                    coin: searchValue
+                  },
+                  gridTitle: ['名称', '最新价', '24H涨幅', '加自选', '加监控'],
+                  gridCon: [{
+                    type: 'Img+Text',
+                    data: ['url', 'symbol']
+                  }, {
+                    type: 'Text',
+                    data: 'last'
+                  }, {
+                    type: 'HighlightArea',
+                    data: 'price24h'
+                  }, {
+                    type: 'AddCollect',
+                    data: ['favorite', 'symbol']
+                  }, {
+                    type: 'AddMonitor',
+                    data: 'symbol'
+                  },{
+                    type: 'key',
+                    data: 'symbol'
+                  }],
+                });
+              }
+                }}>
+                  币种({infoData.length})
+                  {infoData.length > 3 && <IconFont name='right' size={24} color='#666666' />}
+                </View>
+          )}
+          </View>
+        </View>
 
-      {
-        showType === 'none' && <View className='no-search-box'>请输入您想搜索的币种</View>
-      }
-      {
-        showType === 'invalid' && <View className='no-search-box'>请输入正确的币种</View>
-      }
-      {
-        showType === 'valid' && (
-          <View className='search-box'>
+      <View className='content-area'>
+        {
+          showType === 'none' && <View className='no-search-box'>请输入您想搜索的币种</View>
+        }
+        {
+          showType === 'invalid' && <View className='no-search-box'>请输入正确的币种</View>
+        }
+        {
+          showType === 'valid' && (
+            <View className='search-box'>
             {/* 币种 */}
             <Layout isLoading={infoData.loading} isClose={infoData.close}>
               <MoziCard
-                title='币种'
-                sumNum={infoData.length}
                 type={infoData.length > 3? 'more': null}
                 // type='more'
                 callback={() => {
@@ -328,15 +400,42 @@ export default function Search() {
                   length={5}
                   colName={['名称', '最新价', '24H涨幅', '加自选', '加监控']}
                   gridContent={infoData.data}
+                  gridTitleBgColor="transparent"
                   callback={(gridCon) => {jump2Detail(gridCon.key)}}
                 >
                 </MoziGrid>
               </MoziCard>
             </Layout>
+            {!areaData.close && (
+              <View className='header-info'>
+                <View className='header-info-item' onClick={() => {
+                  if (areaData.length > 4) {
+                    jump2List({
+                      interFace: Interface.COIN_AREA,
+                      requestData: {
+                        coin: searchValue
+                      },
+                      gridTitle: ['币种', '版块', '涨幅'],
+                      gridCon: [{
+                        type: 'Img+Text',
+                        data: ['url', 'coin']
+                      }, {
+                        type: 'Text',
+                        data: 'section'
+                      }, {
+                        type: 'HighlightArea',
+                        data: 'changes'
+                      }],
+                    });
+                  }
+                }}>
+                  相关版块({areaData.length})
+                  {areaData.length > 4 && <IconFont name='right' size={24} color='#666666' />}
+                </View>
+              </View>
+            )}
             <Layout isLoading={areaData.loading} isClose={areaData.close}>
               <MoziCard
-                title='相关版块'
-                sumNum={areaData.length}
                 type={areaData.length > 4? 'more': null}
                 callback={() => {
                   jump2List({
@@ -367,50 +466,53 @@ export default function Search() {
                 </View>
               </MoziCard>
             </Layout>
+            {!platformData.close && (
+              <View className='header-info'>
+                <View className='header-info-item' onClick={() => {
+                  if (platformData.length > 3) {
+                    jump2List({
+                      interFace: Interface.COIN_PLATFORM,
+                      requestData: {
+                        coin: searchValue
+                      },
+                      gridTitle: ['交易所', '链', '提取手续费', '最小提币量'],
+                      gridCon: [{
+                        type: 'Img+Text',
+                        data: ['url', 'exchanges']
+                      }, {
+                        type: 'Text',
+                        data: 'chain'
+                      }, {
+                        type: 'Text',
+                        data: 'withdrawfee'
+                      }, {
+                        type: 'Text',
+                        data: 'withdrawmin'
+                      }],
+                    });
+                  }
+                }}>
+                  可交易{searchValue}平台({platformData.length})
+                  {platformData.length > 3 && <IconFont name='right' size={24} color='#666666' />}
+                </View>
+              </View>
+            )}
             <Layout isLoading={platformData.loading} isClose={platformData.close}>
-              <MoziCard
-                title={`可交易${searchValue}平台`}
-                sumNum={platformData.length}
-                type={platformData.length > 3? 'more': null}
-                callback={() => {
-                  jump2List({
-                    interFace: Interface.COIN_PLATFORM,
-                    requestData: {
-                      coin: searchValue
-                    },
-                    gridTitle: ['交易所', '链', '提取手续费', '最小提币量'],
-                    gridCon: [{
-                      type: 'Img+Text',
-                      data: ['url', 'exchanges']
-                    }, {
-                      type: 'Text',
-                      data: 'chain'
-                    }, {
-                      type: 'Text',
-                      data: 'withdrawfee'
-                    }, {
-                      type: 'Text',
-                      data: 'withdrawmin'
-                    }],
-                  });
-                }}
-              >
+              <MoziCard>
                 <MoziGrid
                   length={4}
                   colName={['平台', '所属链', '提取手续费', '最小提币量']}
                   gridContent={platformData.data}
                   // callback={(gridCon) => {jump2Detail(gridCon.key)}}
+                  gridTitleBgColor="transparent"
                 >
 
                 </MoziGrid>
               </MoziCard>
             </Layout>
-            <Layout isLoading={spotData.loading} isClose={spotData.close}>
-              <MoziCard
-                title='交易对'
-                // sumNum={spotData.length}
-                type={spotData.length}
-                callback={() => {
+            {!spotData.close && (
+              <View className='header-info'>
+                <View className='header-info-item' onClick={() => {
                   jump2List({
                     interFace: Interface.COIN_SPOT,
                     requestData: {
@@ -437,8 +539,14 @@ export default function Search() {
                       data: 'url'
                     }],
                   });
-                }}
-              >
+                }}>
+                  交易对
+                  <IconFont name='right' size={24} color='#666666' />
+                </View>
+              </View>
+            )}
+            <Layout isLoading={spotData.loading} isClose={spotData.close}>
+              <MoziCard>
                 {
                   spotData?.data && spotData.data.map((pairItem, pairIndex) => {
                     
@@ -447,6 +555,7 @@ export default function Search() {
                         length={4}
                         colName={spotColNameList[pairIndex]}
                         gridContent={pairItem}
+                        gridTitleBgColor="transparent"
                         // callback={(gridCon) => {jump2Detail(gridCon.key)}}
                       ></MoziGrid>
                     )
@@ -454,9 +563,10 @@ export default function Search() {
                 }
               </MoziCard>
             </Layout>
-          </View>
-        )
-      }
+            </View>
+          )
+        }
+      </View>
       {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
     </View>
   )

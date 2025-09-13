@@ -1,12 +1,164 @@
 .indexBox {
   background-color: #efefef;
-  // background: linear-gradient(to bottom, #000 40%, #fff);
-  // background-image: url('../../assets/mozi_logo.jpg');
-  // background-size: contain;
-  // background-repeat: no-repeat;
-  padding: 20px;
   box-sizing: border-box;
   min-height: 100vh;
+
+  // 顶部区域 - 包含导航栏和搜索框
+  .top-area {
+    background-image: url('../../assets/image/home-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    // 自定义导航栏
+    .custom-navbar {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      
+      .navbar-left {
+        width: 80px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        
+        .navbar-left-icon {
+          width: 18px;
+          height: 24px;
+        }
+        
+        &:active {
+          opacity: 0.7;
+        }
+      }
+      
+      .navbar-title {
+        flex: 1;
+        text-align: center;
+        font-size: 34px;
+        font-weight: 500;
+        color: #ffffff;
+      }
+      
+      .navbar-right {
+        width: 80px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    // 搜索框区域
+    .header {
+      padding: 20px;
+    }
+    
+    // 币种头部信息区域（特殊样式）
+    .coin-header-info {
+      background-color: #EEF0F3;
+      border-radius: 40px 40px 0 0;
+      padding: 20px 20px 20px 0;
+      margin-top: 10px;
+      
+      .coin-header-item {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        font-size: 32px;
+        font-weight: 500;
+        color: #333333;
+        margin-left: 30px;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 60px;
+        white-space: nowrap;
+        
+        // 图标样式
+        .iconfont {
+          flex-shrink: 0;
+          margin-left: 10px;
+        }
+      }
+      .header-info-arrow {
+        font-size: 28px;
+        color: #666666;
+      }
+    }
+    
+    // 头部信息区域
+    .header-info {
+      background-color: #EEF0F3;
+      border-radius: 40px 40px 0 0;
+      padding: 20px;
+      // margin-top: 10px;
+      
+      .header-info-item {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        font-size: 32px;
+        font-weight: 500;
+        color: #333333;
+        margin-left: 30px;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 60px;
+        white-space: nowrap;
+
+        // 图标样式
+        .iconfont {
+          flex-shrink: 0;
+          margin-left: 10px;
+        }
+      }
+      .header-info-arrow {
+        font-size: 28px;
+        color: #666666;
+      }
+    }
+  }
+  
+  // 内容区域
+  .content-area {
+    padding:0 20px 20px 20px;
+    // margin-top: 220px;
+    
+    // 内容区域中的头部信息
+    .header-info {
+      background-color: #EEF0F3;
+      border-radius: 40px 40px 0 0;
+      padding: 0px 20px 10px 0;
+      margin-top: 0;
+      
+      .header-info-item {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        font-size: 32px;
+        font-weight: 500;
+        color: #333333;
+        margin: 0 0 0 10px;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 60px;
+        white-space: nowrap;
+        
+        // 图标样式
+        .iconfont {
+          flex-shrink: 0;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
 
   .no-search-box {
     height: 100%;
@@ -24,7 +176,7 @@
   .header {    
     width: 100%;
     margin-bottom: 20px;
-
+    box-sizing: border-box;
   }
 
   .area-flex {
@@ -121,5 +273,30 @@
     white-space: nowrap;  /* 不换行 */
     overflow: hidden;     /* 超出宽度隐藏 */
     text-overflow: ellipsis;  /* 超出宽度点点显示 */
+  }
+}
+
+// 相关板块区域的定制样式
+.area-flex {
+  .area-box.green {
+    background-color: #E7FAF5;
+    
+    .area-box-title {
+      color: #333333;
+    }
+    
+    // 百分比数值颜色 - 涨
+    color: #11B787;
+  }
+  
+  .area-box.red {
+    background-color: #FFF2F2;
+    
+    .area-box-title {
+      color: #333333;
+    }
+    
+    // 百分比数值颜色 - 跌
+    color: #FA5F5F;
   }
 }
