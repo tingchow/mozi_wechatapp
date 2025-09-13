@@ -1,15 +1,9 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import Taro, { useLoad, useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
-import { TabBar } from 'antd-mobile';
 import { Layout } from '../../components/Layout';
 import IconFont from '../../components/iconfont';
 import './index.less';
-
-// 导入奖杯图标
-import goldIcon from '../../assets/icon/gold.png';
-import silverIcon from '../../assets/icon/silver.png';
-import copperIcon from '../../assets/icon/copper.png';
 
 export default function PointsRank() {
   const [activeTab, setActiveTab] = useState('daily');
@@ -87,98 +81,54 @@ export default function PointsRank() {
     setTimeout(() => loadRankData(), 100);
   };
 
-  const getRankIcon = (rank) => {
-    switch (rank) {
-      case 1:
-        return goldIcon;
-      case 2:
-        return silverIcon;
-      case 3:
-        return copperIcon;
-      default:
-        return null;
-    }
-  };
-
-  const currentData = rankData[activeTab] || [];
-  const topThree = currentData.filter(item => item.rank <= 3);
-  const others = currentData.filter(item => item.rank > 3);
+  const listData = rankData[activeTab] || [];
 
   return (
     <View className='points-rank-container'>
       {/* 头部背景 */}
       <View className='header-bg'>
         <View className='header-content'>
-          <View className='title'>积分榜单</View>
-          <View className='trophy-icon'>🏆</View>
+          <View className='top-row'>
+            <View className='back-arrow' onClick={() => Taro.navigateBack()}>
+              <Image 
+                className='back-arrow-icon'
+                src={require('@/assets/icon/left-arrow.png')}
+              />
+            </View>
+            <View className='mini-title'>积分榜单</View>
+          </View>
+          <View className='main-title'>积分榜单</View>
+          <View className='mini-tabs'>
+            <View
+              className={`mini-tab ${activeTab === 'daily' ? 'active' : ''}`}
+              onClick={() => handleTabChange('daily')}
+            >
+              日榜
+            </View>
+            <View
+              className={`mini-tab ${activeTab === 'monthly' ? 'active' : ''}`}
+              onClick={() => handleTabChange('monthly')}
+            >
+              月榜
+            </View>
+            <View
+              className={`mini-tab ${activeTab === 'total' ? 'active' : ''}`}
+              onClick={() => handleTabChange('total')}
+            >
+              总榜
+            </View>
+          </View>
         </View>
       </View>
 
-      {/* Tab切换 */}
-      <View className='tab-container'>
-        <TabBar activeKey={activeTab} onChange={handleTabChange}>
-          <TabBar.Item key='daily' title='日榜' />
-          <TabBar.Item key='monthly' title='月榜' />
-          <TabBar.Item key='total' title='总榜' />
-        </TabBar>
-      </View>
+      {/* 大Tab已移除，顶部使用迷你切换 */}
 
       {/* 内容区域 */}
       <ScrollView scrollY className='content-area'>
         <Layout isLoading={loading}>
-          {/* 前三名特殊展示 */}
-          <View className='top-three-container'>
-          <View className='podium'>
-            {/* 第二名 */}
-            {topThree[1] && (
-              <View className='podium-item second'>
-                <View className='rank-badge'>
-                  <Image src={getRankIcon(2)} className='rank-icon' mode='aspectFit' />
-                </View>
-                <Image src={topThree[1].avatar} className='avatar' mode='aspectFit' />
-                <View className='name'>{topThree[1].name}</View>
-                <View className='points'>
-                  <Text className='points-icon'>🪙</Text>
-                  {topThree[1].points}
-                </View>
-              </View>
-            )}
-
-            {/* 第一名 */}
-            {topThree[0] && (
-              <View className='podium-item first'>
-                <View className='rank-badge'>
-                  <Image src={getRankIcon(1)} className='rank-icon' mode='aspectFit' />
-                </View>
-                <Image src={topThree[0].avatar} className='avatar' mode='aspectFit' />
-                <View className='name'>{topThree[0].name}</View>
-                <View className='points'>
-                  <Text className='points-icon'>🪙</Text>
-                  {topThree[0].points}
-                </View>
-              </View>
-            )}
-
-            {/* 第三名 */}
-            {topThree[2] && (
-              <View className='podium-item third'>
-                <View className='rank-badge'>
-                  <Image src={getRankIcon(3)} className='rank-icon' mode='aspectFit' />
-                </View>
-                <Image src={topThree[2].avatar} className='avatar' mode='aspectFit' />
-                <View className='name'>{topThree[2].name}</View>
-                <View className='points'>
-                  <Text className='points-icon'>🪙</Text>
-                  {topThree[2].points}
-                </View>
-              </View>
-            )}
-          </View>
-        </View>
-
-          {/* 其他排名列表 */}
+          {/* 排名列表 */}
           <View className='rank-list'>
-            {others.map((item) => (
+            {listData.map((item) => (
               <View key={item.id} className={`rank-item ${item.isMe ? 'me' : ''}`}>
                 <View className='rank-number'>{item.rank}</View>
                 <Image src={item.avatar} className='avatar-small' mode='aspectFit' />
