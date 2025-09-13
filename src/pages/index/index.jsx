@@ -56,15 +56,19 @@ export default function Index() {
   const [ hot_coin, setHotCoin ] = useState(null);
   const [ hot_industry, setHotIndustry ] = useState(null);
   const [ hot_contract, setHotContract ] = useState(null);
+  const [ hot_topics, setHotTopics ] = useState(null);
   const [ coinLoading, setCoinLoading ] = useState(true);
   const [ industryLoading, setIndustryLoading ] = useState(true);
   const [ contractLoading, setContractLoading ] = useState(true);
+  const [ topicsLoading, setTopicsLoading ] = useState(false);
+  const [ lastTopicsLoadTime, setLastTopicsLoadTime ] = useState(null);
   const [ my_own, setOwn ] = useState(null);
   const [ myOwnLoading, setMyOwnLoading ] = useState(true);
   const [ popVis, setPopVis ] = useState(false);
   const [ rankActiveKey, setRankActive ] = useState('zhangfu');
   const [ investmentTab, setInvestmentTab ] = useState('opportunity');
   const needLoop = useRef(true);
+  const topicsCacheTimer = useRef(null);
 
   // 自选接口、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
   const footerIfList = [{
@@ -183,6 +187,11 @@ export default function Index() {
   useDidHide(() => {
     console.log('index 隐藏');
     needLoop.current = false;
+    // 清理话题缓存定时器
+    if (topicsCacheTimer.current) {
+      clearTimeout(topicsCacheTimer.current);
+      topicsCacheTimer.current = null;
+    }
   });
 
   useShareAppMessage(() => {
@@ -280,6 +289,55 @@ export default function Index() {
     return res;
   };
 
+  // 清理话题缓存
+  const clearTopicsCache = () => {
+    setHotTopics(null);
+    setLastTopicsLoadTime(null);
+    if (topicsCacheTimer.current) {
+      clearTimeout(topicsCacheTimer.current);
+      topicsCacheTimer.current = null;
+    }
+  };
+
+  // 加载热门话题数据 - 带缓存机制
+  const loadHotTopics = async (forceRefresh = false) => {
+    const now = Date.now();
+    const CACHE_DURATION = 60 * 1000; // 缓存1分钟
+    
+    // 如果强制刷新，清理缓存
+    if (forceRefresh) {
+      clearTopicsCache();
+    }
+    
+    // 检查缓存是否有效
+    if (!forceRefresh && hot_topics !== null && lastTopicsLoadTime && (now - lastTopicsLoadTime < CACHE_DURATION)) {
+      return;
+    }
+    
+    setTopicsLoading(true);
+    try {
+      const topics = await cardRequest(Interface.HOT_TOPICS_API, {
+        pageSize: 10
+      });
+      setHotTopics(topics.data.data || []);
+      setLastTopicsLoadTime(now);
+      
+      // 清除之前的定时器
+      if (topicsCacheTimer.current) {
+        clearTimeout(topicsCacheTimer.current);
+      }
+      
+      // 设置缓存清理定时器
+      topicsCacheTimer.current = setTimeout(() => {
+        setLastTopicsLoadTime(null); // 标记缓存过期
+      }, CACHE_DURATION);
+      
+    } catch (error) {
+      setHotTopics([]);
+    }
+    setTopicsLoading(false);
+  };
+
   const handlePopupConfirm = () => {console.log(1)}
 
   const jump2Search = () => {
@@ -367,7 +425,15 @@ export default function Index() {
               </View>
               <View 
                 className={`tab-item ${investmentTab === 'topics' ? 'active' : ''}`}
-                onClick={() => setInvestmentTab('topics')}
+                onClick={() => {
+                  setInvestmentTab('topics');
+                  loadHotTopics(); // 切换到话题热榜时加载数据（使用缓存）
+                }}
+                onLongPress={() => {
+                  setInvestmentTab('topics');
+                  loadHotTopics(true); // 长按强制刷新
+                  console.log('长按触发强制刷新');
+                }}
               >
                 话题热榜
               </View>
@@ -459,42 +525,52 @@ export default function Index() {
             style={{whiteSpace: 'nowrap'}}
           >
             <View className='topics-content'>
-              <View className='topic-cards'>
-              <View className='topic-card'>
-                <View className='topic-rank'>
-                  <Image src={require('@/assets/icon/gold.png')} className='rank-medal' mode='aspectFit' />
+              <Layout isLoading={topicsLoading}>
+                <View className='topic-cards'>
+                  {hot_topics && hot_topics.length > 0 ? (
+                    hot_topics.slice(0, 3).map((topic, index) => {
+                      // 根据排名显示不同的奖牌
+                      const rankMedals = [
+                        require('@/assets/icon/gold.png'),
+                        require('@/assets/icon/silver.png'), 
+                        require('@/assets/icon/copper.png')
+                      ];
+                      
+                      return (
+                        <View className='topic-card' key={topic.id || index}>
+                          <View className='topic-rank'>
+                            <Image 
+                              src={rankMedals[index] || rankMedals[2]} 
+                              className='rank-medal' 
+                              mode='aspectFit' 
+                            />
+                          </View>
+                          <View className='topic-title'>{topic.title || topic.name}</View>
+                          <View className='topic-desc'>{topic.desc || topic.description}</View>
+                          <View className='topic-stats'>
+                            <View className='topic-hot'>🔥 {topic.discussionCount || topic.hot || 0} 讨论</View>
+                            <View className='topic-date'>{topic.createdAt}</View>
+                          </View>
+                        </View>
+                      );
+                    })
+                  ) : (
+                    // 默认显示加载中或暂无数据
+                    <View className='topic-card'>
+                      <View className='topic-rank'>
+                        <Image src={require('@/assets/icon/gold.png')} className='rank-medal' mode='aspectFit' />
+                      </View>
+                      <View className='topic-title'>暂无话题</View>
+                      <View className='topic-desc'>敬请期待</View>
+                      <View className='topic-stats'>
+                        <View className='topic-hot'>🔥 0 讨论</View>
+                        <View className='topic-date'>--</View>
+                      </View>
+                    </View>
+                  )}
                 </View>
-                <View className='topic-title'>行情讨论</View>
-                <View className='topic-desc'>全链技术分析</View>
-                <View className='topic-stats'>
-                  <View className='topic-hot'>🔥 21543 讨论</View>
-                  <View className='topic-date'>2025-05-15</View>
-                </View>
-              </View>
-              <View className='topic-card'>
-                <View className='topic-rank'>
-                  <Image src={require('@/assets/icon/silver.png')} className='rank-medal' mode='aspectFit' />
-                </View>
-                <View className='topic-title'>价格讨论</View>
-                <View className='topic-desc'>BTC价格方向</View>
-                <View className='topic-stats'>
-                  <View className='topic-hot'>🔥 21543 讨论</View>
-                  <View className='topic-date'>2025-05-15</View>
-                </View>
-              </View>
-              <View className='topic-card'>
-                <View className='topic-rank'>
-                  <Image src={require('@/assets/icon/copper.png')} className='rank-medal' mode='aspectFit' />
-                </View>
-                <View className='topic-title'>行情讨论</View>
-                <View className='topic-desc'>全链技术分析</View>
-                <View className='topic-stats'>
-                  <View className='topic-hot'>🔥 21543 讨论</View>
-                  <View className='topic-date'>2025-05-15</View>
-                </View>
-              </View>
+              </Layout>
             </View>
-          </View>
           </ScrollView>
         )}
       </MoziCard>

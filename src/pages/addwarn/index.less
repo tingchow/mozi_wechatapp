@@ -1,83 +1,243 @@
-.box {
-  background-color: #efefef;
-  padding-bottom: 50px;
-  box-sizing: border-box;
+.container {
+  background-color: #f0f0f0;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  
+  padding-bottom: 40px;
 
-  .side-box {
+  // 顶部标题栏
+  .header {
     display: flex;
-    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid #f0f0f0;
 
-    .side {
-      flex: none;
-  
-      .sidebar {
-        width: 200px;
-        box-sizing: border-box;
-  
-        .sidebar-item {
-          padding: 20px;
-        }
-  
-        .sidebar-item.adm-side-bar-item-active {
-          background-color: #fff;
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 36px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+  }
+
+  // 币种价格信息区域
+  .price-info {
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #EEF0F3;
+
+    .coin-symbol {
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .price-details {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .price-label {
+        font-size: 28px;
+        color:#949494;
+      }
+
+      .price-value {
+        font-size: 32px;
+        font-weight: 500;
+        color: #333;
+
+        &.positive {
           color: #11B787;
         }
-      }
-    }
-  
-    .main {
-      flex: auto;
-      background-color: #fff;
-      padding: 20px;
-      box-sizing: border-box;
-      position: relative;
-  
-      &-title {
-        margin-bottom: 20px;
-        font-weight: bold;
-      }
-  
-      &-content {
-        margin-bottom: 20px;
-        display: flex;
-  
-        .main-input {
-          border-bottom: 1px solid #828282;
+
+        &.negative {
+          color: #FA5F5F;
+        }
+
+        &.loading {
+          color: #999;
         }
       }
-  
-      .warn-btn {
-        position: absolute;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #fff;
-        background-color: #11B787;
-      }
-      .warn-btn.hide {
-        opacity: 0.5;
+
+      .price-change {
+        font-size: 28px;
+        font-weight: 500;
+
+        &.positive {
+          color: #11B787;
+        }
+
+        &.negative {
+          color: #FA5F5F;
+        }
       }
     }
   }
-  
-  .footer {
-    padding: 40px;
-    box-sizing: border-box;
-    background-color: #2e2e2e;
-    color: #fff;
-    text-align: center;
-  }
-  
-  .popContainer {
-    padding: 20px;
-    box-sizing: border-box;
+
+  // 页面中心Loading
+  .page-loading {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 40px;
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #11B787;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    .loading-text {
+      font-size: 28px;
+      color: #999;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // 配置项卡片
+  .config-card {
+    background: white;
+    margin: 16px;
+    border-radius: 16px;
+    padding: 16px;
+
+    .config-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f5f5f5;
+      width: 100%;
+      height: 100px;
+      padding: 0 10px;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .config-label {
+        font-size: 30px;
+        color: #333;
+        flex-shrink: 0;
+        width: 120px;
+      }
+
+      .config-input-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        padding: 0 16px;
+
+        .config-input {
+          flex: 1;
+          text-align: right;
+          font-size: 32px;
+          color: #333;
+          border: 1px solid #DEE2E8;
+          border-radius: 10px;
+          outline: none;
+          background: white;
+          height: 70px;
+          box-sizing: border-box;
+          padding-right: 16px;
+        }
+
+        .config-unit {
+          font-size: 32px;
+          color: #333;
+          flex-shrink: 0;
+        }
+      }
+
+      .config-switch {
+        flex-shrink: 0;
+        width: 120px;
+        transform: scale(0.8);
+      }
+    }
+  }
+
+  // 底部按钮区域
+  .bottom-buttons {
+    padding: 500px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .save-button {
+      background: #11B787;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 45px;
+      height: 90px;
+      font-size: 32px;
+      font-weight: 500;
+      width: 100%;
+      text-align: center;
+
+      &::after {
+        border: none;
+      }
+
+      &[disabled] {
+        background: #d9d9d9;
+        color: #999;
+      }
+    }
+
+    .view-button {
+      background: #FFFFFF;
+      color: #11B787;
+      border-radius: 45px;
+      height: 90px;
+      font-size: 32px;
+      width: 100%;
+      text-align: center;
+      &::after {
+        border: none;
+      }
+    }
+  }
+
+  // 弹窗容器
+  .popContainer {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .contactTitle {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 32px;
+    }
+
+    .attendPic {
+      width: 600px;
+      height: 400px;
+    }
   }
 }
 

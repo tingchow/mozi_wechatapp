@@ -1,11 +1,13 @@
-import { View, Text, Input } from '@tarojs/components'
+import { View, Text, Input, Image } from '@tarojs/components'
 import { useState } from 'react'
 import Taro, { useLoad } from '@tarojs/taro'
 import { Interface } from '../../utils/constants'
 import { request } from '../../utils/request'
-import { Layout } from '../../components/Layout'
 import { SearchInput } from '../../components/SearchInput'
 import { GardenLoading } from '../../components/Loading'
+import IconFont from '../../components/iconfont'
+import hotIcon from '../../assets/icon/community/hot.png'
+import leftArrowIcon from '../../assets/icon/left-arrow.png'
 import './index.less'
 
 export default function TopicSearch() {
@@ -84,14 +86,59 @@ export default function TopicSearch() {
     })
   }
 
+  // 返回上一页
+  const goBack = () => {
+    Taro.navigateBack()
+  }
+
+  // 高亮显示搜索关键词
+  const highlightKeyword = (text, keyword) => {
+    if (!keyword || !text) return text
+    
+    const regex = new RegExp(`(${keyword})`, 'gi')
+    const parts = text.split(regex)
+    
+    return parts.map((part, index) => {
+      if (part.toLowerCase() === keyword.toLowerCase()) {
+        return (
+          <Text key={index} style={{ color: '#47C89D' }}>
+            {part}
+          </Text>
+        )
+      }
+      return part
+    })
+  }
+
   return (
-    <Layout>
+    <View className='topicSearchPage'>
+      {/* 自定义导航栏 */}
+      <View className='custom-navbar'>
+        {/* 顶部导航区域 */}
+        <View className='navbar-top'>
+          <View className='navbar-left' onClick={goBack}>
+            <Image src={leftArrowIcon} className='left-arrow-icon' mode='aspectFit' />
+          </View>
+          <View className='navbar-title'>话题搜索</View>
+          <View className='navbar-right'>
+            <IconFont name='more' size={40} color='#fff' />
+          </View>
+        </View>
+        
+        {/* 搜索框 */}
+        <View className='navbar-search'>
+          <SearchInput
+            value={searchValue}
+            reloadFun={searchTopics}
+            placeholder='搜索话题'
+          />
+        </View>
+        
+        {/* 搜索框下方的盒子 */}
+        <View className='search-bottom-box'></View>
+      </View>
+
       <View className='topicSearch'>
-        <SearchInput
-          value={searchValue}
-          reloadFun={searchTopics}
-          placeholder='搜索话题'
-        />
         {loading && topics.length === 0 ? (
           <View className='loading-box'>
             <GardenLoading />
@@ -104,11 +151,18 @@ export default function TopicSearch() {
                 className='topicItem'
                 onClick={() => goToTopicDetail(topic.id)}
               >
-                <View className='topicTitle'>{topic.name}</View>
-                <View className='topicDesc'>{topic.description}</View>
-                <View className='topicMeta'>
-                  <Text className='topicTime'>{topic.createdAt.replace('T', '    ')}</Text>
+                <View className='topicContent'>
+                  <View className='topicTitle'>{highlightKeyword(topic.name, searchValue)}</View>
+                  <View className='topicDesc'>{highlightKeyword(topic.description, searchValue)}</View>
+                  <View className='topicMeta'>
+                    <Text className='topicTime'>{topic.createdAt.replace('T', '    ')}</Text>
+                  </View>
                 </View>
+                {topic.hot && (
+                  <View className='topicHot'>
+                    <Image src={hotIcon} className='hotIcon' mode='aspectFit' />
+                  </View>
+                )}
               </View>
             ))}
             {loading && (
@@ -119,6 +173,6 @@ export default function TopicSearch() {
           </View>
         )}
       </View>
-    </Layout>
+    </View>
   )
 }

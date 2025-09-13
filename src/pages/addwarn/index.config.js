@@ -5,4 +5,5 @@ export default definePageConfig({
   //   'towxml': '../../towxml/towxml'
   // },
   // navigationStyle: 'custom'
+  navigationBarBackgroundColor: '#EEF0F3'
 })

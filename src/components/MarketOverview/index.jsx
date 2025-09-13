@@ -1,5 +1,6 @@
 import { View, ScrollView, Image } from '@tarojs/components';
 import { memo } from 'react';
+import { jump2NoTab } from '../../utils/core';
 import './index.less';
 
 import UpIcon from '../../assets/icon/find/up.png';
@@ -35,12 +36,12 @@ const MarketOverview = memo(({ data }) => {
       id: 'smart-order',
       icon: MarketMonitoringIcon, /* 替换为新的图标 */
       iconColor: 'orange',
-      title: '智能订盘',
+      title: '智能盯盘',
       value: 'BTC +3%',
       action: '去配置',
       onClick: () => {
-        // 智能订盘点击事件
-        console.log('跳转到智能订盘配置页面');
+        // 智能订盘点击事件 - 跳转到配置告警页面，默认使用BTC
+        jump2NoTab('addwarn', { symbol: 'BTC' });
       }
     },
     {
