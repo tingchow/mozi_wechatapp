@@ -133,6 +133,7 @@ export default function PointsRank() {
         <View className='top3-overlay'>
           {top2 && (
             <View className='overlay-slot second'>
+              <Image className='medal-second' src={require('@/assets/icon/silver.png')} mode='widthFix' />
               <Image src={top2.avatar} className='ov-avatar' mode='aspectFill' />
               <View className='ov-name'>{top2.name}</View>
               <View className='ov-points'>
@@ -143,6 +144,7 @@ export default function PointsRank() {
           )}
           {top1 && (
             <View className='overlay-slot first'>
+              <Image className='medal-first' src={require('@/assets/icon/gold.png')} mode='widthFix' />
               <Image src={top1.avatar} className='ov-avatar' mode='aspectFill' />
               <View className='ov-name'>{top1.name}</View>
               <View className='ov-points'>
@@ -153,6 +155,7 @@ export default function PointsRank() {
           )}
           {top3 && (
             <View className='overlay-slot third'>
+              <Image className='medal-third' src={require('@/assets/icon/copper.png')} mode='widthFix' />
               <Image src={top3.avatar} className='ov-avatar' mode='aspectFill' />
               <View className='ov-name'>{top3.name}</View>
               <View className='ov-points'>

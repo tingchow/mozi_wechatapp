@@ -126,6 +126,18 @@
         align-items: center;
         justify-content: flex-end;
 
+        // 奖牌图标（独立类，便于单独微调）
+        .medal-first,
+        .medal-second,
+        .medal-third {
+          position: absolute;
+          z-index: 1;
+          width: 48px;
+        }
+        .medal-first { left: 18px; top: 0px; }
+        .medal-second { left: 5px; top: 10px; }
+        .medal-third { left: -20px; top: 10px; }
+
         .ov-avatar {
           width: 88px;
           height: 88px;
