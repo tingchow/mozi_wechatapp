@@ -1,32 +1,99 @@
+@headerHeight: 500rpx;
+@tabHeight: 45px;
+@tabOffset: 10rpx;
+
 .scroll-list {
-  .header {
-    display: flex;
-    height: 22vh;
-    box-sizing: border-box;
-    background-color: #f5f5f5;
+  .header-new {
+    position: relative;
+    height: @headerHeight;
+    overflow: visible;
+    .header-bg {
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 750px;
+      height: 480px;
+      background-image: url('~@/assets/image/range_bg.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .header-con {
+      position: relative;
+      display: flex;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 0 20rpx 0 20rpx;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 105px;
+      left: 10rpx;
+      z-index: 30;
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .back-icon {
+        width: 36rpx;
+        height: 36rpx;
+      }
+    }
 
     .left {
       flex: 1;
-      padding: 20rpx 0 20rpx 60rpx;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #fff;
+      position: absolute;
+      left: 20rpx;
+      top: 60%;
+      transform: translateY(-50%);
+      width: 60%;
 
       .title {
         font-weight: bold;
-        font-size: 36px;
+        font-size: 60px;
         margin-bottom: 20px;
+      }
+
+      .rank-name {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        padding: 0 20rpx;
+        color: #fff;
+        background-image: url('~@/assets/image/list-top.png');
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        background-position: center;
+        width: auto;
+        max-width: 110px;
       }
 
       .desc {
         display: flex;
         margin-top: 20px;
         font-size: 24px;
+        color: #fff;
 
         .desc-con {
           margin-right: 10px;
+          color:#A1A1A1;
         }
 
         .picker-select {
           display: flex;
           align-items: center;
+          color: #fff;
 
           .select-icon {
             margin-right: 10px;
@@ -36,14 +103,16 @@
     }
 
     .right {
-      flex: 1;
-      width: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      position: absolute;
+        top: 280px;
+        right: 85rpx;
+        transform: translateY(-50%);
 
       .header-img {
-        height: 18vh;
+        
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
       }
     }
   }
@@ -68,7 +137,7 @@
   }
 
   .show-header-grid {
-    top: 22vh;
+    top: calc(@headerHeight + @tabOffset);
   }
 
   .gridListItem {
@@ -108,5 +177,52 @@
 }
 
 .show-header {
-  height: 78vh;
+  height: calc(100vh - (@headerHeight + @tabOffset));
+}
+
+/* Tabs at the intersection of header and content */
+.scroll-list {
+  .header-new {
+    .tab-select {
+      position: absolute;
+      left: 20rpx;
+      right: auto;
+      bottom: 0px;
+      height: @tabHeight;
+      background: #ffffff;
+      border-radius: 50rpx;
+      display: inline-flex;
+      align-items: stretch;
+      padding: 4px;
+      box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.12);
+      z-index: 20;
+
+      .tab-item {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #666;
+        font-size: 26rpx;
+        border-radius: 40rpx;
+        margin: 0 8 0 0rpx;
+        white-space: nowrap;
+        max-width: 100px;
+        padding: 0 20rpx;
+
+        &.active {
+          background: #11B787;
+          color: #fff;
+          box-shadow: 0 6rpx 16rpx rgba(17,183,135,0.35);
+          /* 选中同样遵循通用宽度限制 */
+        }
+
+        .tab-text {
+          display: inline-block;
+          padding: 0 8rpx;
+        }
+      }
+    }
+  }
 }

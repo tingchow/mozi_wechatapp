@@ -1,9 +1,9 @@
-import { View, Image, ScrollView, Text, Picker } from '@tarojs/components';
+import { View, Image, ScrollView, Text } from '@tarojs/components';
 import { useState, useEffect, useRef } from 'react';
 import Taro, { useLoad, getCurrentInstance, useDidShow, useReady, useReachBottom } from '@tarojs/taro'
 import { Grid } from 'antd-mobile';
 import { MoziGrid } from '../../MoziGrid';
-import IconFont from '../../iconfont';
+// import IconFont from '../../iconfont';
 import { HighlightArea } from '../../HighlightArea';
 import './index.less';
 import { request } from '../../../utils/request';
@@ -12,6 +12,7 @@ import { AddCollect } from '../../AddCollect';
 import { AddMonitor } from '../../AddMonitor';
 import { GardenLoading } from '../../Loading';
 // import { url } from 'inspector';
+import backPng from '../../../assets/icon/left-arrow.png';
 
 export const SimpleList = ({ 
   interFace,
@@ -60,6 +61,15 @@ export const SimpleList = ({
     });
     setData(tempFindCoin);
   }, [renderData]);
+
+  // 保证默认选中第一项（处理 selectArr 异步到达或变更）
+  useEffect(() => {
+    if (Array.isArray(selectArr) && selectArr.length > 0) {
+      if (!selected || !selectArr.includes(selected)) {
+        setSelected(selectArr[0]);
+      }
+    }
+  }, [selectArr]);
 
   useDidShow(() => {
     // console.log('试个列表,', requestData);
@@ -145,11 +155,18 @@ export const SimpleList = ({
     
   // };
 
-  const onChange = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelected(selectArr[e.detail.value]);
-    if (onChangeCb) onChangeCb(e.detail.value);
+  // Tab 切换
+  const onTabChange = (index) => {
+    setSelected(selectArr[index]);
+    if (onChangeCb) onChangeCb(index);
+  }
+
+  const goBack = () => {
+    try {
+      Taro.navigateBack({ delta: 1 });
+    } catch (e) {
+      Taro.switchTab({ url: '/pages/index/index' });
+    }
   }
 
   // useReachBottom(() => {
@@ -160,64 +177,71 @@ export const SimpleList = ({
   if (isLoading) {
     return <GardenLoading />
   }
-
-  if (data.length > 0) {
-    return (
-      <View className='scroll-list'>
-        {
-          selectArr.length > 0 && (
-            <View className='header'>
+  return (
+    <View className='scroll-list'>
+      {
+        selectArr.length > 0 && (
+          <View className='header-new'>
+            <View className='header-bg' />
+            <View className='back-btn' onClick={goBack}>
+              <Image className='back-icon' src={backPng} mode='aspectFit' />
+            </View>
+            <View className='header-con'>
               <View className='left'>
                 <View className='title'>{rankTitle}</View>
-                <View>{rankName}</View>
+                <View className='rank-name'>{rankName}</View>
                 <View className='desc'>
                   {rankDesc && <Text className='desc-con'>{rankDesc}</Text>}
-                  {
-                    selectArr && selectedPick && (
-                      <Picker mode='selector' range={selectArr} onChange={onChange}>
-                        <View className='picker-select'>
-                          <View className='select-icon'>{selectedPick}</View>
-                          <IconFont name='caret-down' />
-                        </View>
-                      </Picker>
-                    )
-                  }
-                  
                 </View>
               </View>
               <View className='right'>
-                { data[0].img && <Image src={data[0].img} mode='aspectFit' className='header-img' /> }
+                { data[0]?.img && <Image src={data[0].img} mode='aspectFit' className='header-img' /> }
               </View>
             </View>
-          )
+            { selectArr && selectArr.length > 0 && (
+              <View className='tab-select'>
+                {
+                  selectArr.map((item, index) => (
+                    <View
+                      className={`tab-item ${selected === item ? 'active' : ''}`}
+                      key={`${item}-${index}`}
+                      onClick={() => onTabChange(index)}
+                    >
+                      <Text className='tab-text'>{item}</Text>
+                    </View>
+                  ))
+                }
+              </View>
+            )}
+          </View>
+        )
+      }
+      <Grid className={`gridTitle ${selectArr.length > 0? 'show-header-grid': ''}`} columns={gridTitle.length}>
+        {
+          gridTitle.map((colNameItem, colNameIndex) => {
+            return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+          })
         }
-        <Grid className={`gridTitle ${selectArr.length > 0? 'show-header-grid': ''}`} columns={gridTitle.length}>
-          {
-            gridTitle.map((colNameItem, colNameIndex) => {
-              return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
-            })
-          }
-        </Grid>
-        <ScrollView
-          className={`scroll ${selectArr.length > 0? 'show-header': ''}`}
-          scrollY
-          enableBackToTop={true}
-          enablePassive={true}
-          onScrollToLower={loadMore}
-          // compileMode
-        >
-          <MoziGrid
-            length={gridTitle.length}
-            colName={gridTitle}
-            gridContent={data}
-            callback={(gridCon) => {
-              if (!gridCon.key) return;
-              jump2Detail(gridCon.key);
-            }}
-            hideTitle={true}
-          />
-        </ScrollView>
-      </View>
-    )
-  }
+      </Grid>
+      <ScrollView
+        className={`scroll ${selectArr.length > 0? 'show-header': ''}`}
+        scrollY
+        enableBackToTop={true}
+        enablePassive={true}
+        onScrollToLower={loadMore}
+        // compileMode
+      >
+        <MoziGrid
+          length={gridTitle.length}
+          colName={gridTitle}
+          gridContent={data}
+          callback={(gridCon) => {
+            if (!gridCon.key) return;
+            jump2Detail(gridCon.key);
+          }}
+          hideTitle={true}
+        />
+      </ScrollView>
+    </View>
+  )
 }

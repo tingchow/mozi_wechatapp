@@ -132,7 +132,7 @@
         .medal-third {
           position: absolute;
           z-index: 1;
-          width: 48px;
+          width: 40px;
         }
         .medal-first { left: 18px; top: 0px; }
         .medal-second { left: 5px; top: 10px; }
@@ -296,5 +296,42 @@
       .coin-icon { width: 28px; margin-right: 6px; }
       .points-text { font-size: 28px; font-weight: 600; color: #333333; }
     }
+  }
+
+  // 邀请好友悬浮按钮
+  .invite-float-btn {
+    position: fixed;
+    right: 0;
+    bottom: 10%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    background: #E4FFF7;
+    border: none;
+    margin: 0;
+    line-height: normal;
+    box-sizing: border-box;
+    color: #11B787;
+    border-radius: 28px 0 0 28px;
+    height: 70px;
+    padding: 0 14px 0 6px;
+    z-index: 1000;
+
+    &::after {
+      border: none;
+    }
+
+    .invite-icon-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 30px;
+      background: #11B787;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+    }
+    .invite-icon { width: 60px; }
+    .invite-text { font-size: 24px; font-weight: 600; }
   }
 }
