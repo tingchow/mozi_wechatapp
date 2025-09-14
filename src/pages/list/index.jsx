@@ -162,6 +162,7 @@ export default function List() {
         // onChangeCb={(value) => {onChange(value)}}
         onChangeCb={onChange}
         gridCon={listParam.gridCon} // ['coin', 'priceChangePercent']
+        showHeader={listParam.showHeader}
         // loginCb={() => {setPopVis(true)}}
       />
        }

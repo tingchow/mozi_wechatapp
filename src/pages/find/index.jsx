@@ -1280,6 +1280,7 @@ export default function Find() {
                   rankTitle: '新币排行榜',
                   rankName: 'Top100',
                   rankDesc: '每天更新',
+                  showHeader: true,
                   // selectArr: xinbiData.tradeSelect
                 });
               }}
@@ -1315,6 +1316,7 @@ export default function Find() {
                   rankTitle: '新币排行榜',
                   rankName: 'Top100',
                   rankDesc: '每天更新',
+                  showHeader: true,
                   // selectArr: tradeData.tradeSelect
                 });
               }}>

@@ -31,7 +31,7 @@ export const SimpleList = ({
   onChangeCb,
   isLoading,
   // loginCb,
-  // showHeader
+  showHeader
 }) => {
   console.log('进入列表');
 
@@ -180,7 +180,7 @@ export const SimpleList = ({
   return (
     <View className='scroll-list'>
       {
-        selectArr.length > 0 && (
+        (showHeader || selectArr.length > 0) && (
           <View className='header-new'>
             <View className='header-bg' />
             <View className='back-btn' onClick={goBack}>
@@ -216,7 +216,7 @@ export const SimpleList = ({
           </View>
         )
       }
-      <Grid className={`gridTitle ${selectArr.length > 0? 'show-header-grid': ''}`} columns={gridTitle.length}>
+      <Grid className={`gridTitle ${(showHeader || selectArr.length > 0)? 'show-header-grid': ''}`} columns={gridTitle.length}>
         {
           gridTitle.map((colNameItem, colNameIndex) => {
             return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
@@ -224,7 +224,7 @@ export const SimpleList = ({
         }
       </Grid>
       <ScrollView
-        className={`scroll ${selectArr.length > 0? 'show-header': ''}`}
+        className={`scroll ${(showHeader || selectArr.length > 0)? 'show-header': ''}`}
         scrollY
         enableBackToTop={true}
         enablePassive={true}
