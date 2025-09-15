@@ -99,6 +99,32 @@ export default function List() {
         } else {
           setData(coinData.data);
         }
+
+        // 若未传入 headerImg：根据首条 symbol 调用 COIN_INFO 获取 logo 作为头图
+        if (!listParam.headerImg && !headerImg) {
+          try {
+            const arr = Array.isArray(coinData.data)
+              ? coinData.data
+              : (Array.isArray(coinData.data.list) ? coinData.data.list : []);
+            if (arr && arr.length > 0) {
+              const first = arr[0] || {};
+              const firstSymbol = first.symbol || first.coin;
+              if (firstSymbol) {
+                const info = await request({
+                  url: Interface.COIN_INFO,
+                  data: { coin: firstSymbol }
+                });
+                if (Array.isArray(info?.data) && info.data[0]?.url) {
+                  setHeaderImg(info.data[0].url);
+                } else if (info?.data?.url) {
+                  setHeaderImg(info.data.url);
+                }
+              }
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
       }
     } finally {
       setLoading(false);
