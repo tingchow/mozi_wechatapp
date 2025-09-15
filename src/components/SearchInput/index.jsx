@@ -2,7 +2,7 @@ import IconFont from '../iconfont';
 import { Input, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro';
 import { useEffect, useState, useRef } from 'react';
-import searchIcon from '../../assets/icon/community/search.png';
+const searchIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/search.png';
 import './index.less';
 
 

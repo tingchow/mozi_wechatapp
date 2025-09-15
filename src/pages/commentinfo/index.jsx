@@ -5,10 +5,11 @@ import { request } from '../../utils/request'
 import { Interface } from '../../utils/constants'
 import IconFont from '../../components/iconfont'
 import { GardenLoading } from '../../components/Loading'
-import likeActiveIcon from '../../assets/icon/community/like-active.png';
-import likeNoActiveIcon from '../../assets/icon/community/like-no-active.png';
-import shareIcon from '../../assets/icon/community/share.png';
-import editIcon from '../../assets/icon/edit.png';
+const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
+const likeActiveIcon = `${CDN_PREFIX}/icon/community/like-active.png`;
+const likeNoActiveIcon = `${CDN_PREFIX}/icon/community/like-no-active.png`;
+const shareIcon = `${CDN_PREFIX}/icon/community/share.png`;
+const editIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/edit.png';
 import './index.less'
 
 // 确保接口定义存在

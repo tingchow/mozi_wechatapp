@@ -12,7 +12,7 @@ import { AddCollect } from '../../AddCollect';
 import { AddMonitor } from '../../AddMonitor';
 import { GardenLoading } from '../../Loading';
 // import { url } from 'inspector';
-import backPng from '../../../assets/icon/left-arrow.png';
+const backPng = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/left-arrow.png';
 
 export const SimpleList = ({ 
   interFace,
@@ -31,7 +31,8 @@ export const SimpleList = ({
   onChangeCb,
   isLoading,
   // loginCb,
-  showHeader
+  showHeader,
+  headerImg
 }) => {
   console.log('进入列表');
 
@@ -189,13 +190,13 @@ export const SimpleList = ({
             <View className='header-con'>
               <View className='left'>
                 <View className='title'>{rankTitle}</View>
-                <View className='rank-name'>{rankName}</View>
+                {rankName && <View className='rank-name'>{rankName}</View>}
                 <View className='desc'>
                   {rankDesc && <Text className='desc-con'>{rankDesc}</Text>}
                 </View>
               </View>
               <View className='right'>
-                { data[0]?.img && <Image src={data[0].img} mode='aspectFit' className='header-img' /> }
+                { (headerImg || data[0]?.img) && <Image src={headerImg || data[0]?.img} mode='aspectFit' className='header-img' /> }
               </View>
             </View>
             { selectArr && selectArr.length > 0 && (

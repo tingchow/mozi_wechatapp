@@ -7,10 +7,10 @@ import { request } from '../../utils/request'
 import { Interface } from '../../utils/constants'
 import { GardenLoading } from '../../components/Loading'
 import IconFont from '../../components/iconfont'
-import shareIcon from '../../assets/icon/community/share.png'
-import commentIcon from '../../assets/icon/community/messages-comment.png'
-import likeIcon from '../../assets/icon/community/like-no-active.png'
-import likeActiveIcon from '../../assets/icon/community/like-active.png'
+const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png'
+const commentIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/messages-comment.png'
+const likeIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/like-no-active.png'
+const likeActiveIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/like-active.png'
 
 export default function TopicInfo() {
   const router = useRouter();

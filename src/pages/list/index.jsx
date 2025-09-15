@@ -5,6 +5,7 @@ import { SimpleList } from '../../components/ListCom/SimpleList';
 import { Layout } from '../../components/Layout';
 import { PageLogin } from '../../components/PageLogin';
 import { request } from '../../utils/request';
+import { Interface } from '../../utils/constants';
 
 export default function List() {
 
@@ -14,6 +15,7 @@ export default function List() {
   const [readyIndex, setReadyIndex] = useState(0);
   const [isLoading, setLoading] = useState(true);
   const [showHeader, setShowHeader] = useState(false);
+  const [headerImg, setHeaderImg] = useState('');
   const pageNo = useRef(1);
   const pageSize = useRef(100);
   const pageFinish = useRef(false);
@@ -39,6 +41,22 @@ export default function List() {
     console.log('app', app);
     if (app.listParam) {
       setListParam(app.listParam);
+      // 如果是从可交易平台入口，且没有头图，则使用搜索币种的 logo
+      if (app.listParam.fromPlatform && !app.listParam.headerImg) {
+        (async () => {
+          try {
+            const info = await request({
+              url: Interface.COIN_INFO,
+              data: { coin: app.listParam.searchCoin }
+            });
+            if (Array.isArray(info?.data) && info.data[0]?.url) {
+              setHeaderImg(info.data[0].url);
+            }
+          } catch (e) {
+            // ignore
+          }
+        })();
+      }
       if (Array.isArray(app.listParam.selectArr) && app.listParam.selectArr.length > 0) {
         setShowHeader(true);
         setSelected(app.listParam.selectArr[0]);
@@ -163,6 +181,7 @@ export default function List() {
         onChangeCb={onChange}
         gridCon={listParam.gridCon} // ['coin', 'priceChangePercent']
         showHeader={listParam.showHeader}
+        headerImg={headerImg || listParam.headerImg}
         // loginCb={() => {setPopVis(true)}}
       />
        }

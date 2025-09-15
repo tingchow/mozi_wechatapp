@@ -21,11 +21,13 @@ import './index.less';
 
 // 区块内容
 // 导入图片
-import bullBearRatioIcon from '../../assets/icon/bull-bear-ratio.png';
-import inventoryIcon from '../../assets/icon/inventory.png';
-import fundingRateIcon from '../../assets/icon/funding-rate.png';
-import volumeTransactionIcon from '../../assets/icon/volume-transaction.png';
-import HomeAlertIcon from '../../assets/icon/home-alert.png'; // 导入新的提醒图标
+// 静态图使用 CDN 前缀，提升加载速度
+const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
+const bullBearRatioIcon = `${CDN_PREFIX}/icon/bull-bear-ratio.png`;
+const inventoryIcon = `${CDN_PREFIX}/icon/inventory.png`;
+const fundingRateIcon = `${CDN_PREFIX}/icon/funding-rate.png`;
+const volumeTransactionIcon = `${CDN_PREFIX}/icon/volume-transaction.png`;
+const HomeAlertIcon = `${CDN_PREFIX}/icon/home-alert.png`; // 提醒图标
 
 const area = {
   derivativeArea: {
@@ -531,9 +533,9 @@ export default function Index() {
                     hot_topics.slice(0, 3).map((topic, index) => {
                       // 根据排名显示不同的奖牌
                       const rankMedals = [
-                        require('@/assets/icon/gold.png'),
-                        require('@/assets/icon/silver.png'), 
-                        require('@/assets/icon/copper.png')
+                        `${CDN_PREFIX}/icon/gold.png`,
+                        `${CDN_PREFIX}/icon/silver.png`, 
+                        `${CDN_PREFIX}/icon/copper.png`
                       ];
                       
                       return (
@@ -558,7 +560,7 @@ export default function Index() {
                     // 默认显示加载中或暂无数据
                     <View className='topic-card'>
                       <View className='topic-rank'>
-                        <Image src={require('@/assets/icon/gold.png')} className='rank-medal' mode='aspectFit' />
+                        <Image src={`${CDN_PREFIX}/icon/gold.png`} className='rank-medal' mode='aspectFit' />
                       </View>
                       <View className='topic-title'>暂无话题</View>
                       <View className='topic-desc'>敬请期待</View>

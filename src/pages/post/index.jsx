@@ -756,7 +756,7 @@ export default function PostPage() {
           }}
         >
           <View className={`template-box ${activeButton === 'template' ? 'active' : ''}`}>
-            <Image className='button-icon' src={require('../../assets/icon/community/template.png')} />
+            <Image className='button-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/template.png'} />
             模板
           </View>
         </Button>
@@ -768,7 +768,7 @@ export default function PostPage() {
           }}
         >
           <View className={`template-box ${activeButton === 'vote' ? 'active' : ''}`}>
-            <Image className='button-icon' src={require('../../assets/icon/community/vote.png')} />
+            <Image className='button-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/vote.png'} />
             投票
           </View>
         </Button>
@@ -780,7 +780,7 @@ export default function PostPage() {
           }}
         >
           <View className={`template-box ${activeButton === 'coin' ? 'active' : ''}`}>
-            <Image className='button-icon' src={require('../../assets/icon/community/currency.png')} />
+            <Image className='button-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/currency.png'} />
             币种
           </View>
         </Button>
@@ -792,7 +792,7 @@ export default function PostPage() {
           }}
         >
           <View className={`template-box ${activeButton === 'topic' ? 'active' : ''}`}>
-            <Image className='button-icon' src={require('../../assets/icon/community/topic.png')} />
+            <Image className='button-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/topic.png'} />
             话题
           </View>
         </Button>

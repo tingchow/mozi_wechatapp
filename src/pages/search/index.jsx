@@ -16,7 +16,7 @@ import { GardenLoading } from '../../components/Loading';
 import { HighlightArea } from '../../components/HighlightArea';
 import { PageLogin } from '../../components/PageLogin';
 import { isEmpty } from 'lodash';
-import leftArrowIcon from '../../assets/icon/left-arrow.png';
+const leftArrowIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/left-arrow.png';
 import './index.less';
 // let $instance = null;
 
@@ -318,6 +318,8 @@ export default function Search() {
             <View className='coin-header-item' onClick={() => {
               if (infoData.length > 3) {
                 jump2List({
+                  showHeader: true,
+                  rankTitle: searchValue,
                   interFace: Interface.COIN_INFO,
                   requestData: {
                     coin: searchValue
@@ -369,6 +371,8 @@ export default function Search() {
                 // type='more'
                 callback={() => {
                   jump2List({
+                    showHeader: true,
+                    rankTitle: searchValue,
                     interFace: Interface.COIN_INFO,
                     requestData: {
                       coin: searchValue
@@ -411,6 +415,8 @@ export default function Search() {
                 <View className='header-info-item' onClick={() => {
                   if (areaData.length > 4) {
                     jump2List({
+                      showHeader: true,
+                      rankTitle: searchValue,
                       interFace: Interface.COIN_AREA,
                       requestData: {
                         coin: searchValue
@@ -439,6 +445,8 @@ export default function Search() {
                 type={areaData.length > 4? 'more': null}
                 callback={() => {
                   jump2List({
+                    showHeader: true,
+                    rankTitle: searchValue,
                     interFace: Interface.COIN_AREA,
                     requestData: {
                       coin: searchValue
@@ -471,6 +479,10 @@ export default function Search() {
                 <View className='header-info-item' onClick={() => {
                   if (platformData.length > 3) {
                     jump2List({
+                      showHeader: true,
+                      rankTitle: `可交易${(searchValue || '').toUpperCase()}平台`,
+                      fromPlatform: true,
+                      searchCoin: searchValue,
                       interFace: Interface.COIN_PLATFORM,
                       requestData: {
                         coin: searchValue
@@ -514,6 +526,8 @@ export default function Search() {
               <View className='header-info'>
                 <View className='header-info-item' onClick={() => {
                   jump2List({
+                    showHeader: true,
+                    rankTitle: `${(searchValue || '').toUpperCase()}交易对`,
                     interFace: Interface.COIN_SPOT,
                     requestData: {
                       coin: searchValue

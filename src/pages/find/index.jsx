@@ -832,7 +832,7 @@ export default function Find() {
           {/* 交易所排行榜 */}
           <Layout isLoading={isExchangeLoading} isError={isExchangeError}>
             <MoziCard
-              title={<View className='rank-title title-with-range-bg'><View>交易所排行榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title title-with-range-bg'><View>交易所排行榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
               selectArr={exchangeData.exchangeSelect}
               callback={() => {
@@ -917,7 +917,7 @@ export default function Find() {
           {/* 涨幅榜 */}
           <Layout isLoading={isPriceLoading} isError={isPriceError}>
             <MoziCard
-              title={<View className='rank-title title-with-range-bg'><View>涨幅榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title title-with-range-bg'><View>涨幅榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
               selectArr={priceData.priceSelect}
               callback={() => {
@@ -1001,7 +1001,7 @@ export default function Find() {
           {/* 跌幅榜 */}
           <Layout isLoading={isDownLoading} isError={isDownError}>
             <MoziCard
-              title={<View className='rank-title title-with-range-bg'><View>跌幅榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title title-with-range-bg'><View>跌幅榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
               selectArr={downData.downSelect}
               callback={() => {
@@ -1085,7 +1085,7 @@ export default function Find() {
           {/* 波幅榜 */}
           <Layout isLoading={isWaveLoading} isError={isWaveError}>
             <MoziCard
-              title={<View className='rank-title title-with-range-bg'><View>波幅榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title title-with-range-bg'><View>波幅榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
               selectArr={waveData.waveSelect}
               callback={() => {
@@ -1168,7 +1168,7 @@ export default function Find() {
           {/* 成交额榜 */}
           <Layout isLoading={isTradeLoading} isError={isTradeError}>
             <MoziCard
-              title={<View className='rank-title title-with-range-bg'><View>成交额榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title title-with-range-bg'><View>成交额榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
               customStyle={{ '--tabs-width': '320px' }}
               className='trade-rank-card'
@@ -1247,7 +1247,7 @@ export default function Find() {
           {/* 新币榜 */}
           <Layout isLoading={isXinbiLoading} isError={isXinbiError}>
             <MoziCard
-              title={<View className='rank-title'><View>新币榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title'><View>新币榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               // type='select'
               // selectArr={xinbiData.xinbiSelect}
               callback={() => {
@@ -1332,7 +1332,7 @@ export default function Find() {
           {/* 飙升榜 */}
           <Layout isLoading={isUpTradeLoading} isError={isUpTradeError}>
             <MoziCard
-              title={<View className='rank-title title-with-range-bg'><View>飙升榜</View><Image className='rank-arrow' src={require('../../assets/icon/find/range-arrow.png')} /></View>}
+              title={<View className='rank-title title-with-range-bg'><View>飙升榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
               selectArr={upTradeData.upTradeSelect}
               callback={() => {

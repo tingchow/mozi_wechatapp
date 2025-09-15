@@ -1,7 +1,7 @@
 import { View, Text, Image } from '@tarojs/components'
 import './index.less'
-import answerQuestionImg from '../../assets/icon/community/answer-question.png'
-import submitQuestionImg from '../../assets/icon/community/submit-question.png'
+const answerQuestionImg = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/answer-question.png'
+const submitQuestionImg = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/submit-question.png'
 
 export default function QuestionButtons({ onAskQuestion, onAnswerQuestion }) {
   return (

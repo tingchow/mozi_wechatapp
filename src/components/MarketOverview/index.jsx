@@ -3,13 +3,14 @@ import { memo } from 'react';
 import { jump2NoTab } from '../../utils/core';
 import './index.less';
 
-import UpIcon from '../../assets/icon/find/up.png';
-import DownIcon from '../../assets/icon/find/down.png';
+const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
+const UpIcon = `${CDN_PREFIX}/icon/find/up.png`;
+const DownIcon = `${CDN_PREFIX}/icon/find/down.png`;
 
-import CoinIcon from '../../assets/icon/find/coin.png';
-import TurnoverIcon from '../../assets/icon/find/turn-over.png';
-import MarketMonitoringIcon from '../../assets/icon/find/market-monitoring.png';
-import CalendarIcon from '../../assets/icon/find/calendar.png';
+const CoinIcon = `${CDN_PREFIX}/icon/find/coin.png`;
+const TurnoverIcon = `${CDN_PREFIX}/icon/find/turn-over.png`;
+const MarketMonitoringIcon = `${CDN_PREFIX}/icon/find/market-monitoring.png`;
+const CalendarIcon = `${CDN_PREFIX}/icon/find/calendar.png`;
 
 const MarketOverview = memo(({ data }) => {
   // 默认数据

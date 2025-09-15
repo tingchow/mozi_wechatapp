@@ -8,7 +8,7 @@ const NewCoinListing = () => {
     {
       id: 1,
       exchange: 'Binance',
-      exchangeIcon: require('@/assets/icon/biannce.png'),
+      exchangeIcon: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/biannce.png',
       listingTime: '2025-05-07 10:00:10',
       details: 'Ravala (AVA)将上线 Bitget 创新区及WEB3区!',
       link: 'https://www.bitget.com/zh-CN/support/articles/1256060381977'

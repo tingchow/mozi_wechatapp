@@ -18,10 +18,10 @@ import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
 import towxml from '../../towxml';
 import { isEmpty } from 'lodash';
-import communityIcon from '../../assets/icon/community-no-actived.png';
-import shareIcon from '../../assets/icon/community/share.png';
-import upIcon from '../../assets/icon/up.png';
-import downIcon from '../../assets/icon/down.png';
+const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
+const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
+const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
+const downIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/down.png';
 // import '~taro-parse/dist/style/main.scss'
 // import TaroParser from 'taro-parse'
 

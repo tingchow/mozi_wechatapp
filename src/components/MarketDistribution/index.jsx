@@ -2,7 +2,8 @@ import { View, Text, Image } from '@tarojs/components';
 import { useState, useEffect } from 'react';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
-import warnIcon from '../../assets/icon/warn.png';
+const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
+const warnIcon = `${CDN_PREFIX}/icon/warn.png`;
 import './index.less';
 
 export function MarketDistribution({ title = '涨跌分布', showUpdateTime = true }) {

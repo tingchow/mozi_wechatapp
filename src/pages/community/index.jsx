@@ -9,29 +9,30 @@ import { GardenLoading } from '../../components/Loading';
 
 import { isEmpty } from 'lodash';
 import IconFont from '../../components/iconfont';
-import shareIcon from '../../assets/icon/community/share.png';
-import likeActiveIcon from '../../assets/icon/community/like-active.png';
-import commentIcon from '../../assets/icon/community/comment.png';
-import likeNoActiveIcon from '../../assets/icon/community/like-no-active.png';
-import messagesCommentIcon from '../../assets/icon/community/messages-comment.png';
-import messagesLikeActiveIcon from '../../assets/icon/community/messages-like-active.png';
-import messagesLikeNoActivedIcon from '../../assets/icon/community/messages-like-no-actived.png';
-import messagesShareIcon from '../../assets/icon/community/messages-share.png';
-import reasonIcon from '../../assets/icon/community/reason.png';
-import plateIcon from '../../assets/icon/community/plate.png';
-import integralIcon from '../../assets/icon/community/integral.png';
+const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
+const shareIcon = `${CDN_PREFIX}/icon/community/share.png`;
+const likeActiveIcon = `${CDN_PREFIX}/icon/community/like-active.png`;
+const commentIcon = `${CDN_PREFIX}/icon/community/comment.png`;
+const likeNoActiveIcon = `${CDN_PREFIX}/icon/community/like-no-active.png`;
+const messagesCommentIcon = `${CDN_PREFIX}/icon/community/messages-comment.png`;
+const messagesLikeActiveIcon = `${CDN_PREFIX}/icon/community/messages-like-active.png`;
+const messagesLikeNoActivedIcon = `${CDN_PREFIX}/icon/community/messages-like-no-actived.png`;
+const messagesShareIcon = `${CDN_PREFIX}/icon/community/messages-share.png`;
+const reasonIcon = `${CDN_PREFIX}/icon/community/reason.png`;
+const plateIcon = `${CDN_PREFIX}/icon/community/plate.png`;
+const integralIcon = `${CDN_PREFIX}/icon/community/integral.png`;
 import './index.less'
 import BullBearVote from '../../components/BullBearVote'
 import QuestionButtons from '../../components/QuestionButtons'
-import recommendationImg from '../../assets/image/community/community-recommend.png'
-import hotListImg from '../../assets/image/community/community-hot-list.png'
-import hotListActivedImg from '../../assets/image/community/hot-list-actived.png'
-import recommendNoActivedImg from '../../assets/image/community/recommend-no-actived.png'
-import findBestCoinIcon from '../../assets/icon/community/find-best-coin.png'
-import nov1Icon from '../../assets/icon/community/Nov1.png'
-import nov2Icon from '../../assets/icon/community/Nov2.png'
-import nov3Icon from '../../assets/icon/community/Nov3.png'
-import hotIcon from '../../assets/icon/community/hot.png'
+const recommendationImg = `${CDN_PREFIX}/image/community/community-recommend.png`;
+const hotListImg = `${CDN_PREFIX}/image/community/community-hot-list.png`;
+const hotListActivedImg = `${CDN_PREFIX}/image/community/hot-list-actived.png`;
+const recommendNoActivedImg = `${CDN_PREFIX}/image/community/recommend-no-actived.png`;
+const findBestCoinIcon = `${CDN_PREFIX}/icon/community/find-best-coin.png`;
+const nov1Icon = `${CDN_PREFIX}/icon/community/Nov1.png`;
+const nov2Icon = `${CDN_PREFIX}/icon/community/Nov2.png`;
+const nov3Icon = `${CDN_PREFIX}/icon/community/Nov3.png`;
+const hotIcon = `${CDN_PREFIX}/icon/community/hot.png`;
 
 // 时间格式化函数
 const formatTimeAgo = (timestamp) => {
@@ -1447,7 +1448,7 @@ export default function CommunityPage() {
       {/* 添加悬浮发帖按钮 */}
       <View className="float-post-btn">
         <Button className="post-btn" onClick={handlePost}>
-          <Image className="post-icon-img" src={require('../../assets/image/community/publish.png')} mode="widthFix" />
+          <Image className="post-icon-img" src={`${CDN_PREFIX}/image/community/publish.png`} mode="widthFix" />
         </Button>
       </View>
 

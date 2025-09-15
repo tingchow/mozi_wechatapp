@@ -108,7 +108,7 @@ export const CalendarCard = (props) => {
           <View className="announcement-icon">
             <Image 
               className="icon-image" 
-              src={require('@/assets/icon/calendar.png')} 
+              src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/calendar.png'}
               mode="aspectFit"
             />
           </View>

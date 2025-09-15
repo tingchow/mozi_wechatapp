@@ -6,8 +6,8 @@ import { request } from '../../utils/request'
 import { SearchInput } from '../../components/SearchInput'
 import { GardenLoading } from '../../components/Loading'
 import IconFont from '../../components/iconfont'
-import hotIcon from '../../assets/icon/community/hot.png'
-import leftArrowIcon from '../../assets/icon/left-arrow.png'
+const hotIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/hot.png'
+const leftArrowIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/left-arrow.png'
 import './index.less'
 
 export default function TopicSearch() {

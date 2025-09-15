@@ -8,8 +8,9 @@ import { useLoad, useShareTimeline, useDidShow } from '@tarojs/taro';
 import { jump2Detail, jump2Market, jump2NoTab } from '../../utils/core';
 import { request } from '../../utils/request';
 import { EMAIL, COINKEY, Interface } from '../../utils/constants';
-import DefaultAvatar from '../../assets/icon/avatar.png'; // 导入新的默认头像图片
-import EditIcon from '../../assets/icon/edit.png'; // 导入编辑图标
+// 默认头像使用 CDN 链接，避免打包并加速加载
+const DEFAULT_AVATAR = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png';
+const EDIT_ICON = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/edit.png';
 import NewCoinListing from '../../components/NewCoinListing'; // 导入新币上线组件
 // import '../../assets/wechat_account.jpg'
 // import '../../assets/BTC.jpg'
@@ -32,31 +33,31 @@ export default function Index() {
   const footerList = [
   {
     key: 'theme',
-    icon: <Image src={require('@/assets/icon/skin.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/skin.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '皮肤中心',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('皮肤中心')}
   }, {
     key: '',
-    icon: <Image src={require('@/assets/icon/contact.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/contact.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '联系我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {contact()}
   }, {
     key: 'social',
-    icon: <Image src={require('@/assets/icon/social.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/social.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '到社交媒体找我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('社交媒体')}
   }, {
     key: '',
-    icon: <Image src={require('@/assets/icon/about.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/about.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '关于',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {about()}
   }, {
     key: '',
-    icon: <Image src={require('@/assets/icon/donate.png')} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/donate.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '捐赠',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {reward()}
@@ -314,16 +315,16 @@ export default function Index() {
           isLogin? (
             
             <View className='headerUser' onClick={() => jump2User()}>
-              <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || DefaultAvatar} />
+              <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || DEFAULT_AVATAR} />
               <Text>{userInfo.nickName || '微信用户'}</Text>
               {
-                isLogin && <Image className='editIcon' src={EditIcon} /> // 移除 size 属性
+                isLogin && <Image className='editIcon' src={EDIT_ICON} /> // 移除 size 属性
               }
             </View>
           ) : (
             <Button className='loginBox' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>
               <View className='headerUser'>
-                <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || DefaultAvatar} />
+                <Image className='headerAvatar' mode='aspectFill' src={userInfo.avatar || DEFAULT_AVATAR} />
                 <Text>{userInfo.nickName || '请登录'}</Text>
               </View>
             </Button>
@@ -334,19 +335,19 @@ export default function Index() {
         <View className='actionButtons'>
           <View className='actionButton' onClick={() => jump2Market('own')}>
             <View className='actionIcon'>
-              <Image className='actionIconImg' src={require('@/assets/icon/alert.png')} />
+              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/alert.png'} />
             </View>
             <Text className='actionText'>我的自选</Text>
           </View>
           <View className='actionButton' onClick={() => jump2NoTab('mywarn')}>
             <View className='actionIcon'>
-              <Image className='actionIconImg' src={require('@/assets/icon/like.png')} />
+              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/like.png'} />
             </View>
             <Text className='actionText'>我的报警</Text>
           </View>
           <View className='actionButton' onClick={attendUs}>
             <View className='actionIcon'>
-              <Image className='actionIconImg' src={require('@/assets/icon/wechat.png')} />
+              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/wechat.png'} />
             </View>
             <Text className='actionText'>关注公众号</Text>
           </View>
@@ -358,20 +359,20 @@ export default function Index() {
         <View className='actionRow'>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={require('@/assets/icon/comment.png')} />
+              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/comment.png'} />
             </View>
             <Text className='actionText secondary'>我的评论</Text>
           </View>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={require('@/assets/icon/notification.png')} />
+              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/notification.png'} />
               <View className='badge'>3</View>
             </View>
             <Text className='actionText secondary'>消息通知</Text>
           </View>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={require('@/assets/icon/upvote.png')} />
+              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/upvote.png'} />
             </View>
             <Text className='actionText secondary'>我的点赞</Text>
           </View>
@@ -384,7 +385,7 @@ export default function Index() {
           !isLogin ? (
                           <Button className='horizontalBtn left' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>
                 <View className='btnIcon'>
-                  <Image className='btnIconImg' src={require('@/assets/icon/feedback.png')} />
+                  <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/feedback.png'} />
                 </View>
               <View className='btnBottom'>
                 <View className='btnContent'>
@@ -399,7 +400,7 @@ export default function Index() {
           ) : (
             <View className='horizontalBtn left' onClick={score}>
               <View className='btnIcon'>
-                <Image className='btnIconImg' src={require('@/assets/icon/feedback.png')} />
+                <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/feedback.png'} />
               </View>
               <View className='btnBottom'>
                 <View className='btnContent'>
@@ -415,7 +416,7 @@ export default function Index() {
         }
         <Button className='horizontalBtn right' openType='share'>
           <View className='btnIcon'>
-            <Image className='btnIconImg' src={require('@/assets/icon/share.png')} />
+            <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/share.png'} />
           </View>
           <View className='btnBottom'>
             <View className='btnContent'>
@@ -445,7 +446,7 @@ export default function Index() {
           <Text className='pointsButton'>积分榜单</Text>
           <IconFont name='right' size={24} color='#fff'/>
         </View>
-        <Image className='pointsCoin' src={require('@/assets/image/integral-coin.png')} />
+        <Image className='pointsCoin' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/integral-coin.png'} />
       </View>
 
 

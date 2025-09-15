@@ -115,7 +115,7 @@ export default function PointsRank() {
             <View className='back-arrow' onClick={() => Taro.navigateBack()}>
               <Image 
                 className='back-arrow-icon'
-                src={require('@/assets/icon/left-arrow.png')}
+                src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/left-arrow.png'}
               />
             </View>
             <View className='mini-title'>积分榜单</View>
@@ -150,33 +150,33 @@ export default function PointsRank() {
         <View className='top3-overlay'>
           {top2 && (
             <View className='overlay-slot second'>
-              <Image className='medal-second' src={require('@/assets/icon/silver.png')} mode='widthFix' />
+              <Image className='medal-second' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/silver.png'} mode='widthFix' />
               <Image src={top2.avatar} className='ov-avatar' mode='aspectFill' />
               <View className='ov-name'>{top2.name}</View>
               <View className='ov-points'>
-                <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                <Image className='coin-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/score-coin.png'} mode='widthFix' />
                 <Text className='ov-points-text'>{top2.points}</Text>
               </View>
             </View>
           )}
           {top1 && (
             <View className='overlay-slot first'>
-              <Image className='medal-first' src={require('@/assets/icon/gold.png')} mode='widthFix' />
+              <Image className='medal-first' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/gold.png'} mode='widthFix' />
               <Image src={top1.avatar} className='ov-avatar' mode='aspectFill' />
               <View className='ov-name'>{top1.name}</View>
               <View className='ov-points'>
-                <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                <Image className='coin-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/score-coin.png'} mode='widthFix' />
                 <Text className='ov-points-text'>{top1.points}</Text>
               </View>
             </View>
           )}
           {top3 && (
             <View className='overlay-slot third'>
-              <Image className='medal-third' src={require('@/assets/icon/copper.png')} mode='widthFix' />
+              <Image className='medal-third' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/copper.png'} mode='widthFix' />
               <Image src={top3.avatar} className='ov-avatar' mode='aspectFill' />
               <View className='ov-name'>{top3.name}</View>
               <View className='ov-points'>
-                <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                <Image className='coin-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/score-coin.png'} mode='widthFix' />
                 <Text className='ov-points-text'>{top3.points}</Text>
               </View>
             </View>
@@ -197,7 +197,7 @@ export default function PointsRank() {
                   <View className='name'>{item.name}</View>
                 </View>
                 <View className='points-area'>
-                  <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+                  <Image className='coin-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/score-coin.png'} mode='widthFix' />
                   <Text className='points-text'>{item.points}</Text>
                 </View>
               </View>
@@ -216,7 +216,7 @@ export default function PointsRank() {
               <View className='name'>{myRank.name}</View>
             </View>
             <View className='points-area'>
-              <Image className='coin-icon' src={require('@/assets/icon/score-coin.png')} mode='widthFix' />
+              <Image className='coin-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/score-coin.png'} mode='widthFix' />
               <Text className='points-text'>{myRank.points}</Text>
             </View>
           </View>
@@ -226,7 +226,7 @@ export default function PointsRank() {
       {/* 邀请好友悬浮按钮 */}
       <Button className='invite-float-btn' openType='share'>
         <View className='invite-icon-wrap'>
-          <Image className='invite-icon' src={require('@/assets/icon/score-invite.png')} mode='widthFix' />
+          <Image className='invite-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/score-invite.png'} mode='widthFix' />
         </View>
         <Text className='invite-text'>邀请朋友来挑战吧</Text>
       </Button>
