@@ -3,6 +3,7 @@ import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 import { SimpleList } from '../../components/ListCom/SimpleList';
 import { Layout } from '../../components/Layout';
+import { LogoLoading } from '../../components/LogoLoading';
 import { PageLogin } from '../../components/PageLogin';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
@@ -77,30 +78,30 @@ export default function List() {
   // 初始化获取数据
   const init = async (listParam) => {
     console.log('init', listParam);
-    const requestData = Array.isArray(listParam.requestData) && listParam.requestData.length > 0? listParam.requestData[0]: listParam.requestData;
-    const coinData = await request({
-      url: listParam.interFace,
-      data: {
-        ...requestData,
-        pageNo: pageNo.current,
-        pageSize: pageSize.current
+    try {
+      const requestData = Array.isArray(listParam.requestData) && listParam.requestData.length > 0? listParam.requestData[0]: listParam.requestData;
+      const coinData = await request({
+        url: listParam.interFace,
+        data: {
+          ...requestData,
+          pageNo: pageNo.current,
+          pageSize: pageSize.current
+        }
+      });
+      if (coinData?.data) {
+        if (listParam.reponseData) {
+          const tmpResData = Object.keys(coinData?.data).map((resData) => {
+            return coinData?.data[resData]
+          });
+          console.log('tmpResData',tmpResData);
+          setReadyData(tmpResData);
+        } else {
+          setData(coinData.data);
+        }
       }
-    });
-    
-    
-    if (coinData?.data) {
-      if (listParam.reponseData) {
-        const tmpResData = Object.keys(coinData?.data).map((resData) => {
-          return coinData?.data[resData]
-        });
-        console.log('tmpResData',tmpResData);
-        setReadyData(tmpResData);
-        // setData(coinData.data[listParam.reponseData[0]]);
-      } else {
-        setData(coinData.data);
-      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const loadMore = async (e) => {
@@ -163,6 +164,14 @@ export default function List() {
 
   return (
     <Layout>
+      {/* 进入列表页和切换维度请求时显示全屏品牌 Loading */}
+      <LogoLoading
+        visible={isLoading}
+        fullscreen
+        mask
+        image={require('../../assets/image/community/loadding.png')}
+        size={72}
+      />
       { listParam && 
       <SimpleList
         isLoading={isLoading}
