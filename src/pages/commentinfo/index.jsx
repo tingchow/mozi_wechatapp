@@ -367,7 +367,7 @@ export default function CommentInfo() {
     
     // 跳转到发帖页面，并传递帖子信息
     Taro.navigateTo({
-      url: `/pages/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
+      url: `/packages/misc/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
     });
   }
 
@@ -671,7 +671,7 @@ export default function CommentInfo() {
                 <Text 
                   key={`tag-${tag.id}`} 
                   className="coin-tag"
-                  onClick={() => Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` })}
+                  onClick={() => Taro.navigateTo({ url: `/packages/detail/detail/index?symbol=${tag.name}` })}
                 >
                   @{tag.name}
                 </Text>
@@ -682,7 +682,7 @@ export default function CommentInfo() {
                 <Text 
                   key={`topic-${topic.id}`} 
                   className="topic-tag"
-                  onClick={() => Taro.navigateTo({ url: `/pages/topicinfo/index?id=${topic.id}` })}
+                  onClick={() => Taro.navigateTo({ url: `/packages/misc/topicinfo/index?id=${topic.id}` })}
                 >
                   #{topic.name}
                 </Text>

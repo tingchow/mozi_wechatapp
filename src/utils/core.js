@@ -1,11 +1,31 @@
 import Taro from '@tarojs/taro';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+
+// 分包路由映射（不改变现有页面实现，仅调整路径）
+const pageRouteMap = {
+  detail: '/packages/detail/detail/index',
+  landscapechart: '/packages/detail/landscapechart/index',
+  list: '/packages/listpkg/list/index',
+  search: '/packages/misc/search/index',
+  commentinfo: '/packages/misc/commentinfo/index',
+  topicinfo: '/packages/misc/topicinfo/index',
+  post: '/packages/misc/post/index',
+  addwarn: '/packages/misc/addwarn/index',
+  mywarn: '/packages/misc/mywarn/index',
+  topicsearch: '/packages/misc/topicsearch/index',
+  pointsrank: '/packages/misc/pointsrank/index',
+  positionsize: '/packages/misc/positionsize/index',
+  putcallratio: '/packages/misc/putcallratio/index',
+  fundingrate: '/packages/misc/fundingrate/index',
+  tradevol: '/packages/misc/tradevol/index',
+  user: '/packages/misc/user/index',
+};
 
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {
   console.log(symbol)
   Taro.navigateTo({
-    url: `/pages/detail/index?symbol=${symbol}`,
+    url: `${pageRouteMap.detail}?symbol=${symbol}`,
   });
 }
 
@@ -29,7 +49,7 @@ export const jump2List = (listParam) => {
   const app = Taro.getApp();
   app.listParam = listParam;
   Taro.navigateTo({
-    url: `/pages/list/index`,
+    url: pageRouteMap.list,
   });
 };
 
@@ -44,11 +64,11 @@ const queryString = (params) => {
 export const jump2NoTab = (pageName, params = {}) => {
   if (isEmpty(params)) {
     Taro.navigateTo({
-      url: `/pages/${pageName}/index`,
+      url: pageRouteMap[pageName] || `/pages/${pageName}/index`,
     });
   } else {
     Taro.navigateTo({
-      url: `/pages/${pageName}/index?${queryString(params)}`,
+      url: `${pageRouteMap[pageName] || `/pages/${pageName}/index`}?${queryString(params)}`,
     });
   }
 };
@@ -58,7 +78,7 @@ export const jump2DataPage = (pageName, dataName, data = {}) => {
   const app = Taro.getApp();
   app[dataName] = data;
   Taro.navigateTo({
-    url: `/pages/${pageName}/index`,
+    url: pageRouteMap[pageName] || `/pages/${pageName}/index`,
   });
 };
 

@@ -82,7 +82,7 @@ export default function TopicSearch() {
   // 跳转到话题详情
   const goToTopicDetail = (topicId) => {
     Taro.navigateTo({
-      url: `/pages/topicinfo/index?id=${topicId}`
+      url: `/packages/misc/topicinfo/index?id=${topicId}`
     })
   }
 

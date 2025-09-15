@@ -17,7 +17,7 @@ import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
 import towxml from '../../towxml';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
 const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';

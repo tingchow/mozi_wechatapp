@@ -3,63 +3,61 @@ import { useGlobalIconFont } from './components/iconfont/helper';
 
 export default defineAppConfig({
   pages: [
-    // 首页
+    // 首页（主包）
     'pages/index/index',
-    // 社区
-    'pages/community/index',
-    // 发现页
+    // 发现（主包）
     'pages/find/index',
-    // 通用列表页
-    'pages/list/index',
-    // 我的
+    // 社区（主包）
+    'pages/community/index',
+    // 我的（主包）
     'pages/me/index',
-    // 币种详情页
-    'pages/detail/index',
-    // 搜索页
-    'pages/search/index',
-    // 用户信息
-    'pages/user/index',
-    // 多空比
-    'pages/putcallratio/index',
-    // 持仓量
-    'pages/positionsize/index',
-    // 资金费率
-    'pages/fundingrate/index',
-    // 持仓量
-    'pages/tradevol/index',
-    // 横向图表
-    'pages/landscapechart/index',
-    // 评论详情页
-    'pages/commentinfo/index',
-    // 话题详情页
-    'pages/topicinfo/index',
-    // 发帖页
-    'pages/post/index',
-    // 配置告警页
-    'pages/addwarn/index',
-    // 我的告警页
-    'pages/mywarn/index',
-    // 话题搜索页
-    'pages/topicsearch/index',
-    // 积分榜单页
-    'pages/pointsrank/index',
   ],
-  // subpackages: [
-  //   {
-  //     root: "packages",
-  //     name: "detail",
-  //     pages: [
-  //       "detail/index"
-  //     ],
-  //     // entry: "index.js"
-  //   }
-  // ],
-  // preloadRule: {
-  //   "pages/index/index": {
-  //     network: "all",
-  //     packages: ["detail"]
-  //   },
-  // },
+  subpackages: [
+    {
+      root: 'packages/detail',
+      name: 'detail',
+      pages: [
+        'detail/index',
+        'landscapechart/index'
+      ]
+    },
+    {
+      root: 'packages/listpkg',
+      name: 'listpkg',
+      pages: [
+        'list/index'
+      ]
+    },
+    {
+      root: 'packages/misc',
+      name: 'misc',
+      pages: [
+        'search/index',
+        'commentinfo/index',
+        'topicinfo/index',
+        'post/index',
+        'addwarn/index',
+        'mywarn/index',
+        'topicsearch/index',
+        'pointsrank/index',
+        'positionsize/index',
+        'putcallratio/index',
+        'fundingrate/index',
+        'tradevol/index',
+        'user/index'
+      ]
+    }
+  ],
+  preloadRule: {
+    'pages/index/index': {
+      network: 'all',
+      packages: ['detail']
+    },
+    'pages/community/index': {
+      network: 'all',
+      packages: ['detail']
+    }
+  },
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

@@ -7,7 +7,7 @@ import { request } from '../../utils/request';
 import { Layout } from '../../components/Layout';
 import { GardenLoading } from '../../components/Loading';
 
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import IconFont from '../../components/iconfont';
 const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
 const shareIcon = `${CDN_PREFIX}/icon/community/share.png`;
@@ -96,7 +96,7 @@ export default function CommunityPage() {
   // 跳转到话题搜索页
   const goToTopicSearch = () => {
     Taro.navigateTo({
-      url: `/pages/topicsearch/index`
+      url: `/packages/misc/topicsearch/index`
     })
   }
 
@@ -334,7 +334,7 @@ export default function CommunityPage() {
       if (postId && postTitle) {
         return {
           title: postTitle,
-          path: `/pages/commentinfo/index?id=${postId}`,
+          path: `/packages/misc/commentinfo/index?id=${postId}`,
         }
       }
     }
@@ -639,7 +639,7 @@ export default function CommunityPage() {
   const handleUpdatePost = (e, post) => {
     // 跳转到发帖页面，并传递帖子信息
     Taro.navigateTo({
-      url: `/pages/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
+      url: `/packages/misc/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
     });
   }
 
@@ -705,7 +705,7 @@ export default function CommunityPage() {
       templateType = '普通';
     }
     
-    const url = `/pages/post/index?templateType=${encodeURIComponent(templateType)}${urlParams}`;
+    const url = `/packages/misc/post/index?templateType=${encodeURIComponent(templateType)}${urlParams}`;
     console.log('跳转URL:', url);
     
     Taro.navigateTo({
@@ -1044,7 +1044,7 @@ export default function CommunityPage() {
   // 添加跳转到评论详情页的方法
   const navigateToCommentInfo = (commentId) => {
     Taro.navigateTo({
-      url: `/pages/commentinfo/index?id=${commentId}`
+      url: `/packages/misc/commentinfo/index?id=${commentId}`
     })
   }
 
@@ -1052,7 +1052,7 @@ export default function CommunityPage() {
   const navigateToTopicInfo = (topicId, name, description = '暂无描述') => {
     if (description == null) description = '暂无描述'
     Taro.navigateTo({
-      url: `/pages/topicinfo/index?id=${topicId}&title=${name}&description=${description}`
+      url: `/packages/misc/topicinfo/index?id=${topicId}&title=${name}&description=${description}`
     })
   }
 
@@ -1368,7 +1368,7 @@ export default function CommunityPage() {
                                 className="coin-tag"
                                 onClick={(e) => {
                                   e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
-                                  Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` });
+                                  Taro.navigateTo({ url: `/packages/detail/detail/index?symbol=${tag.name}` });
                                 }}
                               >
                                 ${tag.name}$
@@ -1382,7 +1382,7 @@ export default function CommunityPage() {
                                 className="topic-tag"
                                 onClick={(e) => {
                                   e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
-                                  Taro.navigateTo({ url: `/pages/topicinfo/index?id=${topic.id}` });
+                                  Taro.navigateTo({ url: `/packages/misc/topicinfo/index?id=${topic.id}` });
                                 }}
                               >
                                 #{topic.name}
