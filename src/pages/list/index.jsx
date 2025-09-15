@@ -59,9 +59,10 @@ export default function List() {
         })();
       }
       if (Array.isArray(app.listParam.selectArr) && app.listParam.selectArr.length > 0) {
-        setShowHeader(true);
         setSelected(app.listParam.selectArr[0]);
       }
+      // 统一开启头部容器（即使没有 tabs 也显示标题区）
+      setShowHeader(true);
       delete app.findType;
       
       Taro.setNavigationBarTitle({
@@ -189,7 +190,7 @@ export default function List() {
         // onChangeCb={(value) => {onChange(value)}}
         onChangeCb={onChange}
         gridCon={listParam.gridCon} // ['coin', 'priceChangePercent']
-        showHeader={listParam.showHeader}
+        showHeader={showHeader}
         headerImg={headerImg || listParam.headerImg}
         // loginCb={() => {setPopVis(true)}}
       />

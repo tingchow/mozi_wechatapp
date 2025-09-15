@@ -463,7 +463,8 @@ export default function Index() {
               }, {
                 type: 'HighlightArea',
                 data: 'priceChangePercent'
-              }]
+              }],
+              rankTitle: '热门币种'
             })}}>
               <div className='treemapTitle'>热门币种</div>
               <Layout isLoading={coinLoading}>
@@ -486,7 +487,8 @@ export default function Index() {
               }, {
                 type: 'HighlightArea',
                 data: 'priceChangePercent'
-              }]
+              }],
+              rankTitle: '热门合约'
             })}}>
               <div className='treemapTitle'>热门合约</div>
               <Layout isLoading={contractLoading}>
@@ -506,7 +508,8 @@ export default function Index() {
               }, {
                 type: 'HighlightArea',
                 data: 'changes'
-              }]
+              }],
+              rankTitle: '热门版块'
             })}}>
               <div className='treemapTitle'>热门版块</div>
               <Layout isLoading={industryLoading}>
