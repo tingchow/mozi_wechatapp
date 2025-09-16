@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro';
 import isEmpty from 'lodash/isEmpty';
 
 // 需要走分包路径的页面
-const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn']);
+const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn', 'list']);
 
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {
@@ -31,9 +31,7 @@ export const jump2Me = () => {
 export const jump2List = (listParam) => {
   const app = Taro.getApp();
   app.listParam = listParam;
-  Taro.navigateTo({
-    url: `/pages/list/index`,
-  });
+  Taro.navigateTo({ url: `/packages/list/index` });
 };
 
 

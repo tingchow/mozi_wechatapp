@@ -9,8 +9,7 @@ export default defineAppConfig({
     'pages/community/index',
     // 发现页
     'pages/find/index',
-    // 通用列表页
-    'pages/list/index',
+    // 通用列表页（已迁移到分包 list）
     // 我的
     'pages/me/index',
     // 币种详情页（已迁移到分包 detail）
@@ -66,6 +65,13 @@ export default defineAppConfig({
     {
       root: "packages/mywarn",
       name: "mywarn",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/list",
+      name: "list",
       pages: [
         "index"
       ]
