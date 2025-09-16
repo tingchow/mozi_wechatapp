@@ -295,7 +295,7 @@ export default function Mywarn() {
                             </Text>
                           </View>
                         )}
-                        <Switch checked={item.active} onChange={() => switchChange(item.code, item.active, index)} />
+                        <Switch checked={item.active} onChange={() => switchChange(item.code, item.active, index)} className='warn-switch' color='#11B787' />
                       </View>
                     )
                   })
