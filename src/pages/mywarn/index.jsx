@@ -16,7 +16,7 @@ import { AddCollect } from '../../components/AddCollect';
 import { jump2List, jump2DataPage } from '../../utils/core';
 import './index.less';
 import { PopLogin } from '../../components/PopLogin';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 // import '~taro-parse/dist/style/main.scss'
 // import TaroParser from 'taro-parse'
 

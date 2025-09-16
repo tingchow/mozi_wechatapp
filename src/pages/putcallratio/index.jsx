@@ -17,7 +17,7 @@ import { MoziPCRColChart } from '../../components/MoziChart/PCRColChart';
 import { jump2Detail, jump2Market, jump2List, jump2DataPage } from '../../utils/core';
 import { handleOptions } from '../../components/MoziChart/options';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import './index.less';
 
 const ratioArr = ['主动买卖量比', '人数多空比', '大账户人数多空比', '持仓多空比', '大账户持仓多空比'];

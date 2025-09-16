@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {

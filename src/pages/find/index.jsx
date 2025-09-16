@@ -16,7 +16,7 @@ import { request } from '../../utils/request';
 import { AddCollect } from '../../components/AddCollect';
 import { AddMonitor } from '../../components/AddMonitor';
 import { MarketOverview } from '../../components/MarketOverview';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 
 const MarketTitle = ({url, symbol, totalVolume}) => {

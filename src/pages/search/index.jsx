@@ -15,7 +15,7 @@ import { jump2Detail, jump2List } from '../../utils/core';
 import { GardenLoading } from '../../components/Loading';
 import { HighlightArea } from '../../components/HighlightArea';
 import { PageLogin } from '../../components/PageLogin';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 const leftArrowIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/left-arrow.png';
 import './index.less';
 // let $instance = null;

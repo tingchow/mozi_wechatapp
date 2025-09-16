@@ -7,7 +7,7 @@ import { request } from '../../utils/request';
 import { Layout } from '../../components/Layout';
 import { GardenLoading } from '../../components/Loading';
 
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import IconFont from '../../components/iconfont';
 const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
 const shareIcon = `${CDN_PREFIX}/icon/community/share.png`;

@@ -9,7 +9,7 @@ import IconFont from '../../iconfont';
 import { request } from '../../../utils/request';
 import { GardenLoading } from '../../Loading';
 import { TopBtn } from '../../TopBtn';
-// import { throttle } from 'lodash';
+// import throttle from 'lodash/throttle';
 
 export const ComplexList = memo(({data, gridTitle, loadMore, isFinish, hideTitle}) => {
   const isLoadMore = useRef(false);

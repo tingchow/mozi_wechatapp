@@ -16,8 +16,9 @@ import { jump2List, jump2DataPage, jump2NoTab } from '../../utils/core';
 import './index.less';
 import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // import * as towxml from '../../components/towxml/towxml';
-import towxml from '../../towxml';
-import { isEmpty } from 'lodash';
+// 延迟加载 towxml，避免在非 AI 页面时增加主包体积
+let parseTowxml = null;
+import isEmpty from 'lodash/isEmpty';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
 const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
@@ -369,7 +370,11 @@ export default function Detail() {
       });
       return;
     }
-    let mdRes = towxml(aiRes?.data,'markdown',{});
+    if (!parseTowxml) {
+      const mod = await import('../../towxml');
+      parseTowxml = mod.default || mod;
+    }
+    let mdRes = parseTowxml(aiRes?.data,'markdown',{});
     aiData.current[activeKey] = mdRes;
     
     setAi({
