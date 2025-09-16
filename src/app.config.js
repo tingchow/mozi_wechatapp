@@ -23,8 +23,7 @@ export default defineAppConfig({
     'pages/positionsize/index',
     // 资金费率
     'pages/fundingrate/index',
-    // 持仓量
-    'pages/tradevol/index',
+    // 持仓量（已迁移到分包 tradevol）
     // 横向图表
     'pages/landscapechart/index',
     // 配置告警页（已迁移到分包 addwarn）
@@ -72,6 +71,13 @@ export default defineAppConfig({
     {
       root: "packages/list",
       name: "list",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/tradevol",
+      name: "tradevol",
       pages: [
         "index"
       ]
