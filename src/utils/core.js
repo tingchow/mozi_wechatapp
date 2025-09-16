@@ -1,6 +1,9 @@
 import Taro from '@tarojs/taro';
 import isEmpty from 'lodash/isEmpty';
 
+// 需要走分包路径的页面
+const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn']);
+
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {
   console.log(symbol)
@@ -42,15 +45,16 @@ const queryString = (params) => {
 
 // 跳转非Tab页面
 export const jump2NoTab = (pageName, params = {}) => {
+  const basePath = SUBPACKAGE_PAGES.has(pageName)
+    ? `/packages/${pageName}/index`
+    : `/pages/${pageName}/index`;
+
   if (isEmpty(params)) {
-    Taro.navigateTo({
-      url: `/pages/${pageName}/index`,
-    });
-  } else {
-    Taro.navigateTo({
-      url: `/pages/${pageName}/index?${queryString(params)}`,
-    });
+    Taro.navigateTo({ url: basePath });
+    return;
   }
+
+  Taro.navigateTo({ url: `${basePath}?${queryString(params)}` });
 };
 
 // 跳转非Tab页面

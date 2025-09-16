@@ -28,10 +28,8 @@ export default defineAppConfig({
     'pages/tradevol/index',
     // 横向图表
     'pages/landscapechart/index',
-    // 配置告警页
-    'pages/addwarn/index',
-    // 我的告警页
-    'pages/mywarn/index',
+    // 配置告警页（已迁移到分包 addwarn）
+    // 我的告警页（已迁移到分包 mywarn）
   ],
   subpackages: [
     {
@@ -54,6 +52,20 @@ export default defineAppConfig({
     {
       root: "packages/detail",
       name: "detail",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/addwarn",
+      name: "addwarn",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/mywarn",
+      name: "mywarn",
       pages: [
         "index"
       ]
