@@ -5,7 +5,7 @@ import isEmpty from 'lodash/isEmpty';
 export const jump2Detail = (symbol) => {
   console.log(symbol)
   Taro.navigateTo({
-    url: `/pages/detail/index?symbol=${symbol}`,
+    url: `/packages/detail/index?symbol=${symbol}`,
   });
 }
 

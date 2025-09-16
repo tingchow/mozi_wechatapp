@@ -1368,7 +1368,7 @@ export default function CommunityPage() {
                                 className="coin-tag"
                                 onClick={(e) => {
                                   e.stopPropagation(); // 阻止冒泡，避免触发帖子详情跳转
-                                  Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` });
+                                  Taro.navigateTo({ url: `/packages/detail/index?symbol=${tag.name}` });
                                 }}
                               >
                                 ${tag.name}$

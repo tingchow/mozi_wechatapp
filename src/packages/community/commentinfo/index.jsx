@@ -671,7 +671,7 @@ export default function CommentInfo() {
                 <Text 
                   key={`tag-${tag.id}`} 
                   className="coin-tag"
-                  onClick={() => Taro.navigateTo({ url: `/pages/detail/index?symbol=${tag.name}` })}
+                  onClick={() => Taro.navigateTo({ url: `/packages/detail/index?symbol=${tag.name}` })}
                 >
                   @{tag.name}
                 </Text>

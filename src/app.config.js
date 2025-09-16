@@ -13,8 +13,7 @@ export default defineAppConfig({
     'pages/list/index',
     // 我的
     'pages/me/index',
-    // 币种详情页
-    'pages/detail/index',
+    // 币种详情页（已迁移到分包 detail）
     // 搜索页
     'pages/search/index',
     // 用户信息
@@ -50,6 +49,13 @@ export default defineAppConfig({
         "topicinfo/index",
         "post/index",
         "topicsearch/index"
+      ]
+    },
+    {
+      root: "packages/detail",
+      name: "detail",
+      pages: [
+        "index"
       ]
     }
   ],

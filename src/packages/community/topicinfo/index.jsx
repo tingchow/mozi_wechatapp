@@ -326,7 +326,7 @@ export default function TopicInfo() {
                     onClick={(e) => {
                       e.stopPropagation();
                       Taro.navigateTo({
-                        url: `/pages/detail/index?symbol=${tag.name}`
+                        url: `/packages/detail/index?symbol=${tag.name}`
                       });
                     }}
                   >
