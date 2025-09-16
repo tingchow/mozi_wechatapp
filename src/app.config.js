@@ -16,8 +16,7 @@ export default defineAppConfig({
     // 搜索页（已迁移到分包 search）
     // 用户信息
     'pages/user/index',
-    // 多空比
-    'pages/putcallratio/index',
+    // 多空比（已迁移到分包 putcallratio）
     // 持仓量
     'pages/positionsize/index',
     // 资金费率（已迁移到分包 fundingrate）
@@ -96,6 +95,13 @@ export default defineAppConfig({
     {
       root: "packages/landscapechart",
       name: "landscapechart",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/putcallratio",
+      name: "putcallratio",
       pages: [
         "index"
       ]
