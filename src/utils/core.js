@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro';
 import isEmpty from 'lodash/isEmpty';
 
 // 需要走分包路径的页面
-const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn', 'list', 'tradevol', 'search', 'fundingrate']);
+const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn', 'list', 'tradevol', 'search', 'fundingrate', 'landscapechart']);
 
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {
@@ -59,9 +59,10 @@ export const jump2NoTab = (pageName, params = {}) => {
 export const jump2DataPage = (pageName, dataName, data = {}) => {
   const app = Taro.getApp();
   app[dataName] = data;
-  Taro.navigateTo({
-    url: `/pages/${pageName}/index`,
-  });
+  const basePath = SUBPACKAGE_PAGES.has(pageName)
+    ? `/packages/${pageName}/index`
+    : `/pages/${pageName}/index`;
+  Taro.navigateTo({ url: basePath });
 };
 
 // 返回当前类型

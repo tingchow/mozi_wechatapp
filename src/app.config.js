@@ -22,8 +22,7 @@ export default defineAppConfig({
     'pages/positionsize/index',
     // 资金费率（已迁移到分包 fundingrate）
     // 持仓量（已迁移到分包 tradevol）
-    // 横向图表
-    'pages/landscapechart/index',
+    // 横向图表（已迁移到分包 landscapechart）
     // 配置告警页（已迁移到分包 addwarn）
     // 我的告警页（已迁移到分包 mywarn）
   ],
@@ -90,6 +89,13 @@ export default defineAppConfig({
     {
       root: "packages/fundingrate",
       name: "fundingrate",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/landscapechart",
+      name: "landscapechart",
       pages: [
         "index"
       ]
