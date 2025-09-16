@@ -29,37 +29,40 @@ export default defineAppConfig({
     'pages/tradevol/index',
     // 横向图表
     'pages/landscapechart/index',
-    // 评论详情页
-    'pages/commentinfo/index',
-    // 话题详情页
-    'pages/topicinfo/index',
-    // 发帖页
-    'pages/post/index',
     // 配置告警页
     'pages/addwarn/index',
     // 我的告警页
     'pages/mywarn/index',
-    // 话题搜索页
-    'pages/topicsearch/index',
-    // 积分榜单页
-    'pages/pointsrank/index',
   ],
-  // subpackages: [
-  //   {
-  //     root: "packages",
-  //     name: "detail",
-  //     pages: [
-  //       "detail/index"
-  //     ],
-  //     // entry: "index.js"
-  //   }
-  // ],
-  // preloadRule: {
-  //   "pages/index/index": {
-  //     network: "all",
-  //     packages: ["detail"]
-  //   },
-  // },
+  subpackages: [
+    {
+      root: "packages/more",
+      name: "more",
+      pages: [
+        "pointsrank/index"
+      ]
+    },
+    {
+      root: "packages/community",
+      name: "community",
+      pages: [
+        "commentinfo/index",
+        "topicinfo/index",
+        "post/index",
+        "topicsearch/index"
+      ]
+    }
+  ],
+  preloadRule: {
+    "pages/me/index": {
+      network: "all",
+      packages: ["more"]
+    },
+    "pages/community/index": {
+      network: "all",
+      packages: ["community"]
+    },
+  },
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

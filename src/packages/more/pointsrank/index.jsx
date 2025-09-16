@@ -1,8 +1,8 @@
 import { View, Text, Image, ScrollView, Button } from '@tarojs/components'
 import Taro, { useLoad, useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
-import { Layout } from '../../components/Layout';
-import IconFont from '../../components/iconfont';
+import { Layout } from '../../../components/Layout';
+import IconFont from '../../../components/iconfont';
 import './index.less';
 
 export default function PointsRank() {
@@ -48,7 +48,7 @@ export default function PointsRank() {
     const title = me ? `邀请你来挑战！我在${tabText}排第${me.rank}` : `邀请你来挑战${tabText}`;
     return {
       title,
-      path: `/pages/pointsrank/index?inviteFrom=share&tab=${activeTab}`
+      path: `/packages/more/pointsrank/index?inviteFrom=share&tab=${activeTab}`
     };
   });
 

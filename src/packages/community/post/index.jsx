@@ -2,8 +2,8 @@ import { View, Text, Image, Input, Textarea, Button, ScrollView } from '@tarojs/
 import { useState, useEffect } from 'react'
 import { useLoad, useRouter } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
-import { request } from '../../utils/request'
-import { Interface } from '../../utils/constants'
+import { request } from '../../../utils/request'
+import { Interface } from '../../../utils/constants'
 import './index.less'
 
 // 确保接口定义存在

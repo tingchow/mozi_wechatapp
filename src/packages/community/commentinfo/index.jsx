@@ -1,10 +1,10 @@
 import { View, Text, Image, ScrollView, Input, Button, Textarea } from '@tarojs/components'
 import Taro, { useLoad, useReachBottom, useRouter, useShareAppMessage } from '@tarojs/taro'
 import { useState, useEffect } from 'react'
-import { request } from '../../utils/request'
-import { Interface } from '../../utils/constants'
-import IconFont from '../../components/iconfont'
-import { GardenLoading } from '../../components/Loading'
+import { request } from '../../../utils/request'
+import { Interface } from '../../../utils/constants'
+import IconFont from '../../../components/iconfont'
+import { GardenLoading } from '../../../components/Loading'
 const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
 const likeActiveIcon = `${CDN_PREFIX}/icon/community/like-active.png`;
 const likeNoActiveIcon = `${CDN_PREFIX}/icon/community/like-no-active.png`;
