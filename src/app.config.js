@@ -13,8 +13,7 @@ export default defineAppConfig({
     // 我的
     'pages/me/index',
     // 币种详情页（已迁移到分包 detail）
-    // 搜索页
-    'pages/search/index',
+    // 搜索页（已迁移到分包 search）
     // 用户信息
     'pages/user/index',
     // 多空比
@@ -78,6 +77,13 @@ export default defineAppConfig({
     {
       root: "packages/tradevol",
       name: "tradevol",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/search",
+      name: "search",
       pages: [
         "index"
       ]
