@@ -20,8 +20,7 @@ export default defineAppConfig({
     'pages/putcallratio/index',
     // 持仓量
     'pages/positionsize/index',
-    // 资金费率
-    'pages/fundingrate/index',
+    // 资金费率（已迁移到分包 fundingrate）
     // 持仓量（已迁移到分包 tradevol）
     // 横向图表
     'pages/landscapechart/index',
@@ -84,6 +83,13 @@ export default defineAppConfig({
     {
       root: "packages/search",
       name: "search",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/fundingrate",
+      name: "fundingrate",
       pages: [
         "index"
       ]
