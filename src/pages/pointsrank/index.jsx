@@ -48,7 +48,7 @@ export default function PointsRank() {
     const title = me ? `邀请你来挑战！我在${tabText}排第${me.rank}` : `邀请你来挑战${tabText}`;
     return {
       title,
-      path: `/packages/misc/pointsrank/index?inviteFrom=share&tab=${activeTab}`
+      path: `/pages/pointsrank/index?inviteFrom=share&tab=${activeTab}`
     };
   });
 

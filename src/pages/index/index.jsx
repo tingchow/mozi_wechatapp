@@ -12,11 +12,10 @@ import { Layout } from '../../components/Layout';
 import { AddCollect } from '../../components/AddCollect';
 import { AddMonitor } from '../../components/AddMonitor';
 import { HighlightArea } from '../../components/HighlightArea';
-// 懒加载重型组件
-let LazyMoziTreeMap = null;
-let LazyMarketDistribution = null;
+import { MoziTreeMap } from '../../components/MoziChart/TreeMap';
 import { PageLogin } from '../../components/PageLogin';
-import { Popup } from '../../components/PopLogin';
+import { Popup } from '../../components/PopLogin'
+import { MarketDistribution } from '../../components/MarketDistribution';
 import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
@@ -178,17 +177,6 @@ export default function Index() {
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
     });
-    
-    // 懒加载重型组件
-    if (!LazyMoziTreeMap) {
-      const treeMapMod = await import('../../components/MoziChart/TreeMap');
-      LazyMoziTreeMap = treeMapMod.MoziTreeMap || treeMapMod.default;
-    }
-    if (!LazyMarketDistribution) {
-      const distributionMod = await import('../../components/MarketDistribution');
-      LazyMarketDistribution = distributionMod.MarketDistribution || distributionMod.default;
-    }
-    
     // allRequest();
   });
 
@@ -480,11 +468,11 @@ export default function Index() {
             })}}>
               <div className='treemapTitle'>热门币种</div>
               <Layout isLoading={coinLoading}>
-                {LazyMoziTreeMap && <LazyMoziTreeMap
+                <MoziTreeMap
                   list={hot_coin}
                   name='coin'
                   desc='priceChangePercent'
-                />}
+                />
               </Layout>
             </div>
             <div className='treemapBox content-card' onClick={() => {jump2List({
@@ -504,11 +492,11 @@ export default function Index() {
             })}}>
               <div className='treemapTitle'>热门合约</div>
               <Layout isLoading={contractLoading}>
-                {LazyMoziTreeMap && <LazyMoziTreeMap
+                <MoziTreeMap
                   list={hot_contract}
                   name='coin'
                   desc='priceChangePercent'
-                />}
+                />
               </Layout>
             </div>
             <div className='treemapBox content-card last' onClick={() => {jump2List({
@@ -525,12 +513,12 @@ export default function Index() {
             })}}>
               <div className='treemapTitle'>热门版块</div>
               <Layout isLoading={industryLoading}>
-                {LazyMoziTreeMap && <LazyMoziTreeMap
+                <MoziTreeMap
                   // list={mock_hotbankuai.data}
                   list={hot_industry}
                   name='section'
                   desc='changes'
-                />}
+                />
               </Layout>
             </div>
           </ScrollView>
@@ -593,7 +581,7 @@ export default function Index() {
       </MoziCard>
 
       {/* 涨跌分布 */}
-      {LazyMarketDistribution && <LazyMarketDistribution />}
+      <MarketDistribution />
 
       {/* 自选 */}
       {/* <View className='own-box'> */}

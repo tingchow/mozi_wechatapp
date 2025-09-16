@@ -117,7 +117,7 @@ export default function TopicInfo() {
   // 跳转到评论详情页
   const navigateToCommentInfo = (commentId) => {
     Taro.navigateTo({
-      url: `/packages/misc/commentinfo/index?id=${commentId}`
+      url: `/pages/commentinfo/index?id=${commentId}`
     })
   }
 
@@ -125,7 +125,7 @@ export default function TopicInfo() {
   const handlePost = () => {
     if (topicId) {
       Taro.navigateTo({
-        url: `/packages/misc/post/index?topicId=${topicId}&topicTitle=${encodeURIComponent(detail.title)}`
+        url: `/pages/post/index?topicId=${topicId}&topicTitle=${encodeURIComponent(detail.title)}`
       })
     }
   }
@@ -326,7 +326,7 @@ export default function TopicInfo() {
                     onClick={(e) => {
                       e.stopPropagation();
                       Taro.navigateTo({
-                        url: `/packages/detail/detail/index?symbol=${tag.name}`
+                        url: `/pages/detail/index?symbol=${tag.name}`
                       });
                     }}
                   >
@@ -340,7 +340,7 @@ export default function TopicInfo() {
                     onClick={(e) => {
                       e.stopPropagation();
                       Taro.navigateTo({
-                        url: `/packages/misc/topicinfo/index?id=${topic.id}`
+                        url: `/pages/topicinfo/index?id=${topic.id}`
                       });
                     }}
                   >

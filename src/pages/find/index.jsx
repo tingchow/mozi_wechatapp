@@ -15,9 +15,8 @@ import { Interface, LOOPTIME } from '../../utils/constants';
 import { request } from '../../utils/request';
 import { AddCollect } from '../../components/AddCollect';
 import { AddMonitor } from '../../components/AddMonitor';
-// 懒加载 MarketOverview，避免首包引入体积大的模块
-let LazyMarketOverview = null;
-import isEmpty from 'lodash/isEmpty';
+import { MarketOverview } from '../../components/MarketOverview';
+import { isEmpty } from 'lodash';
 
 
 const MarketTitle = ({url, symbol, totalVolume}) => {
@@ -290,10 +289,6 @@ export default function Find() {
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
     });
-    if (!LazyMarketOverview) {
-      const mod = await import('../../components/MarketOverview');
-      LazyMarketOverview = mod.MarketOverview || mod.default;
-    }
   });
 
   useDidShow(() => {
@@ -802,8 +797,8 @@ export default function Find() {
       {
         pageActiveKey === 'market' && (
         <>
-          {/* 市场概况横向滑动卡片 - 懒加载 */}
-          {LazyMarketOverview && <LazyMarketOverview />}
+          {/* 市场概况横向滑动卡片 - 独立在marketBox上方 */}
+          <MarketOverview />
           
           <View className='marketBox'>   
             <Layout isLoading={marketLoading} isError={isMarketError}>
