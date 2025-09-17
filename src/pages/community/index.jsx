@@ -1218,13 +1218,13 @@ export default function CommunityPage() {
                     </View>
               )
             }
-            <View className={subTab === 'discovery' ? 'discovery-cards-container' : ''}>
+            <View className={subTab === 'discovery' ? 'discovery-grid' : ''}>
               {posts.map(item => {
                   // 根据当前标签页决定使用哪种卡片样式
                   const isDiscoveryCard = subTab === 'discovery';
                   
                   return (
-                    <View key={item.id} className={`comment-card ${isDiscoveryCard ? 'discovery-card' : ''}`} onClick={() => navigateToCommentInfo(item.id)}>
+                    <View key={item.id} className={`comment-card ${isDiscoveryCard ? 'discovery-only' : ''}`} onClick={() => navigateToCommentInfo(item.id)}>
                     {/* 发现好币背景图片 */}
                     <Image src={findBestCoinIcon} className="find-best-coin-bg" />
                     

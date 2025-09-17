@@ -1043,3 +1043,28 @@
     }
   }
 }
+
+/* 仅作用于发现好币 tab 的专用两列样式，避免影响热门榜单等其它界面 */
+.discovery-grid {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.discovery-only {
+  -webkit-flex: 0 0 calc(50% - 8px);
+  flex: 0 0 calc(50% - 8px);
+  max-width: calc(50% - 8px);
+  width: calc(50% - 8px);
+  box-sizing: border-box;
+  margin: 0 0 16px 0; /* 只设置纵向间距，横向间距由space-between分配 */
+}
