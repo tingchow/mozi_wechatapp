@@ -26,16 +26,8 @@ export default function Tradevol() {
   const [ coinSelected, setCoinSelected ] = useState('');
 
   const [activeKey, setActiveKey] = useState('currentRatio');
-  // const [curPCRData, setCurPCRData] = useState({
-  //   loading: true,
-  //   close: false,
-  //   data: null
-  // });
-  // const [hisPCRData, setHisPCRData] = useState({
-  //   loading: true,
-  //   close: false,
-  //   data: null
-  // });
+  const [curLoading, setCurLoading] = useState(true);
+  const [hisLoading, setHisLoading] = useState(true);
 
   useShareAppMessage(() => {
     return {
@@ -50,6 +42,14 @@ export default function Tradevol() {
     his: null
   });
 
+  const applyOptionWhenReady = (ref, option, done) => {
+    if (ref.current) {
+      ref.current.setOption(option);
+      done && done();
+    } else {
+      setTimeout(() => applyOptionWhenReady(ref, option, done), 100);
+    }
+  };
 
   const initChart = (canvas, width, height, dpr) => {
     const chart = echarts.init(canvas, null, {
@@ -58,12 +58,7 @@ export default function Tradevol() {
       devicePixelRatio: dpr // new
     });
     canvas.setChart(chart);
-
-    // console.log(handleOptions(hisData, 'samebar'));
-    // canvas.setOption();
-    // console.log('chartRef.current', chartRef.current);
     chartRef.current = chart;
-
     return chart;
   }
 
@@ -74,12 +69,7 @@ export default function Tradevol() {
       devicePixelRatio: dpr // new
     });
     canvas.setChart(chart);
-
-    // console.log(handleOptions(hisData, 'samebar'));
-    // canvas.setOption();
-    // console.log('chartRef.current', chartRef.current);
     chartRef1.current = chart;
-
     return chart;
   }
 
@@ -141,6 +131,9 @@ export default function Tradevol() {
   });
 
   const getData = async ({coin = coinSelected, exchange = cexSelected}) => {
+    setCurLoading(true);
+    setHisLoading(true);
+
     const traCurData = await request({
       url: Interface.TRA_CUR,
       data: {
@@ -165,7 +158,8 @@ export default function Tradevol() {
       type: 'treemap'
     };
 
-    chartRef.current.setOption(handleOptions(traTmpData, 'treemap', '成交量'));
+    const curOption = handleOptions(traTmpData, 'treemap', '成交量');
+    applyOptionWhenReady(chartRef, curOption, () => setCurLoading(false));
 
     const traHisData = await request({
       url: Interface.TRA_HIS,
@@ -179,7 +173,8 @@ export default function Tradevol() {
       data: traHisData.data,
       type: 'linebar'
     };
-    chartRef1.current.setOption(handleOptions(traHisData.data, 'linebar', '成交额'));
+    const hisOption = handleOptions(traHisData.data, 'linebar', '成交额');
+    applyOptionWhenReady(chartRef1, hisOption, () => setHisLoading(false));
   };
 
   const jump2Land = (type) => {
@@ -220,6 +215,9 @@ export default function Tradevol() {
       <View className='section-header'>当前成交额</View>
       <View className='currentPCR'>
         <View className='currentPCRChart'>
+          {curLoading && (
+            <View className='chart-loading'><View className='spinner' /></View>
+          )}
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
@@ -229,20 +227,10 @@ export default function Tradevol() {
       
       <View className='section-header'>历史成交额</View>
       <View className='currentPCR'>
-        {/* <View className='header'>历史成交额
-          <View></View>
-          <View className='pickerList'>
-            
-            <Picker mode='selector' range={coinList} onChange={onCoinChange}>
-              <View className='pickerSelect'>
-                <View className='selectIcon'>{coinSelected}</View>
-                <IconFont name='caret-down' />
-              </View>
-            </Picker>
-          </View>
-        </View> */}
-          
         <View className='currentPCRChart'>
+          {hisLoading && (
+            <View className='chart-loading'><View className='spinner' /></View>
+          )}
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
