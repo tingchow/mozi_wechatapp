@@ -33,31 +33,31 @@ export default function Index() {
   const footerList = [
   {
     key: 'theme',
-    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/skin.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/skin%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '皮肤中心',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('皮肤中心')}
   }, {
     key: '',
-    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/contact.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '联系我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {contact()}
   }, {
     key: 'social',
-    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/social.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/social%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '到社交媒体找我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('社交媒体')}
   }, {
     key: '',
-    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/about.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/about%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '关于',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {about()}
   }, {
     key: '',
-    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/donate.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/donate%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '捐赠',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {reward()}
@@ -335,19 +335,19 @@ export default function Index() {
         <View className='actionButtons'>
           <View className='actionButton' onClick={() => jump2Market('own')}>
             <View className='actionIcon'>
-              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/alert.png'} />
+              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/optional%402x.png'} />
             </View>
             <Text className='actionText'>我的自选</Text>
           </View>
           <View className='actionButton' onClick={() => jump2NoTab('mywarn')}>
             <View className='actionIcon'>
-              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/like.png'} />
+              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-alert%402x.png'} />
             </View>
-            <Text className='actionText'>我的报警</Text>
+            <Text className='actionText'>我的报警</Text> 
           </View>
           <View className='actionButton' onClick={attendUs}>
             <View className='actionIcon'>
-              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/wechat.png'} />
+              <Image className='actionIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/official-accounts%402x.png'} />
             </View>
             <Text className='actionText'>关注公众号</Text>
           </View>
@@ -359,20 +359,20 @@ export default function Index() {
         <View className='actionRow'>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/comment.png'} />
+              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/comment%402x.png'} />
             </View>
             <Text className='actionText secondary'>我的评论</Text>
           </View>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/notification.png'} />
+              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/mail%402x.png'} />
               <View className='badge'>3</View>
             </View>
             <Text className='actionText secondary'>消息通知</Text>
           </View>
           <View className='actionButton' onClick={score}>
             <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/upvote.png'} />
+              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/like%402x.png'} />
             </View>
             <Text className='actionText secondary'>我的点赞</Text>
           </View>
@@ -385,7 +385,7 @@ export default function Index() {
           !isLogin ? (
                           <Button className='horizontalBtn left' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>
                 <View className='btnIcon'>
-                  <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/feedback.png'} />
+                  <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/feedback%402x.png'} />
                 </View>
               <View className='btnBottom'>
                 <View className='btnContent'>
@@ -400,7 +400,7 @@ export default function Index() {
           ) : (
             <View className='horizontalBtn left' onClick={score}>
               <View className='btnIcon'>
-                <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/feedback.png'} />
+                <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/feedback%402x.png'} />
               </View>
               <View className='btnBottom'>
                 <View className='btnContent'>
@@ -416,7 +416,7 @@ export default function Index() {
         }
         <Button className='horizontalBtn right' openType='share'>
           <View className='btnIcon'>
-            <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/share.png'} />
+            <Image className='btnIconImg' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-share%402x.png'} />
           </View>
           <View className='btnBottom'>
             <View className='btnContent'>

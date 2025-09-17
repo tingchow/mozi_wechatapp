@@ -93,6 +93,9 @@ export const handleOptions = (data, type, msg) => {
       },
       yAxis: {
         scale: true,
+        splitLine: {
+          show: true
+        },
         splitArea: {
           show: true
         },
@@ -295,6 +298,72 @@ export const handleOptions = (data, type, msg) => {
             opacity: 0.5
           }
         },
+      ]
+    };
+  }
+
+  // 简单折线图，用于价格走势（收盘价）
+  if (type === 'line') {
+    return {
+      animation: false,
+      animationDurationUpdate: 0,
+      grid: {
+        top: '5%',
+        left: '15%',
+        right: '5%',
+        bottom: '25%'
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'line' }
+      },
+      xAxis: {
+        type: 'category',
+        data: data.categoryData,
+        boundaryGap: false,
+        axisLine: {
+          lineStyle: { color: '#D8D8D8' }
+        },
+        splitLine: { show: false },
+        axisTick: { show: false },
+        min: 'dataMin',
+        max: 'dataMax',
+        axisLabel: { color: '#8E8E8E' }
+      },
+      yAxis: {
+        type: 'value',
+        scale: true,
+        
+        //不展示网格线
+        splitLine: { show: false },
+        splitArea: { show: false },
+        axisLabel: { color: '#8E8E8E' }
+      },
+      dataZoom: [
+        { type: 'inside', start: 50, end: 100 },
+        { show: true, type: 'slider', start: 70, end: 100, top: '87%', height: 20 }
+      ],
+      series: [
+        {
+          type: 'line',
+          data: data.lineData,
+          smooth: false,
+          symbol: 'none',
+          lineStyle: { color: '#11B787', width: 2 },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: 'rgba(17, 183, 135, 0.35)' },
+                { offset: 1, color: 'rgba(17, 183, 135, 0.0)' }
+              ]
+            }
+          }
+        }
       ]
     };
   }

@@ -7,10 +7,10 @@ const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets
 const UpIcon = `${CDN_PREFIX}/icon/find/up.png`;
 const DownIcon = `${CDN_PREFIX}/icon/find/down.png`;
 
-const CoinIcon = `${CDN_PREFIX}/icon/find/coin.png`;
-const TurnoverIcon = `${CDN_PREFIX}/icon/find/turn-over.png`;
-const MarketMonitoringIcon = `${CDN_PREFIX}/icon/find/market-monitoring.png`;
-const CalendarIcon = `${CDN_PREFIX}/icon/find/calendar.png`;
+const CoinIcon = `${CDN_PREFIX}/icon/find_slices/find-coin%402x.png`;
+const TurnoverIcon = `${CDN_PREFIX}/icon/find_slices/find-vol%402x.png`;
+const MarketMonitoringIcon = `${CDN_PREFIX}/icon/find_slices/find-watch%402x.png`;
+const CalendarIcon = `${CDN_PREFIX}/icon/find_slices/find-calendar%402x.png`;
 
 const MarketOverview = memo(({ data }) => {
   // 默认数据
@@ -49,8 +49,8 @@ const MarketOverview = memo(({ data }) => {
       id: 'today',
       icon: CalendarIcon, /* 替换为新的图标 */
       iconColor: 'purple',
-      title: '今日事件',
-      value: '1月2日',
+      title: '公告日日历',
+      value: '今日有更新',
       desc: '去订阅', /* 修改描述为去订阅 */
       isActionButton: true, /* 标记为按钮样式 */
       onClick: () => {
@@ -61,7 +61,7 @@ const MarketOverview = memo(({ data }) => {
 
   const marketData = data || defaultData;
 
-  const renderValueWithPercentage = (value) => {
+  const renderValueWithPercentage = (value, extraClass = '') => {
     const regex = /([+-]?\d+\.?\d*%)/; // 匹配百分比，例如 +3.26%, -1.26%
     const match = value.match(regex);
 
@@ -78,7 +78,7 @@ const MarketOverview = memo(({ data }) => {
         </>
       );
     } else {
-      return <View className='card-value-text'>{value}</View>;
+      return <View className={`card-value-text ${extraClass}`}>{value}</View>;
     }
   };
 
@@ -115,7 +115,10 @@ const MarketOverview = memo(({ data }) => {
                 
                 <View className='card-info'>
                   <View className='card-value'>
-                    {renderValueWithPercentage(item.value)}
+                    {renderValueWithPercentage(
+                      item.value,
+                      (item.id === 'today' && String(item.value).includes('今日有更新')) ? 'today-updated' : ''
+                    )}
                   </View>
                 </View>
                 {item.change && (

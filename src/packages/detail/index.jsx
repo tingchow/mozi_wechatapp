@@ -23,6 +23,12 @@ const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/ass
 const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
 const downIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/down.png';
+
+// Switch chart-type icons to CDN URLs
+const klineActived = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/graph/kline-actived.png';
+const klineNoActived = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/graph/kline-no-actived.png';
+const lineActived = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/graph/line-actived.png';
+const lineNoActived = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/graph/line-no-actived.png';
 // import '~taro-parse/dist/style/main.scss'
 // import TaroParser from 'taro-parse'
 
@@ -38,6 +44,8 @@ export default function Detail() {
 
   const [activeKey, setActiveKey] = useState('hour');
   const [pageActiveKey, setPageActiveKey] = useState('chart');
+  const [chartType, setChartType] = useState('line'); // kline | line
+  const chartTypeRef = useRef('line');
 
   const [coinInfo, setCoinInfo] = useState(null);
   const [ needLogin, setLogin ] = useState(false);
@@ -107,6 +115,10 @@ export default function Detail() {
     headRequest();
     kLineRequest();
     marketRequest();
+    // 初次进入按默认类型渲染一次，避免先闪K再变线
+    setTimeout(() => {
+      renderCurrentChart();
+    }, 0);
   });
 
   useDidHide(() => {
@@ -197,7 +209,9 @@ export default function Detail() {
       data: coin_line1?.data,
       type: 'kline'
     };
-    chartRef.current.setOption(handleOptions(coin_line1.data, 'kline'));
+    if (chartData.current.active === 'hour') {
+      renderCurrentChart();
+    }
 
     const coin_line2 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -207,6 +221,9 @@ export default function Detail() {
       data: coin_line2?.data,
       type: 'kline'
     };
+    if (chartData.current.active === 'day') {
+      renderCurrentChart();
+    }
     const coin_line3 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 3
@@ -215,6 +232,9 @@ export default function Detail() {
       data: coin_line3?.data,
       type: 'kline'
     };
+    if (chartData.current.active === 'week') {
+      renderCurrentChart();
+    }
     const coin_line4 = await cardRequest(Interface.coin_line, {
       symbol,
       type: 4
@@ -223,6 +243,9 @@ export default function Detail() {
       data: coin_line4?.data,
       type: 'kline'
     };
+    if (chartData.current.active === 'month') {
+      renderCurrentChart();
+    }
 
     setTimeout(() => {
       if (needLoop.current) kLineRequest();
@@ -278,6 +301,11 @@ export default function Detail() {
     chartRef.current.dispose();
   });
 
+  // 保证路由切换或隐藏显示过程中，不丢失当前类型
+  useEffect(() => {
+    chartTypeRef.current = chartType;
+  }, [chartType]);
+
   const cardRequest = async (url, data) => {
     const res = await request({
       url,
@@ -296,10 +324,40 @@ export default function Detail() {
     if ( value ===  activeKey) return;
     chartData.current.active = value;
     setActiveKey(value);
-
-    chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
+    renderCurrentChart();
     // TODO-暂时下掉
     getAiData({activeKey: value});
+  };
+
+  const buildLineDataset = (klineData) => {
+    // 期望结构：{ categoryData: [], lineData: [] }
+    if (!klineData) return { categoryData: [], lineData: [] };
+    // 若已是折线结构则直接返回
+    if (Array.isArray(klineData.lineData)) return klineData;
+    const categoryData = klineData.categoryData || [];
+    const values = klineData.values || [];
+    const lineData = values.map((v) => Array.isArray(v) ? v[1] : v?.Close ?? v?.close ?? 0);
+    return { categoryData, lineData };
+  };
+
+  const renderCurrentChart = ({ dataset, forceType } = {}) => {
+    const key = chartData.current.active || activeKey;
+    const data = dataset || chartData.current[key]?.data;
+    const type = forceType || chartTypeRef.current;
+    if (!data || !chartRef.current) return;
+    if (type === 'line') {
+      const lineDs = buildLineDataset(data);
+      chartRef.current.setOption(handleOptions(lineDs, 'line'));
+    } else {
+      chartRef.current.setOption(handleOptions(data, 'kline'));
+    }
+  };
+
+  const handleChartTypeToggle = (type) => {
+    if (type === chartType) return;
+    setChartType(type);
+    chartTypeRef.current = type;
+    renderCurrentChart({ forceType: type });
   };
 
   const pageActiveClick = (value) => {
@@ -528,6 +586,14 @@ export default function Detail() {
       {/* 折线图区域 */}
       <div className='box chart-box'>
         <div className='f2Box'>
+          <View className='chart-type-tabs'>
+            <View className={`chart-type-btn ${chartType === 'line' ? 'active' : ''}`} onClick={() => handleChartTypeToggle('line')}>
+              <Image src={chartType === 'line' ? lineActived : lineNoActived} className='chart-type-icon' />
+            </View>
+            <View className={`chart-type-btn ${chartType === 'kline' ? 'active' : ''}`} onClick={() => handleChartTypeToggle('kline')}>
+              <Image src={chartType === 'kline' ? klineActived : klineNoActived} className='chart-type-icon' />
+            </View>
+          </View>
           <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
             <TabBar.Item key='hour' title='1H' />
             <TabBar.Item key='day' title='1日' />
