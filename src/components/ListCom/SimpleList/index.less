@@ -1,6 +1,7 @@
 @headerHeight: 500rpx;
 @tabHeight: 45px;
 @tabOffset: 10rpx;
+@gridTitleHeight: 60rpx;
 
 .scroll-list {
   .header-new {
@@ -121,7 +122,7 @@
     font-size: 20px;
     color: #898989;
     // padding-left: 24px;
-    margin-bottom: 10px;
+    margin-bottom: 0; // 移除额外间距
     position: fixed;
     top: 0;
     left: 0;
@@ -130,6 +131,7 @@
     align-items: center;
     padding: 10px 20px;
     box-sizing: border-box;
+    height: @gridTitleHeight;
 
     .text {
       text-align: right;
@@ -147,7 +149,7 @@
 
 .scroll {
   height: 100vh;
-  // padding-top: 60rpx;
+  padding-top: calc(@gridTitleHeight - 30rpx); // 贴近表头，减少首行与表头间距
   box-sizing: border-box;
   position: relative;
   background-color: #fff;

@@ -14,16 +14,17 @@
   }
 
   .searchButton {
-    height: 60px;
-    width: 115px;
-    padding: 0 20px;
+    height: 90%;
+    width: 155px;
+    padding: 0 24px;
     background-color: #11B787;
-    border-radius: 30px;
+    border-radius: 40px; /* 与父盒子一致，避免上下露白 */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 10px;
+    margin: 0 6px; /* 缩小与右侧间隙 */
     cursor: pointer;
+    box-sizing: border-box;
     
     .searchIconImg {
       width: 27px;
