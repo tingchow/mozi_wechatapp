@@ -153,29 +153,118 @@
       min-height: 100vh;
     }
 
-    /* 发现好币卡片容器：改为两列自适应的flex布局，避免某些机型换行异常 */
-    .discovery-cards-container {
+    .hot-topic-item {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      width: 100%;
-    }
+      align-items: stretch;
+      padding: 30px ;
+      border-bottom: 1px solid #f5f5f5;
+      background: #fff;
+      min-height: 120px;
 
-    /* 固定在 tabs-wrapper 下方的投票组件占位（视觉在 tabs-wrapper 内） */
-    .vote-fixed { display: none; }
+      .topic-rank {
+        width: 42px;
+        height: 42px;
+        line-height: 42px;
+        text-align: center;
+        font-size: 26px;
+        color: #11B787;
+        background: #E7F8F3;
+        border-radius: 50%;
+        margin-right: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        // 前三名奖章样式，去除背景色
+        &.medal-rank {
+          background: transparent;
+        }
+
+        .rank-medal {
+          width: 42px;
+          height: 42px;
+        }
+      }
+
+      .topic-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .topic-title {
+          display: block;
+          font-size: 30px;
+          color: #333;
+          margin-bottom: 16px;
+        }
+
+        .topic-desc {
+          display: block;
+          font-size: 28px;
+          color: #818181;
+          margin-top: auto;
+        }
+
+      }
+
+      .topic-right-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-left: 20px;
+
+        .heat-text {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 6px;
+
+          .heat-icon {
+            width: 25px;
+            height: 25px;
+          }
+
+          .heat-value {
+            font-size: 24px;
+            color: #FA5F5F;
+            text-align: right;
+          }
+        }
+
+        .time-text {
+          font-size: 24px;
+          color: #999;
+          text-align: right;
+          margin-top: auto;
+        }
+      }
+    }
 
     .list-footer,.empty-content,.loading-more {
       display: flex;
       justify-content: center;
-      align-items: center;
-      width: 100%;
-      text-align: center;
       margin-top: 20px;
     }
 
     .vote-wrapper {
-      margin: 12px 0 24px; /* 增加与下面列表的间距 */
+      margin: 12px 0;
     }
+
+    /* 发现好币卡片容器 */
+    .discovery-cards-container {
+      font-size: 0; /* 消除inline-block元素间的空隙 */
+      display: block;
+      width: 100%;
+      
+      .comment-card {
+        font-size: 28px; /* 恢复字体大小 */
+      }
+    }
+
+    /* 固定在 tabs-wrapper 下方的投票组件占位（视觉在 tabs-wrapper 内） */
+    .vote-fixed { display: none; }
 
     .comment-card {
       padding: 20px;
@@ -200,13 +289,20 @@
         padding: 20px;
         background: #fff;
         border-radius: 16px;
-        margin-bottom: 0; /* 使用gap控制间距 */
+        margin-bottom: 16px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        width: calc((100% - 16px) / 2);
+        width: calc(50% - 8px);
         height: 370px;
-        display: block;
-        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 16px;
         border-bottom: none;
+        box-sizing: border-box;
+        
+        /* 每行第二个卡片不需要右边距 */
+        &:nth-child(2n) {
+          margin-right: 0;
+        }
       }
   
       .edit-actions {
