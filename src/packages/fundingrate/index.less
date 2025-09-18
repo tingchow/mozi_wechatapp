@@ -171,10 +171,27 @@
       min-height: 650px;
       position: relative;
       
-      // 确保Layout组件的loadingBox能够占满整个容器
-      .box, .loadingBox {
-        min-height: inherit;
+      // 遮罩式 loading（与历史费率一致）
+      .chart-loading {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+
+        .spinner {
+          width: 48px;
+          height: 48px;
+          border: 4px solid rgba(17,183,135,0.3);
+          border-top-color: #11B787;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
       }
+
+      @keyframes spin { to { transform: rotate(360deg); } }
 
       .scroll {
         width: 100%;
@@ -184,11 +201,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 20px;
+        margin-top: 40px;
         
         .more {
           margin-right: 10px;
         }
+      }
+
+      /* 仅在加载中时，控制“查看更多”固定在底部位置，不影响正常数据状态 */
+      .show-more-btn.loading-pos {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 20px;
+        margin-top: 0;
+        z-index: 60;
+      }
+
+      /* 禁用态：加载时不可点，色彩和手势提示 */
+      .show-more-btn.disabled {
+        opacity: 0.6;
+        pointer-events: none;
       }
 
       .list-item {
@@ -266,6 +299,28 @@
       height: 600px;
       position: relative;
 
+      .chart-loading {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+
+        .spinner {
+          width: 48px;
+          height: 48px;
+          border: 4px solid rgba(17,183,135,0.3);
+          border-top-color: #11B787;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
       .chart-arrawsalt {
         position: absolute;
         right: 90px;

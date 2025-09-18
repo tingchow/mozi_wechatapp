@@ -37,6 +37,7 @@ export default function Fundingrate() {
     close: false,
     data: null
   });
+  const [hisLoading, setHisLoading] = useState(true);
 
   const [showMore, setShowMore] = useState(false);
   const [showChart, setShowChart] = useState(true);
@@ -239,6 +240,7 @@ export default function Fundingrate() {
     });
 
 
+    setHisLoading(true);
     const frHisData = await request({
       url: Interface.FR_HIS,
       data: {
@@ -271,6 +273,7 @@ export default function Fundingrate() {
       return originalFormat.replace(/\$/g, '');
     };
     chartRef.current.setOption(options);
+    setHisLoading(false);
   };
 
   const jump2Land = () => {
@@ -285,9 +288,12 @@ export default function Fundingrate() {
       </TabBar>
       <View className='currentRateTitle'>当前费率</View>
       <View className='currentPCR'>
-          
+        
         <View className='currentPCRChart'>
-          <Layout isLoading={curFundData.loading} isClose={curFundData.close}>
+          <Layout isLoading={false} isClose={curFundData.close}>
+            {curFundData.loading && (
+              <View className='chart-loading'><View className='spinner' /></View>
+            )}
             <ScrollView className='scroll' scrollX scrollWithAnimation style={{whiteSpace: 'nowrap'}} enablePassive={true}>
               <View className='fund-list fund-title'>
                 {
@@ -329,7 +335,8 @@ export default function Fundingrate() {
               </View>
             </ScrollView>
             {
-              !showMore && <View className='show-more-btn' onClick={() => {
+              !showMore && <View className={`show-more-btn ${curFundData.loading ? 'loading-pos disabled' : ''}`} onClick={() => {
+                if (curFundData.loading) return;
                 setShowMore(true);
                 // 先隐藏图表
                 setShowChart(false);
@@ -389,9 +396,11 @@ export default function Fundingrate() {
       </View>
       
       <View className='currentPCR hisFR'>
-          
         {showChart && (
           <View className='currentChart'>
+            {hisLoading && (
+              <View className='chart-loading'><View className='spinner' /></View>
+            )}
             <View className='chart-arrawsalt' onClick={jump2Land}>
               <IconFont name='arrawsalt' size={30} color='#fff' />
             </View>

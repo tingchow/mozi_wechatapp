@@ -38,6 +38,7 @@ export default function Putcallratio() {
     close: false,
     data: null
   });
+  const [hisLoading, setHisLoading] = useState(true);
 
   useShareAppMessage(() => {
     return {
@@ -49,6 +50,15 @@ export default function Putcallratio() {
 
   const chartRef = useRef(null)
   const chartData = useRef(null);
+
+  const applyOptionWhenReady = (ref, option, done) => {
+    if (ref.current) {
+      ref.current.setOption(option);
+      done && done();
+    } else {
+      setTimeout(() => applyOptionWhenReady(ref, option, done), 100);
+    }
+  };
 
   const initChart = (canvas, width, height, dpr) => {
     const chart = echarts.init(canvas, null, {
@@ -141,6 +151,7 @@ export default function Putcallratio() {
   const getData = async ({ratioTypeSelected, coin = coinSelected, exchange = cexSelected, getType = 'all'}) => {
 
     console.log('getType', getType);
+    setHisLoading(true);
 
     const pcrHisData = await request({
       url: Interface.PCR_HIS,
@@ -168,7 +179,8 @@ export default function Putcallratio() {
       data: pcrHisData?.data,
       type: 'samebar'
     };
-    chartRef.current.setOption(handleOptions(pcrHisData?.data, 'samebar'));
+    const hisOption = handleOptions(pcrHisData?.data, 'samebar');
+    applyOptionWhenReady(chartRef, hisOption, () => setHisLoading(false));
     if (getType === 'his') {
       setCurPCRData({
         ...curPCRData,
@@ -237,11 +249,16 @@ export default function Putcallratio() {
         ))}
       </View>
       <View className='section-header'>当前多空比</View>
-      <Layout isLoading={curPCRData.loading} isClose={curPCRData.close}>
+      <Layout isLoading={false} isClose={curPCRData.close}>
         <View className='currentPCR'>
-          <MoziPCRColChart
-            data={curPCRData.data?.list}
-          />
+          <View className='currentPCRChart compact' style={{height: curPCRData.loading ? '150px' : 'auto'}}>
+            {curPCRData.loading && (
+              <View className='chart-loading'><View className='spinner' /></View>
+            )}
+            {!curPCRData.loading && curPCRData?.data?.list?.length ? (
+              <MoziPCRColChart data={curPCRData.data.list} />
+            ) : null}
+          </View>
         </View>
       </Layout>
       
@@ -259,6 +276,9 @@ export default function Putcallratio() {
         </View>
         
         <View className='currentPCRChart'>
+          {hisLoading && (
+            <View className='chart-loading'><View className='spinner' /></View>
+          )}
           <View className='chart-arrawsalt' onClick={jump2Land}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
