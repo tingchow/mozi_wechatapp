@@ -484,13 +484,15 @@ export default function Index() {
               rankTitle: '热门币种'
             })}}>
               <div className='treemapTitle'>热门币种</div>
-              <Layout isLoading={coinLoading}>
-                <MoziTreeMap
-                  list={hot_coin}
-                  name='coin'
-                  desc='priceChangePercent'
-                />
-              </Layout>
+              <div className='center-loading'>
+                <Layout isLoading={coinLoading}>
+                  <MoziTreeMap
+                    list={hot_coin}
+                    name='coin'
+                    desc='priceChangePercent'
+                  />
+                </Layout>
+              </div>
             </div>
             <div className='treemapBox content-card' onClick={() => {jump2List({
               interFace: Interface.hot_contract,
