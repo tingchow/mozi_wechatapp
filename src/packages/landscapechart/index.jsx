@@ -17,6 +17,25 @@ export default function Landscapechart() {
 
   const chartData = useRef(null);
 
+  // 将K线原始数据转换为折线数据（只在横屏折线时使用）
+  const buildLineDataset = (raw) => {
+    if (!raw) return { categoryData: [], lineData: [] };
+    // 已是折线结构
+    if (Array.isArray(raw.lineData) && Array.isArray(raw.categoryData)) return raw;
+    // 兼容：传入的是k线处理后的对象 { categoryData, values }
+    if (Array.isArray(raw.values) && Array.isArray(raw.categoryData)) {
+      const lineData = raw.values.map((v) => Array.isArray(v) ? v[1] : (v?.Close ?? v?.close ?? 0));
+      return { categoryData: raw.categoryData, lineData };
+    }
+    // 原始数组 [{dt, Open, Close, ...}]
+    if (Array.isArray(raw)) {
+      const categoryData = raw.map((it) => it?.dt ?? it?.time ?? it?.t ?? '');
+      const lineData = raw.map((it) => it?.Close ?? it?.close ?? (Array.isArray(it) ? it[1] : 0));
+      return { categoryData, lineData };
+    }
+    return { categoryData: [], lineData: [] };
+  };
+
   useShareAppMessage(() => {
     return {
       title: '你能用微信盯盘啦！'
@@ -36,14 +55,23 @@ export default function Landscapechart() {
 
     // chart.setOption(handleOptions(data, type));
     const app = Taro.getApp();
+    const forceType = app.chartData?.forceType; // 详情页当前显示的图表类型
     if (app.chartData.active) {
       const dataType = app.chartData.active;
       setTabShow(true);
       setActiveKey(dataType);
       chartData.current = app.chartData;
-      chart.setOption(handleOptions(app.chartData[dataType].data, app.chartData[dataType].type, app.chartData[dataType].msg));
+      if (forceType === 'line') {
+        chart.setOption(handleOptions(buildLineDataset(app.chartData[dataType].data), 'line', app.chartData[dataType].msg));
+      } else {
+        chart.setOption(handleOptions(app.chartData[dataType].data, app.chartData[dataType].type, app.chartData[dataType].msg));
+      }
     } else {
-      chart.setOption(handleOptions(app.chartData.data, app.chartData.type, app.chartData.msg));
+      if (forceType === 'line') {
+        chart.setOption(handleOptions(buildLineDataset(app.chartData.data), 'line', app.chartData.msg));
+      } else {
+        chart.setOption(handleOptions(app.chartData.data, app.chartData.type, app.chartData.msg));
+      }
     }
     chartRef.current = chart;
 
@@ -57,8 +85,13 @@ export default function Landscapechart() {
   const activeClick = (value) => {
     if (value === activeKey) return;
     setActiveKey(value);
-    console.log('数据', chartData.current);
-    chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
+    const app = Taro.getApp();
+    const forceType = app.chartData?.forceType;
+    if (forceType === 'line') {
+      chartRef.current.setOption(handleOptions(buildLineDataset(chartData.current[value].data), 'line'));
+    } else {
+      chartRef.current.setOption(handleOptions(chartData.current[value].data, 'kline'));
+    }
   };
 
 

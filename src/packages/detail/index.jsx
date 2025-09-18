@@ -442,7 +442,8 @@ export default function Detail() {
   };
 
   const jump2Land = () => {
-    jump2DataPage('landscapechart', 'chartData', chartData.current);
+    // 将当前图表类型一并传递给横屏页面
+    jump2DataPage('landscapechart', 'chartData', { ...chartData.current, forceType: chartTypeRef.current });
   };
 
   const jump2Community = () => {
