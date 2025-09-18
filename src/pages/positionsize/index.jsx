@@ -32,6 +32,8 @@ export default function Positionsize() {
   const [ coinSelected, setCoinSelected ] = useState('');
 
   const [activeKey, setActiveKey] = useState('currentRatio');
+  const [curLoading, setCurLoading] = useState(true);
+  const [hisLoading, setHisLoading] = useState(true);
   // const [curPCRData, setCurPCRData] = useState({
   //   loading: true,
   //   close: false,
@@ -56,6 +58,15 @@ export default function Positionsize() {
     cur: null,
     his: null
   });
+
+  const applyOptionWhenReady = (ref, option, done) => {
+    if (ref.current) {
+      ref.current.setOption(option);
+      done && done();
+    } else {
+      setTimeout(() => applyOptionWhenReady(ref, option, done), 100);
+    }
+  };
 
   const initChart = (canvas, width, height, dpr) => {
     const chart = echarts.init(canvas, null, {
@@ -145,6 +156,8 @@ export default function Positionsize() {
   });
 
   const getData = async ({coin = coinSelected, exchange = cexSelected}) => {
+    setCurLoading(true);
+    setHisLoading(true);
     const psCurData = await request({
       url: Interface.PS_CUR,
       data: {
@@ -168,7 +181,8 @@ export default function Positionsize() {
       msg: '持仓量',
       type: 'treemap'
     };
-    chartRef.current.setOption(handleOptions(psTmpData, 'treemap', '持仓量'));
+    const curOption = handleOptions(psTmpData, 'treemap', '持仓量');
+    applyOptionWhenReady(chartRef, curOption, () => setCurLoading(false));
 
     const psHisData = await request({
       url: Interface.PS_HIS,
@@ -183,7 +197,8 @@ export default function Positionsize() {
       data: psHisData.data,
       type: 'linebar'
     };
-    chartRef1.current.setOption(handleOptions(psHisData.data, 'linebar', '持仓'));
+    const hisOption = handleOptions(psHisData.data, 'linebar', '持仓');
+    applyOptionWhenReady(chartRef1, hisOption, () => setHisLoading(false));
   };
 
   const jump2Land = (type) => {
@@ -224,7 +239,10 @@ export default function Positionsize() {
       </View>
       <View className='section-header'>当前持仓量</View>
       <View className='currentPCR'>
-        <View className='currentPCRChart'>
+        <View className='currentPCRChart zoom-bottom-right'>
+          {curLoading && (
+            <View className='chart-loading'><View className='spinner' /></View>
+          )}
           <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
@@ -235,6 +253,9 @@ export default function Positionsize() {
       <View className='section-header'>历史持仓量</View>
       <View className='currentPCR'>
         <View className='currentPCRChart'>
+          {hisLoading && (
+            <View className='chart-loading'><View className='spinner' /></View>
+          )}
           <View className='chart-arrawsalt' onClick={() => {jump2Land('his')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>

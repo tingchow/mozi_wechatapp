@@ -1,6 +1,9 @@
 import { View, ScrollView, Image } from '@tarojs/components';
-import { memo } from 'react';
+import Taro from '@tarojs/taro';
+import { memo, useEffect, useState } from 'react';
 import { jump2NoTab } from '../../utils/core';
+import { request } from '../../utils/request';
+import { Interface } from '../../utils/constants';
 import './index.less';
 
 const CDN_PREFIX = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets';
@@ -13,6 +16,98 @@ const MarketMonitoringIcon = `${CDN_PREFIX}/icon/find_slices/find-watch%402x.png
 const CalendarIcon = `${CDN_PREFIX}/icon/find_slices/find-calendar%402x.png`;
 
 const MarketOverview = memo(({ data }) => {
+  const [smartValue, setSmartValue] = useState('请前往配置告警');
+  const [smartAction, setSmartAction] = useState('去配置');
+  const [smartOnClick, setSmartOnClick] = useState(() => () => jump2NoTab('addwarn'));
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const token = Taro.getStorageSync('token');
+        if (!token) {
+          setSmartValue('请前往配置告警');
+          setSmartAction('去配置');
+          setSmartOnClick(() => () => jump2NoTab('addwarn'));
+          return;
+        }
+        const myWarnRes = await request({ url: Interface.MY_WARN });
+        const groups = myWarnRes?.data || {};
+        // 在所有币种里挑选：激活的告警中“最新配置”的那个币
+        let chosenSymbol = null;
+        let latestTs = -Infinity;
+        Object.keys(groups || {}).forEach((symbol) => {
+          const arr = groups[symbol]?.warnContent || [];
+          arr.forEach((item, idx) => {
+            if (item?.active) {
+              const rawTs = item?.updatedAt || item?.updateTime || item?.time || item?.ts || item?.createTime || item?.createdAt;
+              const parsedTs = rawTs ? Date.parse(rawTs) : NaN;
+              // 若没有时间字段，使用索引作为近似顺序（越往后越新）
+              const ts = Number.isFinite(parsedTs) ? parsedTs : idx;
+              if (ts > latestTs) {
+                latestTs = ts;
+                chosenSymbol = symbol;
+              }
+            }
+          });
+        });
+
+        const firstSymbol = chosenSymbol || Object.keys(groups)[0];
+        if (!firstSymbol) {
+          setSmartValue('请前往配置告警');
+          setSmartAction('去配置');
+          setSmartOnClick(() => () => jump2NoTab('addwarn'));
+          return;
+        }
+        // 拉取该币的最近涨跌数据
+        const priceRes = await request({ url: Interface.COIN_INFO, data: { coin: firstSymbol } });
+        const list = Array.isArray(priceRes?.data) ? priceRes.data : (priceRes?.data ? [priceRes.data] : []);
+        // 匹配字段兼容: symbol/coin/name，忽略大小写
+        const priceItem = list.find((it) => String(it?.symbol || it?.coin || it?.name || '').toUpperCase() === String(firstSymbol).toUpperCase()) || list[0] || {};
+        // 兼容可能带%或不带%的字符串
+        const normalizePercent = (v) => {
+          if (v === undefined || v === null || v === '') return undefined;
+          const num = parseFloat(String(v).toString().replace('%',''));
+          return Number.isFinite(num) ? num : undefined;
+        };
+        let percent = normalizePercent(priceItem?.priceChangePercent);
+        if (percent === undefined) percent = normalizePercent(priceItem?.priceChangePercentage24h);
+        if (percent === undefined) percent = normalizePercent(priceItem?.priceRange);
+        if (percent === undefined) percent = normalizePercent(priceItem?.price_24h);
+        // 若仍无百分比，尝试用开收盘计算
+        if (percent === undefined || percent === null || percent === '') {
+          const open = priceItem?.open ?? priceItem?.Open ?? priceItem?.first ?? priceItem?.o;
+          const last = priceItem?.last ?? priceItem?.Close ?? priceItem?.close ?? priceItem?.c;
+          if (Number.isFinite(open) && Number.isFinite(last) && Number(open) !== 0) {
+            percent = ((last - open) / open) * 100;
+          } else {
+            percent = 0;
+          }
+        }
+        // 兜底：若仍为 0 或 NaN，再调用详情头部接口读取 24H 百分比
+        if (!Number.isFinite(percent) || Number(percent) === 0) {
+          try {
+            const headerRes = await request({ url: Interface.coin_info, data: { symbol: firstSymbol } });
+            const p = headerRes?.data?.priceChangePercentage_24h;
+            const parsed = normalizePercent(p);
+            if (parsed !== undefined) {
+              percent = parsed;
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+        const percentStr = `${Number(percent).toFixed(2)}%`;
+        setSmartValue(`${firstSymbol} ${percentStr}`);
+        setSmartAction('去配置');
+        setSmartOnClick(() => () => jump2NoTab('addwarn', { symbol: firstSymbol }));
+      } catch (e) {
+        setSmartValue('请前往配置告警');
+        setSmartAction('去配置');
+        setSmartOnClick(() => () => jump2NoTab('addwarn'));
+      }
+    };
+    init();
+  }, []);
   // 默认数据
   const defaultData = [
     {
@@ -38,12 +133,9 @@ const MarketOverview = memo(({ data }) => {
       icon: MarketMonitoringIcon, /* 替换为新的图标 */
       iconColor: 'orange',
       title: '智能盯盘',
-      value: 'BTC +3%',
-      action: '去配置',
-      onClick: () => {
-        // 智能订盘点击事件 - 跳转到配置告警页面，默认使用BTC
-        jump2NoTab('addwarn', { symbol: 'BTC' });
-      }
+      value: smartValue,
+      action: smartAction,
+      onClick: () => smartOnClick()
     },
     {
       id: 'today',
@@ -72,8 +164,7 @@ const MarketOverview = memo(({ data }) => {
     if (match) {
       const percentage = match[0];
       const nonPercentage = value.replace(percentage, '');
-      const isPositive = parseFloat(percentage) > 0;
-      const colorClass = isPositive ? 'positive' : 'negative';
+      const colorClass = 'positive';
 
       return (
         <>
@@ -82,7 +173,8 @@ const MarketOverview = memo(({ data }) => {
         </>
       );
     } else {
-      return <View className={`card-value-text ${extraClass}`}>{value}</View>;
+      const isPlaceholder = value === '请前往配置告警';
+      return <View className={`card-value-text ${extraClass} ${isPlaceholder ? 'card-value-placeholder' : ''}`}>{value}</View>;
     }
   };
 

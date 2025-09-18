@@ -132,6 +132,37 @@
       padding: 0;
       position: relative;
 
+      .chart-loading {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+
+        .spinner {
+          width: 48px;
+          height: 48px;
+          border: 4px solid rgba(17,183,135,0.3);
+          border-top-color: #11B787;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* 仅持仓量页面启用：将放大按钮固定在右下角 */
+      &.zoom-bottom-right {
+        .chart-arrawsalt {
+          right: 20px;
+          bottom: 20px;
+        }
+      }
+
       .chart-arrawsalt {
         position: absolute;
         right: 90px;

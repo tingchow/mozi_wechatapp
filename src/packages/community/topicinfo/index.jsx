@@ -265,14 +265,15 @@ export default function TopicInfo() {
         
       </View>
 
-      {/* 帖子列表 */}
-      <View className="post-list">
-        <View className="list-header">
-          <Text className="total">全部帖子</Text>
-        </View>
+      {/* 帖子列表（仅当有数据时显示“全部帖子”盒子） */}
+      {posts.length > 0 ? (
+        <View className="post-list">
+          <View className="list-header">
+            <Text className="total">全部帖子</Text>
+          </View>
 
-        {posts.map(item => (
-          <View key={item.id} className="comment-card" onClick={() => navigateToCommentInfo(item.id)}>
+          {posts.map(item => (
+            <View key={item.id} className="comment-card" onClick={() => navigateToCommentInfo(item.id)}>
             {/* 用户自己的帖子显示编辑按钮 */}
             {item.userId === currentUserId && (
               <View className="edit-actions">
@@ -374,28 +375,36 @@ export default function TopicInfo() {
                 {item.likes}
               </Button>
             </View>
-          </View>
-        ))}
+            </View>
+          ))}
 
-        {/* 底部提示 */}
-        {loading && (
-          <View className="loading-more">
-            <GardenLoading />
-          </View>
-        )}
-        
-        {!loading && !hasMore && posts.length > 0 && (
-          <View className="list-footer">
-            <Text className="footer-text">已加载全部内容</Text>
-          </View>
-        )}
-        
-        {!loading && posts.length === 0 && (
-          <View className="list-footer">
-            <Text className="footer-text">暂无帖子</Text>
-          </View>
-        )}
-      </View>
+          {/* 底部提示（列表内，仅用于已有数据的继续加载） */}
+          {loading && (
+            <View className="loading-more">
+              <GardenLoading />
+            </View>
+          )}
+          
+          {!loading && !hasMore && posts.length > 0 && (
+            <View className="list-footer">
+              <Text className="footer-text">已加载全部内容</Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        // 无数据时，显示全局loading或空状态（水平居中）
+        <View>
+          {loading ? (
+            <View className="empty-loading">
+              <GardenLoading />
+            </View>
+          ) : (
+            <View className="empty-footer">
+              <Text className="footer-text">暂无帖子</Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* 添加悬浮发帖按钮 */}
       <View className="float-post-btn">

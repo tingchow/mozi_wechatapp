@@ -414,6 +414,12 @@
         margin-bottom: 12px; // 标签与按钮之间的间距
         margin-left: 90px;
         
+        /* 特殊类：修复标签上下粘连问题，增加行距 */
+        &.tag-gap-fix {
+          margin-top: 8px;
+          row-gap: 8px; /* 每行垂直间距 */
+        }
+        
         .coin-tag,
         .topic-tag {
           display: inline-block;

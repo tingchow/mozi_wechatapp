@@ -214,7 +214,7 @@ export default function Tradevol() {
       
       <View className='section-header'>当前成交额</View>
       <View className='currentPCR'>
-        <View className='currentPCRChart'>
+        <View className='currentPCRChart zoom-bottom-right'>
           {curLoading && (
             <View className='chart-loading'><View className='spinner' /></View>
           )}
@@ -227,7 +227,7 @@ export default function Tradevol() {
       
       <View className='section-header'>历史成交额</View>
       <View className='currentPCR'>
-        <View className='currentPCRChart'>
+        <View className='currentPCRChart zoom-bottom-right'>
           {hisLoading && (
             <View className='chart-loading'><View className='spinner' /></View>
           )}

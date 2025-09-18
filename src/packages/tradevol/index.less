@@ -136,6 +136,14 @@
       padding: 0;
       position: relative;
 
+      /* 仅成交额页面启用：将放大按钮固定在右下角 */
+      &.zoom-bottom-right {
+        .chart-arrawsalt {
+          right: 20px;
+          bottom: 20px;
+        }
+      }
+
       .chart-loading {
         position: absolute;
         inset: 0;

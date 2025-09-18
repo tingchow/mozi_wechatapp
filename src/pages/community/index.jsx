@@ -1362,7 +1362,7 @@ export default function CommunityPage() {
                         
                         {/* 币种和话题标签 */}
                         {(item.tags?.length > 0 || item.topics?.length > 0) && (
-                          <View className="tags-topics-container">
+                          <View className="tags-topics-container tag-gap-fix">
                             {/* 币种标签 */}
                             {item.tags?.map(tag => (
                               <Text 

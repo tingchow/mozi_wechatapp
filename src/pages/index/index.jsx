@@ -364,6 +364,20 @@ export default function Index() {
     ['币种', '最新价', '24小时幅度', '加自选', '加监控'],
     ['币种', '最新价', '24小时幅度', '加自选', '加监控']
   ];
+
+  // 统一格式化话题时间，去掉 ISO 字符 "T"，兼容时间戳
+  const formatTopicTime = (value) => {
+    if (!value) return '--';
+    if (typeof value === 'string') {
+      return value.replace('T', ' ').replace(/Z$/, '');
+    }
+    if (typeof value === 'number') {
+      const d = new Date(value);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+    return String(value);
+  };
   return (
     <View className='indexBox'>
       {/* 头部-搜索框 */}
@@ -544,8 +558,9 @@ export default function Index() {
                         `${CDN_PREFIX}/icon/copper.png`
                       ];
                       
+                      const hasDesc = Boolean(topic.desc || topic.description);
                       return (
-                        <View className='topic-card' key={topic.id || index}>
+                        <View className={`topic-card ${hasDesc ? '' : 'no-desc'}`} key={topic.id || index}>
                           <View className='topic-rank'>
                             <Image 
                               src={rankMedals[index] || rankMedals[2]} 
@@ -554,10 +569,12 @@ export default function Index() {
                             />
                           </View>
                           <View className='topic-title'>{topic.title || topic.name}</View>
-                          <View className='topic-desc'>{topic.desc || topic.description}</View>
+                          {hasDesc && (
+                            <View className='topic-desc'>{topic.desc || topic.description}</View>
+                          )}
                           <View className='topic-stats'>
                             <View className='topic-hot'>🔥 {topic.discussionCount || topic.hot || 0} 讨论</View>
-                            <View className='topic-date'>{topic.createdAt}</View>
+                            <View className='topic-date'>{formatTopicTime(topic.createdAt || topic.createTime)}</View>
                           </View>
                         </View>
                       );
