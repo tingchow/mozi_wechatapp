@@ -199,7 +199,7 @@ export default function Positionsize() {
         <TabBar.Item key='historyRatio' title='历史持仓量' />
       </TabBar> */}
       <View className='pickerList'>
-        <View className='picker-item'>
+        <View className='picker-item coin-picker-white'>
           <View className='picker-title'>币种</View>
           <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
             <View className='pickerSelect'>

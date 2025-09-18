@@ -188,7 +188,7 @@ export default function Tradevol() {
         <TabBar.Item key='historyRatio' title='历史成交额' />
       </TabBar> */}
       <View className='pickerList'>
-        <View className='picker-item'>
+        <View className='picker-item coin-picker-white'>
           <View className='picker-title'>币种</View>
           <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
             <View className='pickerSelect'>

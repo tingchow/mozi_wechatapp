@@ -213,7 +213,7 @@ export default function Putcallratio() {
         <TabBar.Item key='historyRatio' title='历史多空比' />
       </TabBar> */}
       <View className='pickerList'>
-        <View className='picker-item'>
+        <View className='picker-item coin-picker-white'>
           <View className='picker-title'>币种</View>
           <Picker mode='selector' range={coinArr} onChange={onCoinChange}>
             <View className='pickerSelect'>

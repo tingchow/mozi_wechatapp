@@ -4,6 +4,13 @@
   box-sizing: border-box;
   min-height: 100vh;
 
+  /* 单独的币种选择白色背景类，不影响其他区域 */
+  .coin-picker-white {
+    background: #fff;
+    border-radius: 25px;
+    border: 1px solid #e9ecef;
+  }
+
   // .pcrTab {
   //   background-color: #fff;
 
@@ -64,6 +71,12 @@
         }
       }
     }
+  }
+
+  /* 覆盖默认灰底：仅当同时带有 coin-picker-white 类时才渲染为白底 */
+  .pickerList .picker-item.coin-picker-white {
+    background: #fff;
+    border: 1px solid #e9ecef;
   }
 
   // 类型Tab切换样式
