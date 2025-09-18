@@ -90,6 +90,8 @@ export default function CommunityPage() {
   const [selectedPost, setSelectedPost] = useState(null)
   const [pullRefresh, setPullRefresh] = useState(false)
   const [voteChoice, setVoteChoice] = useState(null)
+  const [showQuestionButtons, setShowQuestionButtons] = useState(false) // 新增状态来控制按钮的显示/隐藏
+  const [showBullBearVote, setShowBullBearVote] = useState(false) // 新增状态来控制BullBearVote的显示/隐藏
   // const [showActionSheet, setShowActionSheet] = useState(false)
   // const [selectedPost, setSelectedPost] = useState(null)
 
@@ -1195,13 +1197,13 @@ export default function CommunityPage() {
           </View>
         ) : (
           <View>
-            {subTab === 'question' && (
+            {subTab === 'question' && showQuestionButtons && (
               <QuestionButtons 
                 onAskQuestion={handlePost}
                 onAnswerQuestion={handlePost}
               />
             )}
-            {subTab === 'currency' && (
+            {subTab === 'currency' && showBullBearVote && (
               <View className="vote-wrapper">
                 <BullBearVote
                   title={`您对今天的${selectedCoin}有何看法?`}

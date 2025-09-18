@@ -29,6 +29,9 @@ const fundingRateIcon = `${CDN_PREFIX}/icon/funding-rate.png`;
 const volumeTransactionIcon = `${CDN_PREFIX}/icon/volume-transaction.png`;
 const HomeAlertIcon = `${CDN_PREFIX}/icon/home-alert.png`; // 提醒图标
 
+// 是否显示首页“涨跌分布”组件（隐藏请设为 false）
+const SHOW_MARKET_DISTRIBUTION = false;
+
 const area = {
   derivativeArea: {
     title: '合约专区',
@@ -580,8 +583,8 @@ export default function Index() {
         )}
       </MoziCard>
 
-      {/* 涨跌分布 */}
-      <MarketDistribution />
+      {/* 涨跌分布（隐藏开关） */}
+      {SHOW_MARKET_DISTRIBUTION && <MarketDistribution />}
 
       {/* 自选 */}
       {/* <View className='own-box'> */}

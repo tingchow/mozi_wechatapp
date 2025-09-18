@@ -50,6 +50,9 @@ export default function PostPage() {
   const [images, setImages] = useState([]) // 已选择图片
   const [activeButton, setActiveButton] = useState('') // 当前激活的按钮
 
+  // 是否显示图片上传区域（隐藏请设为 false）
+  const SHOW_IMAGE_UPLOAD = false;
+
   // 加载热门话题
   const loadHotTopics = async () => {
     if (hotTopicsAllLoaded) return; // 如果已加载全部，则不再请求
@@ -683,16 +686,18 @@ export default function PostPage() {
             maxlength={300}
           />
         )}
-        {/* 图片上传区 */}
-        <View className='image-uploader'>
-          {images.map((src, idx) => (
-            <Image key={idx} className='uploaded-img' src={src} mode='aspectFill' />
-          ))}
-          {images.length < 9 && (
-            <View className='upload-tile' onClick={handleChooseImage}>+
-            </View>
-          )}
-        </View>
+        {/* 图片上传区（隐藏开关） */}
+        {SHOW_IMAGE_UPLOAD && (
+          <View className='image-uploader'>
+            {images.map((src, idx) => (
+              <Image key={idx} className='uploaded-img' src={src} mode='aspectFill' />
+            ))}
+            {images.length < 9 && (
+              <View className='upload-tile' onClick={handleChooseImage}>+
+              </View>
+            )}
+          </View>
+        )}
 
         {selectedTemplate === '发现好币' && (
           <View className='discovery-form'>

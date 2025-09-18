@@ -2,6 +2,8 @@
   background: #EEF0F3 url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/me-bg.png') no-repeat top center;
   background-size: 100% 460px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 0 24px 24px 24px;
 
   .header {
@@ -388,7 +390,7 @@
   }
 
   .logoutBtn {
-    margin: 32px 0 20px 0;
+    margin: auto 0 20px 0; // 顶部自动占据剩余空间，按钮贴底
     background: #dc3545;
     border-radius: 20px;
     height: 90px;
@@ -542,6 +544,11 @@
         margin-left: 20px;
       }
     }
+
+  // 用于将退出登录推到底部（当某些模块隐藏时）
+  .flex-spacer {
+    flex: 1 1 auto;
+  }
   }
   
   .contactContainer {

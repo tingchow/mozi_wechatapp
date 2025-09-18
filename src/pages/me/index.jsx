@@ -29,6 +29,14 @@ export default function Index() {
   const [isLogin, setIsLogin] = useState(false);
   const [scoreDisable, setScoreDisable] = useState(true);
   const scoreInput = useRef('');
+  const [showSecondaryActions, setShowSecondaryActions] = useState(false); // 控制第二排功能按钮的显示/隐藏
+  const [showPointsSection, setShowPointsSection] = useState(false); // 控制我的积分板块的显示/隐藏
+  const [showNewCoinListing, setShowNewCoinListing] = useState(false); // 控制新币上线组件的显示/隐藏
+  const [showCalendarSection, setShowCalendarSection] = useState(false); // 控制日历组件的显示/隐藏
+  // 与行情页一致：当“公告日历”隐藏时，退出登录应固定到底部。
+  // 这里通过布尔值来控制日历显示，若为 false，我们在布局末尾插入一个占位 flex 项将按钮推到底部。
+  const [showThemeOption, setShowThemeOption] = useState(false); // 控制皮肤中心选项的显示/隐藏
+  const [showSocialOption, setShowSocialOption] = useState(false); // 控制社交媒体选项的显示/隐藏
 
   const footerList = [
   {
@@ -38,7 +46,7 @@ export default function Index() {
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('皮肤中心')}
   }, {
-    key: '',
+    key: 'contact',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '联系我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
@@ -50,13 +58,13 @@ export default function Index() {
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {console.log('社交媒体')}
   }, {
-    key: '',
+    key: 'about',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/about%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '关于',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {about()}
   }, {
-    key: '',
+    key: 'donate',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/donate%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '捐赠',
     extra: <IconFont name='right' size={32} color='#ccc' />,
@@ -355,29 +363,31 @@ export default function Index() {
       </View>
 
       {/* 第二排功能按钮 */}
-      <View className='secondaryActions'>
-        <View className='actionRow'>
-          <View className='actionButton' onClick={score}>
-            <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/comment%402x.png'} />
+      {showSecondaryActions && (
+        <View className='secondaryActions'>
+          <View className='actionRow'>
+            <View className='actionButton' onClick={score}>
+              <View className='actionIcon secondary'>
+                <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/comment%402x.png'} />
+              </View>
+              <Text className='actionText secondary'>我的评论</Text>
             </View>
-            <Text className='actionText secondary'>我的评论</Text>
-          </View>
-          <View className='actionButton' onClick={score}>
-            <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/mail%402x.png'} />
-              <View className='badge'>3</View>
+            <View className='actionButton' onClick={score}>
+              <View className='actionIcon secondary'>
+                <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/mail%402x.png'} />
+                <View className='badge'>3</View>
+              </View>
+              <Text className='actionText secondary'>消息通知</Text>
             </View>
-            <Text className='actionText secondary'>消息通知</Text>
-          </View>
-          <View className='actionButton' onClick={score}>
-            <View className='actionIcon secondary'>
-              <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/like%402x.png'} />
+            <View className='actionButton' onClick={score}>
+              <View className='actionIcon secondary'>
+                <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/like%402x.png'} />
+              </View>
+              <Text className='actionText secondary'>我的点赞</Text>
             </View>
-            <Text className='actionText secondary'>我的点赞</Text>
           </View>
         </View>
-      </View>
+      )}
 
       {/* 左右分布的功能按钮 */}
       <View className='horizontalButtons'>
@@ -431,41 +441,53 @@ export default function Index() {
       </View>
 
       {/* 我的积分 */}
-      <View className='pointsSection'>
-        <View className='pointsInfo'>
-          <Text className='pointsTitle'>我的积分</Text>
-          <View className='pointsValueRow'>
-            <Text className='pointsValue'>2000</Text>
-            <Text className='pointsDaily'>昨日积分：+100</Text>
-          </View>
-          <Text className='pointsRank'>
+      {showPointsSection && (
+        <View className='pointsSection'>
+          <View className='pointsInfo'>
+            <Text className='pointsTitle'>我的积分</Text>
+            <View className='pointsValueRow'>
+              <Text className='pointsValue'>2000</Text>
+              <Text className='pointsDaily'>昨日积分：+100</Text>
+            </View>
+            <Text className='pointsRank'>
                          当前排名：总榜第 <Text style={{color: '#000', fontWeight: 'bold'}}>23</Text> 名
-          </Text>
+            </Text>
+          </View>
+          <View className='pointsAction' onClick={() => Taro.navigateTo({ url: '/packages/more/pointsrank/index' })}>
+            <Text className='pointsButton'>积分榜单</Text>
+            <IconFont name='right' size={24} color='#fff'/>
+          </View>
+          <Image className='pointsCoin' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/integral-coin.png'} />
         </View>
-        <View className='pointsAction' onClick={() => Taro.navigateTo({ url: '/packages/more/pointsrank/index' })}>
-          <Text className='pointsButton'>积分榜单</Text>
-          <IconFont name='right' size={24} color='#fff'/>
-        </View>
-        <Image className='pointsCoin' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/integral-coin.png'} />
-      </View>
-
+      )}
 
       {/* 新币上线组件 */}
-      <NewCoinListing />
+      {showNewCoinListing && (
+        <NewCoinListing />
+      )}
 
       {/* 日历组件 */}
-      <View className='calendarSection'>
-        <CalendarCard
-          onDateChange={handleDateChange}
-          onToggleChange={handleToggleChange}
-          defaultToggle={true}
-        />
-      </View>
+      {showCalendarSection && (
+        <View className='calendarSection'>
+          <CalendarCard
+            onDateChange={handleDateChange}
+            onToggleChange={handleToggleChange}
+            defaultToggle={true}
+          />
+        </View>
+      )}
+
+      {/* 当日历隐藏时，插入一个弹性占位将退出登录推到底部 */}
+      {!showCalendarSection && <View className='flex-spacer' />}
 
       <View className='footer'>
         <List className='footerList'>
           {footerList.map((item, index) => {
             const openType = matchOpenType(item.key);
+            // 根据key判断是否隐藏
+            if (item.key === 'theme' && !showThemeOption) return null;
+            if (item.key === 'social' && !showSocialOption) return null;
+
             return (
               <List.Item key={index} className={`footerItem ${index === footerList.length - 1? 'last': ''}`}>
                 {

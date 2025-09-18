@@ -49,7 +49,7 @@ const MarketOverview = memo(({ data }) => {
       id: 'today',
       icon: CalendarIcon, /* 替换为新的图标 */
       iconColor: 'purple',
-      title: '公告日日历',
+      title: '公告日历',
       value: '今日有更新',
       desc: '去订阅', /* 修改描述为去订阅 */
       isActionButton: true, /* 标记为按钮样式 */
@@ -60,6 +60,10 @@ const MarketOverview = memo(({ data }) => {
   ];
 
   const marketData = data || defaultData;
+  // 隐藏“加密总市值”、“成交量”、“公告日历”卡片
+  const hiddenIds = ['total-market-cap', 'volume', 'today'];
+  const hiddenTitles = ['加密总市值', '成交量', '公告日历'];
+  const visibleMarketData = (marketData || []).filter((item) => !hiddenIds.includes(item?.id) && !hiddenTitles.includes(item?.title));
 
   const renderValueWithPercentage = (value, extraClass = '') => {
     const regex = /([+-]?\d+\.?\d*%)/; // 匹配百分比，例如 +3.26%, -1.26%
@@ -88,6 +92,8 @@ const MarketOverview = memo(({ data }) => {
     }
   };
 
+  const isSingle = visibleMarketData.length === 1;
+
   return (
     <View className='market-overview'>
       <ScrollView 
@@ -98,10 +104,10 @@ const MarketOverview = memo(({ data }) => {
       >
         <View className='market-cards-content'>
           <View className='market-cards'>
-            {marketData.map((item) => (
+            {visibleMarketData.map((item) => (
               <View 
                 key={item.id}
-                className='market-card'
+                className={`market-card ${isSingle ? 'single' : ''}`}
                 onClick={() => handleCardClick(item)}
               >
                 <View className='card-header'>
