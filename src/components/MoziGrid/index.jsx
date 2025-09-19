@@ -30,6 +30,7 @@ export const MoziGrid = (props) => {
           <View className='ranking-layout'>
             <View className='ranking-column'>
               {props.gridContent.length > 0 && props.gridContent[0].img ? (
+                <View className='ranking-logo-container'>
                 <Image 
                   src={props.gridContent[0].img} 
                   mode='aspectFit' 
@@ -37,6 +38,8 @@ export const MoziGrid = (props) => {
                   onError={(e) => console.log('图片加载失败:', e, props.gridContent[0].img)}
                   onLoad={() => console.log('图片加载成功:', props.gridContent[0].img)}
                 />
+                  <Text className='ranking-logo-text'>{props?.extraTopName || ''}</Text>
+                </View>
               ) : (
                 <View className='logo-placeholder-full'>🏆</View>
               )}

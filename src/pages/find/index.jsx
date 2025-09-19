@@ -206,6 +206,7 @@ export default function Find() {
   const [isExchangeError, setExchangeError] = useState(false);
   const [isExchangeLoading, setExchangeLoading] = useState(true);
   const exchangeArr = useRef([]);
+  const exchangeTopNames = useRef([]); // 记录各数据集TOP1名称
 
   // 过滤交易所名称中的.com，避免文字过长溢出
   const sanitizeExchangeName = (name) => {
@@ -249,6 +250,10 @@ export default function Find() {
           img: item.url // 添加img字段用于排名显示
         };
       });
+      try {
+        const topName = sanitizeExchangeName(exchangeSpot.data[0]?.exchange);
+        if (topName) exchangeTopNames.current.push(topName);
+      } catch (e) {}
     }
     if (!isEmpty(exchangeFutures.data)) {
       tempExchangeFutures = exchangeFutures.data.slice(0, 3).map((item) => {
@@ -261,6 +266,10 @@ export default function Find() {
           img: item.url // 添加img字段用于排名显示
         }
       });
+      try {
+        const topName = sanitizeExchangeName(exchangeFutures.data[0]?.exchange);
+        if (topName) exchangeTopNames.current.push(topName);
+      } catch (e) {}
     }
 
     const exchangeSelect = [];
@@ -276,6 +285,7 @@ export default function Find() {
     setExchangeData({
       exchangeArr: exchangeArr.current[0],
       exchangeSelect,
+      topName: exchangeTopNames.current[0] || '',
     });
     setExchangeLoading(false);
 
@@ -303,6 +313,7 @@ export default function Find() {
       setExchangeData({
         ...exchangeData,
         exchangeArr: exchangeArr.current[idx],
+        topName: exchangeTopNames.current[idx] || '',
       });
     }
   };
@@ -905,6 +916,7 @@ export default function Find() {
                   gridTitleBgColor='transparent'
                   showRanking={true}
                   className='exchange-ranking-grid'
+                  extraTopName={exchangeData.topName}
                   // hideTitle={false}
                   gridContent={exchangeData.exchangeArr}
                 >
