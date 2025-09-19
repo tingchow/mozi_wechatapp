@@ -51,7 +51,7 @@ export default function PostPage() {
   const [activeButton, setActiveButton] = useState('') // 当前激活的按钮
 
   // 是否显示图片上传区域（隐藏请设为 false）
-  const SHOW_IMAGE_UPLOAD = false;
+  const SHOW_IMAGE_UPLOAD = true;
 
   // 加载热门话题
   const loadHotTopics = async () => {
