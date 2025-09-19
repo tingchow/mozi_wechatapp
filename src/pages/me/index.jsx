@@ -443,7 +443,7 @@ export default function Index() {
       {/* 我的积分 */}
       {showPointsSection && (
         <View className='pointsSection'>
-          <View className='pointsInfo'>
+          <View className='pointsInfo' onClick={() => Taro.navigateTo({ url: '/packages/points/index' })}>
             <Text className='pointsTitle'>我的积分</Text>
             <View className='pointsValueRow'>
               <Text className='pointsValue'>2000</Text>

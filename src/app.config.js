@@ -34,6 +34,13 @@ export default defineAppConfig({
       ]
     },
     {
+      root: "packages/points",
+      name: "points",
+      pages: [
+        "index"
+      ]
+    },
+    {
       root: "packages/community",
       name: "community",
       pages: [
