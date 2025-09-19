@@ -30,7 +30,7 @@ const volumeTransactionIcon = `${CDN_PREFIX}/icon/volume-transaction.png`;
 const HomeAlertIcon = `${CDN_PREFIX}/icon/home-alert.png`; // 提醒图标
 
 // 是否显示首页“涨跌分布”组件（隐藏请设为 false）
-const SHOW_MARKET_DISTRIBUTION = false;
+const SHOW_MARKET_DISTRIBUTION = true;
 
 const area = {
   derivativeArea: {
@@ -68,7 +68,7 @@ export default function Index() {
   const [ topicsLoading, setTopicsLoading ] = useState(false);
   const [ lastTopicsLoadTime, setLastTopicsLoadTime ] = useState(null);
   const [ my_own, setOwn ] = useState(null);
-  const [ myOwnLoading, setMyOwnLoading ] = useState(true);
+  const [ myOwnLoading, setMyOwnLoading ] = useState(false);
   const [ popVis, setPopVis ] = useState(false);
   const [ rankActiveKey, setRankActive ] = useState('zhangfu');
   const [ investmentTab, setInvestmentTab ] = useState('opportunity');
@@ -457,7 +457,17 @@ export default function Index() {
                 话题热榜
               </View>
             </View>
-            <View className='more-btn' onClick={() => jump2Market('rank')}>
+            <View 
+              className='more-btn' 
+              onClick={() => {
+                if (investmentTab === 'topics') {
+                  try { Taro.setStorageSync('communityMainTabPreset', 'hot'); } catch (e) {}
+                  Taro.switchTab({ url: '/pages/community/index' });
+                } else {
+                  jump2Market('rank');
+                }
+              }}
+            >
               查看更多 &gt;
             </View>
           </View>
@@ -562,7 +572,16 @@ export default function Index() {
                       
                       const hasDesc = Boolean(topic.desc || topic.description);
                       return (
-                        <View className={`topic-card ${hasDesc ? '' : 'no-desc'}`} key={topic.id || index}>
+                        <View 
+                          className={`topic-card ${hasDesc ? '' : 'no-desc'}`} 
+                          key={topic.id || index}
+                          onClick={() => {
+                            try {
+                              Taro.setStorageSync('communityMainTabPreset', 'hot');
+                            } catch (e) {}
+                            Taro.switchTab({ url: '/pages/community/index' });
+                          }}
+                        >
                           <View className='topic-rank'>
                             <Image 
                               src={rankMedals[index] || rankMedals[2]} 

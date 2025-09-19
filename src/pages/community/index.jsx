@@ -409,6 +409,14 @@ export default function CommunityPage() {
         backgroundColor: '#EEF0F3'
       });
     } catch (e) {}
+    // 读取首页设置的预设主tab
+    try {
+      const preset = Taro.getStorageSync('communityMainTabPreset');
+      if (preset === 'hot' || preset === 'recommend') {
+        setMainTab(preset);
+        Taro.removeStorageSync('communityMainTabPreset');
+      }
+    } catch (e) {}
     // 获取当前用户ID
     getCurrentUserId();
     console.log('进入社区页面');

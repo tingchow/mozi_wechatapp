@@ -16,7 +16,7 @@ const MarketMonitoringIcon = `${CDN_PREFIX}/icon/find_slices/find-watch%402x.png
 const CalendarIcon = `${CDN_PREFIX}/icon/find_slices/find-calendar%402x.png`;
 
 const MarketOverview = memo(({ data }) => {
-  const [smartValue, setSmartValue] = useState('请前往配置告警');
+  const [smartValue, setSmartValue] = useState('暂无配置');
   const [smartAction, setSmartAction] = useState('去配置');
   const [smartOnClick, setSmartOnClick] = useState(() => () => jump2NoTab('addwarn'));
 
@@ -25,7 +25,7 @@ const MarketOverview = memo(({ data }) => {
       try {
         const token = Taro.getStorageSync('token');
         if (!token) {
-          setSmartValue('请前往配置告警');
+          setSmartValue('暂无配置');
           setSmartAction('去配置');
           setSmartOnClick(() => () => jump2NoTab('addwarn'));
           return;
@@ -53,7 +53,7 @@ const MarketOverview = memo(({ data }) => {
 
         const firstSymbol = chosenSymbol || Object.keys(groups)[0];
         if (!firstSymbol) {
-          setSmartValue('请前往配置告警');
+          setSmartValue('暂无配置');
           setSmartAction('去配置');
           setSmartOnClick(() => () => jump2NoTab('addwarn'));
           return;
@@ -101,7 +101,7 @@ const MarketOverview = memo(({ data }) => {
         setSmartAction('去配置');
         setSmartOnClick(() => () => jump2NoTab('addwarn', { symbol: firstSymbol }));
       } catch (e) {
-        setSmartValue('请前往配置告警');
+        setSmartValue('暂无配置');
         setSmartAction('去配置');
         setSmartOnClick(() => () => jump2NoTab('addwarn'));
       }
@@ -152,10 +152,8 @@ const MarketOverview = memo(({ data }) => {
   ];
 
   const marketData = data || defaultData;
-  // 隐藏“加密总市值”、“成交量”、“公告日历”卡片
-  const hiddenIds = ['total-market-cap', 'volume', 'today'];
-  const hiddenTitles = ['加密总市值', '成交量', '公告日历'];
-  const visibleMarketData = (marketData || []).filter((item) => !hiddenIds.includes(item?.id) && !hiddenTitles.includes(item?.title));
+  // 不再过滤，全部展示
+  const visibleMarketData = marketData || [];
 
   const renderValueWithPercentage = (value, extraClass = '') => {
     const regex = /([+-]?\d+\.?\d*%)/; // 匹配百分比，例如 +3.26%, -1.26%
@@ -173,7 +171,7 @@ const MarketOverview = memo(({ data }) => {
         </>
       );
     } else {
-      const isPlaceholder = value === '请前往配置告警';
+      const isPlaceholder = value === '暂无配置';
       return <View className={`card-value-text ${extraClass} ${isPlaceholder ? 'card-value-placeholder' : ''}`}>{value}</View>;
     }
   };

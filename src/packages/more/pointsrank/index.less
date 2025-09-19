@@ -133,6 +133,7 @@
           position: absolute;
           z-index: 1;
           width: 40px;
+          height: 40px; // 固定尺寸，避免首次加载高度计算引起抖动
         }
         .medal-first { left: 18px; top: 0px; }
         .medal-second { left: 5px; top: 10px; }
@@ -152,7 +153,7 @@
           margin-top: 6px;
           display: flex;
           align-items: center;
-          .coin-icon { width: 28px; margin-right: 6px; }
+          .coin-icon { width: 28px; height: 28px; margin-right: 6px; }
           .ov-points-text { font-size: 26px; color: #333333; font-weight: 600; }
         }
       }
@@ -229,7 +230,7 @@
         display: flex;
         align-items: center;
         
-        .coin-icon { width: 28px; margin-right: 6px; }
+        .coin-icon { width: 28px; height: 28px; margin-right: 6px; }
         
         .points-text {
           font-size: 28px;
@@ -293,7 +294,7 @@
     .points-area {
       display: flex;
       align-items: center;
-      .coin-icon { width: 28px; margin-right: 6px; }
+      .coin-icon { width: 28px; height: 28px; margin-right: 6px; }
       .points-text { font-size: 28px; font-weight: 600; color: #333333; }
     }
   }

@@ -29,14 +29,14 @@ export default function Index() {
   const [isLogin, setIsLogin] = useState(false);
   const [scoreDisable, setScoreDisable] = useState(true);
   const scoreInput = useRef('');
-  const [showSecondaryActions, setShowSecondaryActions] = useState(false); // 控制第二排功能按钮的显示/隐藏
-  const [showPointsSection, setShowPointsSection] = useState(false); // 控制我的积分板块的显示/隐藏
-  const [showNewCoinListing, setShowNewCoinListing] = useState(false); // 控制新币上线组件的显示/隐藏
-  const [showCalendarSection, setShowCalendarSection] = useState(false); // 控制日历组件的显示/隐藏
+  const [showSecondaryActions, setShowSecondaryActions] = useState(true); // 控制第二排功能按钮的显示/隐藏
+  const [showPointsSection, setShowPointsSection] = useState(true); // 控制我的积分板块的显示/隐藏
+  const [showNewCoinListing, setShowNewCoinListing] = useState(true); // 控制新币上线组件的显示/隐藏
+  const [showCalendarSection, setShowCalendarSection] = useState(true); // 控制日历组件的显示/隐藏
   // 与行情页一致：当“公告日历”隐藏时，退出登录应固定到底部。
   // 这里通过布尔值来控制日历显示，若为 false，我们在布局末尾插入一个占位 flex 项将按钮推到底部。
-  const [showThemeOption, setShowThemeOption] = useState(false); // 控制皮肤中心选项的显示/隐藏
-  const [showSocialOption, setShowSocialOption] = useState(false); // 控制社交媒体选项的显示/隐藏
+  const [showThemeOption, setShowThemeOption] = useState(true); // 控制皮肤中心选项的显示/隐藏
+  const [showSocialOption, setShowSocialOption] = useState(true); // 控制社交媒体选项的显示/隐藏
 
   const footerList = [
   {
