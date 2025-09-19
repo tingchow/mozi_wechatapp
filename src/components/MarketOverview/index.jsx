@@ -146,7 +146,9 @@ const MarketOverview = memo(({ data }) => {
       desc: '去订阅', /* 修改描述为去订阅 */
       isActionButton: true, /* 标记为按钮样式 */
       onClick: () => {
-        console.log('跳转到订阅页面');
+        try {
+          Taro.switchTab({ url: '/pages/me/index' });
+        } catch (e) {}
       }
     }
   ];
