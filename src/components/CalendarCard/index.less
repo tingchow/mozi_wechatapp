@@ -162,6 +162,7 @@
       background: #fff;
       
       .calendar-day {
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
         width: 14.28571%; /* 100% / 7 */
         height: 50px;
         display: flex;
@@ -169,6 +170,7 @@
         justify-content: center;
         cursor: pointer;
         transition: background-color 0.2s;
+        &:active { background-color: transparent; }
         
         .day-content {
           display: flex;
@@ -214,7 +216,7 @@
         }
         
         /* 悬停效果 - 只对当月日期生效 */
-        &:hover:not(.other-month) .day-content .day-text {
+        &:hover:not(.other-month):not(.selected) .day-content .day-text {
           background-color: #f0f0f0;
         }
         
@@ -230,6 +232,9 @@
           color: #fff;
           border: none;
           font-weight: bold;
+        }
+        &.selected:hover .day-content .day-text {
+          background-color: #11B787;
         }
         
         /* 其他月份的日期 */
