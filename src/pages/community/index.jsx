@@ -95,6 +95,14 @@ export default function CommunityPage() {
   // const [showActionSheet, setShowActionSheet] = useState(false)
   // const [selectedPost, setSelectedPost] = useState(null)
 
+  // 预加载后的 Tab 图片路径（默认使用 CDN，预加载成功后替换成本地/缓存路径）
+  const [tabImageSrc, setTabImageSrc] = useState({
+    recommendActive: recommendationImg,
+    recommendInactive: recommendNoActivedImg,
+    hotActive: hotListActivedImg,
+    hotInactive: hotListImg
+  })
+
   // 跳转到话题搜索页
   const goToTopicSearch = () => {
     Taro.navigateTo({
@@ -373,6 +381,11 @@ export default function CommunityPage() {
   // 页面首次加载时预加载币种帖子列表
   useEffect(() => {
     preloadCoinPosts();
+  }, []);
+
+  // 页面首次加载时预缓存主 Tab 图片，避免首次点击时闪白
+  useEffect(() => {
+    preloadTabImages();
   }, []);
 
   // 获取当前用户ID
@@ -875,6 +888,50 @@ export default function CommunityPage() {
     }
   };
 
+  // 预加载图片得到可用路径（微信小程序用 downloadFile，H5 直接预热缓存）
+  const preloadImage = async (url) => {
+    try {
+      const env = Taro.getEnv();
+      if (env === Taro.ENV_TYPE.WEAPP) {
+        const res = await Taro.downloadFile({ url });
+        if (res && res.statusCode === 200 && res.tempFilePath) {
+          return res.tempFilePath;
+        }
+        return url;
+      }
+      // H5 端：通过构建 Image 对象预热浏览器缓存
+      await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = url;
+      });
+      return url;
+    } catch (e) {
+      return url;
+    }
+  }
+
+  // 并行预加载主 Tab 使用到的四张图片
+  const preloadTabImages = async () => {
+    try {
+      const [recoActive, recoInactive, hotActive, hotInactive] = await Promise.all([
+        preloadImage(recommendationImg),
+        preloadImage(recommendNoActivedImg),
+        preloadImage(hotListActivedImg),
+        preloadImage(hotListImg)
+      ]);
+      setTabImageSrc({
+        recommendActive: recoActive,
+        recommendInactive: recoInactive,
+        hotActive,
+        hotInactive
+      });
+    } catch (e) {
+      // 忽略预加载失败，保持使用 CDN
+    }
+  }
+
   const handleCoinSelect = (coin) => {
     setSelectedCoin(coin)
     setShowCoinSelector(false)
@@ -1079,13 +1136,13 @@ export default function CommunityPage() {
             className={`tab-card ${mainTab === 'recommend' ? 'active' : ''}`}
             onClick={() => setMainTab('recommend')}
           >
-            <Image className="tab-image" src={mainTab === 'recommend' ? recommendationImg : recommendNoActivedImg} mode="aspectFill" />
+            <Image className="tab-image" src={mainTab === 'recommend' ? tabImageSrc.recommendActive : tabImageSrc.recommendInactive} mode="aspectFill" />
           </View>
           <View
             className={`tab-card ${mainTab === 'hot' ? 'active' : ''}`}
             onClick={() => setMainTab('hot')}
           >
-            <Image className="tab-image" src={mainTab === 'hot' ? hotListActivedImg : hotListImg} mode="aspectFill" />
+            <Image className="tab-image" src={mainTab === 'hot' ? tabImageSrc.hotActive : tabImageSrc.hotInactive} mode="aspectFill" />
           </View>
         </View>
       </View>
