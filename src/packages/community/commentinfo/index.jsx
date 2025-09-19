@@ -367,7 +367,7 @@ export default function CommentInfo() {
     
     // 跳转到发帖页面，并传递帖子信息
     Taro.navigateTo({
-      url: `/pages/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
+      url: `/packages/community/post/index?id=${post.id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&isUpdate=true`
     });
   }
 
