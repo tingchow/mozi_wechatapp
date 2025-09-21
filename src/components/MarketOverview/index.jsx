@@ -229,7 +229,10 @@ const MarketOverview = memo(({ data }) => {
                 {item.action && (
                   <View 
                     className='card-action'
-                    onClick={item.onClick}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      item.onClick();
+                    }}
                   >
                     {item.action}
                   </View>
