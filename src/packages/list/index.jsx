@@ -14,7 +14,8 @@ export default function List() {
   const [data, setData] = useState([]);
   const [readyData, setReadyData] = useState([]);
   const [readyIndex, setReadyIndex] = useState(0);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true); // 列表局部加载
+  const [firstLoading, setFirstLoading] = useState(true); // 首次进入页的全屏加载
   const [showHeader, setShowHeader] = useState(false);
   const [headerImg, setHeaderImg] = useState('');
   const pageNo = useRef(1);
@@ -128,6 +129,7 @@ export default function List() {
       }
     } finally {
       setLoading(false);
+      setFirstLoading(false);
     }
   };
 
@@ -172,7 +174,10 @@ export default function List() {
       setReadyIndex(value);
     }
     if (Array.isArray(listParam.requestData) && listParam.requestData.length > 0) {
-      setLoading(true);
+      // 无感切换：保留当前数据，不触发全屏或局部loading
+      // 重置分页计数
+      pageNo.current = 1;
+      pageFinish.current = false;
       const coinData = await request({
         url: listParam.interFace,
         data: {
@@ -181,7 +186,6 @@ export default function List() {
           pageSize: pageSize.current
         }
       });
-      setLoading(false);
       if (coinData?.data) {
         setData(coinData.data);
       }
@@ -193,7 +197,7 @@ export default function List() {
     <Layout>
       {/* 进入列表页和切换维度请求时显示全屏品牌 Loading */}
       <LogoLoading
-        visible={isLoading}
+        visible={firstLoading}
         fullscreen
         mask
         image={require('../../assets/image/community/loadding.png')}

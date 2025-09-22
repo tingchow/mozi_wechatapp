@@ -99,17 +99,19 @@ export default function Landscapechart() {
     <View className='chart-box'>
       {
         tabShow && (
-          <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
-            <TabBar.Item key='hour' title='小时' />
-            <TabBar.Item key='day' title='日' />
-            <TabBar.Item key='week' title='周' />
-            <TabBar.Item key='month' title='月' />
-          </TabBar>
+          <View className='chartHeader'>
+            <View className='chart-close' onClick={backPage}>
+              <IconFont name='close' size={18} color='#000' />
+            </View>
+            <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
+              <TabBar.Item key='hour' title='1H' />
+              <TabBar.Item key='day' title='1日' />
+              <TabBar.Item key='week' title='1周' />
+              <TabBar.Item key='month' title='1月' />
+            </TabBar>
+          </View>
         )
       }
-      <View className='chart-close' onClick={backPage}>
-        <IconFont name='close' size={20} color='#000' />
-      </View>
       <View className='mychart'>
         <ec-canvas canvas-id="mychart-landscape" ec={{onInit: initChart}}></ec-canvas>
       </View>
