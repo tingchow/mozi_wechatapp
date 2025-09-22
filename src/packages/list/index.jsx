@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 import { SimpleList } from '../../components/ListCom/SimpleList';
@@ -42,6 +42,9 @@ export default function List() {
     init(app.listParam);
     console.log('app', app);
     if (app.listParam) {
+      // 进入页面时基于 rankTitle 判断是否为热门币种
+      const isHotCoinsJudge = app.listParam.rankTitle === '热门币种';
+      console.log('[List/useLoad] rankTitle:', app.listParam.rankTitle, 'isHotCoinsJudge:', isHotCoinsJudge, 'listParam:', app.listParam);
       setListParam(app.listParam);
       // 如果是从可交易平台入口，且没有头图，则使用搜索币种的 logo
       if (app.listParam.fromPlatform && !app.listParam.headerImg) {
@@ -76,6 +79,14 @@ export default function List() {
     
     
   });
+
+  // 当标题变化时再次打印判断，便于确认异步赋值后的结果
+  useEffect(() => {
+    if (listParam && listParam.rankTitle) {
+      const isHotCoinsJudge = listParam.rankTitle === '热门币种';
+      console.log('[List/useEffect] rankTitle:', listParam.rankTitle, 'isHotCoinsJudge:', isHotCoinsJudge, 'listParam:', listParam);
+    }
+  }, [listParam && listParam.rankTitle]);
 
   // 初始化获取数据
   const init = async (listParam) => {

@@ -147,6 +147,20 @@
   }
 }
 
+// 热门币种页面：贴近头图的特例样式
+.scroll-list.hotcoins {
+  .gridTitle.show-header-grid {
+    top: (@headerHeight - 32rpx) !important;
+  }
+  .show-header {
+    height: calc(100vh - (@headerHeight - 32rpx)) !important;
+  }
+  // 热门币种：滚动容器与表头贴近时，额外增大内边距
+  .scroll {
+    padding-top: calc(@gridTitleHeight - 60rpx) !important;
+  }
+}
+
 .scroll {
   height: 100vh;
   padding-top: calc(@gridTitleHeight - 30rpx); // 贴近表头，减少首行与表头间距

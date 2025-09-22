@@ -184,13 +184,11 @@ export default function Index() {
   });
 
   useDidShow(() => {
-    console.log('index 展示');
     needLoop.current = true;
     allRequest();
   });
 
   useDidHide(() => {
-    console.log('index 隐藏');
     needLoop.current = false;
     // 清理话题缓存定时器
     if (topicsCacheTimer.current) {
@@ -343,7 +341,7 @@ export default function Index() {
     setTopicsLoading(false);
   };
 
-  const handlePopupConfirm = () => {console.log(1)}
+  const handlePopupConfirm = () => {}
 
   const jump2Search = () => {
     jump2NoTab('search')
@@ -451,7 +449,7 @@ export default function Index() {
                 onLongPress={() => {
                   setInvestmentTab('topics');
                   loadHotTopics(true); // 长按强制刷新
-                  console.log('长按触发强制刷新');
+                  
                 }}
               >
                 话题热榜

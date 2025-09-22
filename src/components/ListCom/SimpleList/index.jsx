@@ -34,7 +34,11 @@ export const SimpleList = ({
   showHeader,
   headerImg
 }) => {
-  console.log('进入列表');
+  const isHotSpecial =
+    rankTitle === '热门币种' ||
+    rankTitle === '热门合约' ||
+    rankTitle === '热门版块' ||
+    (typeof rankTitle === 'string' && rankTitle.includes('可交易'));
 
   const [data, setData] = useState([]);
   const [ selected, setSelected ] = useState(selectArr[0]);
@@ -44,7 +48,7 @@ export const SimpleList = ({
   // const pageSize = useRef(defaultpageSize);
   // const pageFinish = useRef(false);
 
-  console.log('选择的列表', selectArr);
+   
 
   useEffect(() => {
     // init();
@@ -179,7 +183,8 @@ export const SimpleList = ({
     return <GardenLoading />
   }
   return (
-    <View className='scroll-list'>
+    <View className={`scroll-list ${isHotSpecial ? 'hotcoins' : ''}`}>
+       
       {
         (showHeader || selectArr.length > 0) && (
           <View className='header-new'>
