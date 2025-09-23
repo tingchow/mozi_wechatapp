@@ -11,6 +11,7 @@ export const CalendarCard = (props) => {
     onDateChange,
     onToggleChange,
     defaultToggle = true,
+    enableDark = false,
   } = props;
 
   const [selectedDate, setSelectedDate] = useState(null);
@@ -101,7 +102,7 @@ export const CalendarCard = (props) => {
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
   return (
-    <View className="simple-calendar-card">
+    <View className={`simple-calendar-card ${enableDark ? 'enable-dark' : ''}`}>
       {/* 上部分：交易所公告开关 */}
       <View className="calendar-header">
         <View className="announcement-section">

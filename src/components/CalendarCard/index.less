@@ -286,9 +286,9 @@
   }
 }
 
-/* 深色主题支持 */
+/* 深色主题支持（默认关闭，仅在根元素存在 enable-dark 类时启用） */
 @media (prefers-color-scheme: dark) {
-  .simple-calendar-card {
+  .simple-calendar-card.enable-dark {
     background: #1f1f1f;
     box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
     

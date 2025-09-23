@@ -37,6 +37,7 @@ export default function Index() {
   // 这里通过布尔值来控制日历显示，若为 false，我们在布局末尾插入一个占位 flex 项将按钮推到底部。
   const [showThemeOption, setShowThemeOption] = useState(true); // 控制皮肤中心选项的显示/隐藏
   const [showSocialOption, setShowSocialOption] = useState(true); // 控制社交媒体选项的显示/隐藏
+  const [showContactPop, setShowContactPop] = useState(false); // 控制“联系我们”弹层显示/隐藏（默认隐藏）
 
   const footerList = [
   {
@@ -126,8 +127,10 @@ export default function Index() {
     setPopType('about');
   };
   const contact = () => {
-    setPopVis(true);
-    setPopType('contact');
+    if (showContactPop) {
+      setPopVis(true);
+      setPopType('contact');
+    }
   };
   const attendUs = () => {
     setPopVis(true);
@@ -575,7 +578,7 @@ export default function Index() {
           )
         }
         {
-          popType === 'contact' && (
+          popType === 'contact' && showContactPop && (
           <View className='popContainer contactContainer'>
             <Text className='contactTitle'>欢迎联系我们</Text>
             <View className='contactEmail'>

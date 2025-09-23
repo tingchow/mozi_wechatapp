@@ -1,8 +1,8 @@
-import { View, Text, Image, Swiper, SwiperItem } from '@tarojs/components';
+import { View, Text, Image, ScrollView } from '@tarojs/components';
 import React from 'react';
 import './index.less';
 
-const NewCoinListing = () => {
+const NewCoinListing = ({ showMore = false }) => {
   // 模拟新币上线数据
   const coinListings = [
     {
@@ -36,39 +36,36 @@ const NewCoinListing = () => {
       {/* 标题头部（独立盒子，透明背景） */}
       <View className='new-coin-listing-header'>
         <Text className='header-title'>新币上线</Text>
-        <Text className='view-more'>查看更多 {'>'}</Text>
+        {showMore && <Text className='view-more'>查看更多 {'>'}</Text>}
       </View>
       
-      {/* 新币上线内容容器 */}
+      {/* 新币上线内容容器：横向滑动列表，每个盒子占屏幕 2/3 宽 */}
       <View className='new-coin-listing-container'>
-        <Swiper
-          className='new-coin-listing-swiper'
-          indicatorColor='#999'
-          indicatorActiveColor='#333'
-          circular
-          indicatorDots={false}
-          autoplay={false}
-          interval={5000}
-          duration={500}
-          easingFunction='easeInOutCubic'
-          style={{ height: '140px' }}
+        <ScrollView
+          className='new-coin-scroll'
+          scrollX
+          enableFlex
+          showScrollbar={false}
+          enhanced
+          // style={{ height: '1px' }}
         >
-          {coinListings.map((coin) => (
-            <SwiperItem key={coin.id}>
-              <View className='coin-item'>
-                <View className='coin-info'>
-                  <Image className='exchange-icon' src={coin.exchangeIcon} />
-                  <Text className='exchange-name'>{coin.exchange}</Text>
-                  <Text className='listing-time'>{coin.listingTime}</Text>
-                </View>
-                <Text className='coin-details'>{coin.details}</Text>
-                <View className='coin-link-container'>
-                  <Text className='coin-link'>详情:{coin.link}</Text>
-                </View>
+          {coinListings.map((coin, index) => {
+            const isLast = index === coinListings.length - 1;
+            return (
+            <View className={`coin-item ${isLast ? 'last' : ''}`} key={coin.id}>
+              <View className='coin-info'>
+                <Image className='exchange-icon' src={coin.exchangeIcon} />
+                <Text className='exchange-name'>{coin.exchange}</Text>
+                <Text className='listing-time'>{coin.listingTime}</Text>
               </View>
-            </SwiperItem>
-          ))}
-        </Swiper>
+              <Text className='coin-details'>{coin.details}</Text>
+              <View className='coin-link-container'>
+                <Text className='coin-link'>详情:{coin.link}</Text>
+              </View>
+            </View>
+            );
+          })}
+        </ScrollView>
       </View>
     </View>
   );
