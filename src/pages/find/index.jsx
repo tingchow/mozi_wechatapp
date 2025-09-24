@@ -775,7 +775,7 @@ export default function Find() {
       </TabBar>
       {
         pageActiveKey === 'own' && (
-          <View className='ownBox'>
+          <View className='ownBox own-large-font'>
             <Layout isLoading={ownLoading} isError={isOwnError} needLogin={needLogin} loginCallback={selectRequest}>
               {
                 my_own.length === 0 ? (

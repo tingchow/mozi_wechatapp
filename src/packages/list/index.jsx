@@ -233,6 +233,7 @@ export default function List() {
         gridCon={listParam.gridCon} // ['coin', 'priceChangePercent']
         showHeader={showHeader}
         headerImg={headerImg || listParam.headerImg}
+        extraClass='rank-large'
         // loginCb={() => {setPopVis(true)}}
       />
        }

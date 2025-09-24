@@ -681,6 +681,7 @@ export default function Index() {
                     gridContent={footerArr[activeArr.indexOf(rankActiveKey)]}
                     callback={(gridCon) => {jump2Detail(gridCon.key)}}
                     gridTitleBgColor='transparent'
+                    className='realtime-rank-large'
                   />
                   <View className='list-more' onClick={go2List}>查看更多 <IconFont name='right' /></View>
                 </View>

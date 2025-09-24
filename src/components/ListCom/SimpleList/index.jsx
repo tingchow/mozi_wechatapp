@@ -32,7 +32,8 @@ export const SimpleList = ({
   isLoading,
   // loginCb,
   showHeader,
-  headerImg
+  headerImg,
+  extraClass = ''
 }) => {
   const isHotSpecial =
     rankTitle === '热门币种' ||
@@ -183,7 +184,7 @@ export const SimpleList = ({
     return <GardenLoading />
   }
   return (
-    <View className={`scroll-list ${isHotSpecial ? 'hotcoins' : ''}`}>
+    <View className={`scroll-list ${isHotSpecial ? 'hotcoins' : ''} ${extraClass}`}>
        
       {
         (showHeader || selectArr.length > 0) && (

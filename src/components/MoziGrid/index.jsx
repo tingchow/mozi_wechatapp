@@ -60,7 +60,7 @@ export const MoziGrid = (props) => {
                   </Grid>
                 )
               }
-              <List>
+              <List className='mozi-grid-list'>
                 {
                   props.gridContent.map((gridCon, index) => {
                     return (
@@ -71,9 +71,11 @@ export const MoziGrid = (props) => {
                               if (gridConItem === 'key' || gridConItem === 'img') {
                                 return null;
                               }
+                              const rawCellValue = gridCon[gridConItem];
+                              const displayValue = typeof rawCellValue === 'string' ? rawCellValue.replace(/^\$/,'') : rawCellValue;
                               return (
                                 <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
-                                  {gridCon[gridConItem]}
+                                  {displayValue}
                                 </Grid.Item>
                               )
                             })
@@ -88,7 +90,7 @@ export const MoziGrid = (props) => {
           </View>
         ) : (
           // 原有的普通布局
-          <List>
+          <List className='mozi-grid-list'>
             {
               props.gridContent.map((gridCon, index) => {
                 return (
@@ -99,9 +101,11 @@ export const MoziGrid = (props) => {
                           if (gridConItem === 'key' || gridConItem === 'img') {
                             return null;
                           }
+                          const rawCellValue = gridCon[gridConItem];
+                          const displayValue = typeof rawCellValue === 'string' ? rawCellValue.replace(/^\$/,'') : rawCellValue;
                           return (
                             <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
-                              {gridCon[gridConItem]}
+                              {displayValue}
                             </Grid.Item>
                           )
                         })
