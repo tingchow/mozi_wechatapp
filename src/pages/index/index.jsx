@@ -1,4 +1,4 @@
-import { View, Image, ScrollView, Button } from '@tarojs/components'
+import { View, Image, ScrollView, Button, Swiper, SwiperItem } from '@tarojs/components'
 import Taro, { useLoad, useShareAppMessage, useDidShow, useDidHide } from '@tarojs/taro';
 import IconFont from '../../components/iconfont';
 import { Grid, TabBar, NoticeBar } from 'antd-mobile';
@@ -28,6 +28,12 @@ const inventoryIcon = `${CDN_PREFIX}/icon/inventory.png`;
 const fundingRateIcon = `${CDN_PREFIX}/icon/funding-rate.png`;
 const volumeTransactionIcon = `${CDN_PREFIX}/icon/volume-transaction.png`;
 const HomeAlertIcon = `${CDN_PREFIX}/icon/home-alert.png`; // 提醒图标
+// 首页背景轮播图（可替换为真实素材）
+const HOME_BANNERS = [
+  `${CDN_PREFIX}/image/home/banner1.png`,
+  `${CDN_PREFIX}/image/home/banner2.png`,
+  `${CDN_PREFIX}/image/home/banner3.png`,
+];
 
 // 是否显示首页“涨跌分布”组件（隐藏请设为 false）
 const SHOW_MARKET_DISTRIBUTION = true;
@@ -57,7 +63,11 @@ const area = {
 };
 
 export default function Index() {
-
+  const sysInfo = Taro.getSystemInfoSync?.() || {};
+  const statusBarHeight = Number(sysInfo.statusBarHeight || 0);
+  const systemStr = String(sysInfo.system || '');
+  const isIOS = /iOS|iPhone|iPad/i.test(systemStr);
+  const safeTop = isIOS ? statusBarHeight : 0;
   const [ hot_coin, setHotCoin ] = useState(null);
   const [ hot_industry, setHotIndustry ] = useState(null);
   const [ hot_contract, setHotContract ] = useState(null);
@@ -378,36 +388,59 @@ export default function Index() {
   };
   return (
     <View className='indexBox'>
-      {/* 头部-搜索框 */}
-      {/* <Button openType='contact'>测试-跟我聊天</Button> */}
-      <View className='header' onClick={jump2Search}>
-        <View className='searchBox'>
-          <View className='searchInput'>请输入搜索的币种</View>
-          <View className='searchCancel'>
-            <IconFont name='search' size={42} color='#fff' />
-            搜索
+      {/* 顶部安全区背景色 */}
+      {safeTop > 0 && (
+        <View style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: safeTop,
+          backgroundColor: '#0A1017',
+          zIndex: 1
+        }} />
+      )}
+      {/* 顶部区域：banner + 搜索框（同容器） */}
+      <View className='hero-wrap'>
+        {/* 顶部背景轮播 */}
+        <View className='bg-banner' style={{ top: safeTop }}>
+          <Swiper
+            className='bg-banner-swiper'
+            circular
+            autoplay
+            interval={4000}
+            duration={500}
+          >
+            {HOME_BANNERS.map((url, idx) => (
+              <SwiperItem key={idx}>
+                <Image className='bg-banner-image' src={url} mode='aspectFill' />
+              </SwiperItem>
+            ))}
+          </Swiper>
+        </View>
+        {/* 头部-搜索框 */}
+        {/* <Button openType='contact'>测试-跟我聊天</Button> */}
+        <View className='header' onClick={jump2Search}>
+          <View className='searchBox'>
+            <View className='searchInput'>请输入搜索的币种</View>
+            <View className='searchCancel'>
+              <IconFont name='search' size={42} color='#fff' />
+              搜索
+            </View>
           </View>
         </View>
+        {/* 通知条：定位在 banner 底部 */}
+        <View className='notice'>
+          <NoticeBar
+            className='notice-item'
+            content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
+            color='alert'
+            wrap
+            icon={<Image src={HomeAlertIcon} className='notice-icon' />}
+          />
+        </View>
       </View>
-      <View className='notice'>
-        {/* <View className='notice-item'>
-          <IconFont name='bell-fill' size={30} color='#ff6430' />
-          <View className='notice-content'>告别手动盯盘，实时波动随时跟进！进入币种详情页，开启智能告警配置吧！</View>
-        </View> */}
-        {/* <NoticeBar
-          className='notice-item'
-          content='告别手动盯盘，实时波动随时跟进！进入币种详情页，开启智能告警配置吧！'
-          color='alert'
-          icon={<IconFont name='bell-fill' size={30} color='#ff6430' />}
-        /> */}
-        <NoticeBar
-          className='notice-item'
-          content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
-          color='alert'
-          wrap
-          icon={<Image src={HomeAlertIcon} className='notice-icon' />}
-        />
-      </View>
+
       {/* 合约专区 */}
       <MoziCard
         title={area.derivativeArea.title}

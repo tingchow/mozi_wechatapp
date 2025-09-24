@@ -1,29 +1,18 @@
 .indexBox {
   background-color: #efefef;
-  // background: linear-gradient(to bottom, #000 40%, #fff);
-  background-image: url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/home-bg.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  padding: 260px 0 0;
+  // 顶部区域由 hero-wrap 占位，不再需要全局顶部内边距
+  padding: 0;
   box-sizing: border-box;
   min-height: 100vh;
   overflow: hidden;
   position: relative;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 170px;
-    left: 50px;
-    width: 320px;
-    height: 60px;
-    background-image: url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/home-logo.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    z-index: 999;
-    pointer-events: none;
+  // 顶部组合容器：banner + 搜索框
+  .hero-wrap {
+    position: relative;
+    padding-bottom: 90px; // 为绝对定位的 notice & 搜索框预留空间，避免影响后续文档流
   }
+
 
   .logo {
     width: 100%;
@@ -33,9 +22,14 @@
 
   .header {    
     width: 100%;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     padding: 0 20px;
     box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 75px; // 相对 banner 绝对定位
+    z-index: 5;
 
     .searchBox {
       width: 100%;
@@ -78,9 +72,14 @@
   }
   
   .notice {
-    margin-top: 20px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0; // 相对 banner 绝对定位
+    margin: 0;
     color: #333333;
     font-size: 22px;
+    z-index: 4;
 
     .notice-icon {
       width: 22px;
@@ -88,7 +87,7 @@
     }
   
     .notice-item {
-      border-radius: 20px 20px 0 0;
+      border-radius: 20px 20px 0px 0px;
       padding-top: 10px;
       padding-bottom: 10px;
       line-height: 30px;
@@ -218,6 +217,23 @@
   }
 
   
+}
+
+/* 顶部背景轮播层 */
+.bg-banner {
+  position: relative;
+  left: 0;
+  right: 0;
+  height: 470px; // 与 padding-top 对应
+}
+.bg-banner-swiper {
+  width: 100%;
+  height: 100%;
+}
+.bg-banner-image {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .treemapBox {
