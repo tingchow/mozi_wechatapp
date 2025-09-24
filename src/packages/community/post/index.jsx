@@ -49,6 +49,8 @@ export default function PostPage() {
   const [showCommunityRules, setShowCommunityRules] = useState(false) // 控制社区公约弹窗的显示
   const [images, setImages] = useState([]) // 已选择图片
   const [activeButton, setActiveButton] = useState('') // 当前激活的按钮
+  // 需要置顶显示的模板（当从“发现好币”等入口进入时设置）
+  const [templatePriorityFirst, setTemplatePriorityFirst] = useState(null)
 
   // 是否显示图片上传区域（隐藏请设为 false）
   const SHOW_IMAGE_UPLOAD = true;
@@ -409,6 +411,14 @@ export default function PostPage() {
         // 如果选择了"不懂就问"模板，显示提示弹窗
         if (decodedTemplateType === '不懂就问') {
           setShowAskTips(true);
+        }
+
+        // 如果来源于“发现好币”，则进入页面时自动弹出模板选择弹窗，且默认选中“发现好币”
+        if (decodedTemplateType === '发现好币') {
+          setShowTemplates(true);
+          setTemplatePriorityFirst('发现好币');
+        } else {
+          setTemplatePriorityFirst(null);
         }
       }
     }
@@ -995,7 +1005,7 @@ export default function PostPage() {
               }}>×</Text>
             </View>
             <View className='template-list'>
-                {templates.map((item, index) => (
+                {(templatePriorityFirst ? [templatePriorityFirst, ...templates.filter(t => t !== templatePriorityFirst)] : templates).map((item, index) => (
                   <View
                     key={index}
                     className={`template-item ${selectedTemplate === item ? 'active' : ''}`}
