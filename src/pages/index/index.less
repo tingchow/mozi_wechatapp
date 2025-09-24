@@ -10,7 +10,8 @@
   // 顶部组合容器：banner + 搜索框
   .hero-wrap {
     position: relative;
-    padding-bottom: 90px; // 为绝对定位的 notice & 搜索框预留空间，避免影响后续文档流
+    /* 预留搜索框+公告条高度，并兼容安全区（安卓等无刘海设备 env 返回0） */
+    padding-bottom: calc(22px + env(safe-area-inset-bottom));
   }
 
 
@@ -75,7 +76,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0; // 相对 banner 绝对定位
+    bottom: -5px; // 相对 banner 绝对定位
     margin: 0;
     color: #333333;
     font-size: 22px;
