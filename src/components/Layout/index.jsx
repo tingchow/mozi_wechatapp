@@ -95,9 +95,9 @@ export const Layout = (props) => {
 
   if (props.needLogin) {
     return (
-      <View className='login-box'>
-        <View>您还未登录，登录可享受更多权益</View>
+      <View className='login-box reverse'>
         <Button className='login-btn' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>登录/注册</Button>
+        <View className='login-tips'>您还未登录，登录可享受更多权益</View>
       </View>
     );
   }

@@ -8,6 +8,17 @@
     height: 100vh;
     padding-top: 110px;
 
+    /* 未登录时，让登录区域在当前页垂直+水平居中 */
+    .login-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 110px);
+      width: 100%;
+      text-align: center;
+    }
+
     .scroll {
       height: 100vh;
     }
@@ -97,7 +108,7 @@
 
   /* 行情页专用放大字号（不影响其他） */
   .marketBox.market-large-font {
-    .gridTitle { font-size: 24px; }
+    .gridTitle { font-size: 22px; }
     .gridContent { font-size: 28px; }
     .gridContent .gridConItem { font-size: 28px; }
   }

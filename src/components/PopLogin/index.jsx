@@ -86,7 +86,7 @@ export const PopLogin = ({ show = false, hideCb }) => {
     return (
       <View className="popup-wrap" onClick={handleMask}>
         <View className='login-container'>
-          <View>您还未登录</View>
+          <View className='login-title'>您还未登录</View>
           <Button className='login-btn' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>登录/注册</Button>
         </View>
       </View>

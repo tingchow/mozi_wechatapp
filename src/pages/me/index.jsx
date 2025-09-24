@@ -12,6 +12,7 @@ import { EMAIL, COINKEY, Interface } from '../../utils/constants';
 const DEFAULT_AVATAR = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png';
 const EDIT_ICON = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/edit.png';
 import NewCoinListing from '../../components/NewCoinListing'; // 导入新币上线组件
+import { DonateModal } from '../../components/DonateModal';
 // import '../../assets/wechat_account.jpg'
 // import '../../assets/BTC.jpg'
 // import '../../assets/ETH.jpg'
@@ -136,9 +137,10 @@ export default function Index() {
     setPopVis(true);
     setPopType('attend');
   };
+  const [donateVisible, setDonateVisible] = useState(false);
   const reward = ()=> {
-    setPopVis(true);
-    setPopType('reward');
+    // 旧弹窗禁用，改用新 DonateModal
+    setDonateVisible(true);
   };
 
   // 日历组件事件处理
@@ -605,6 +607,7 @@ export default function Index() {
           </View>
           )
         }
+        {/* 旧版捐赠弹窗已停用，保留注释以便回滚参考
         {
           popType === 'reward' && (
             <View className='scrollContainer'>
@@ -616,78 +619,40 @@ export default function Index() {
                 style={{whiteSpace: 'nowrap'}}
               >
                 <View className='rewardBox'>
-                  <Image
-                    className='attendPic'
-                    mode='aspectFit'
-                    lazyLoad={true}
-                    showMenuByLongpress={true}
-                    // style='width: 300px;height: 100px;background: #fff;'
-                    src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/wechat_pay.jpg'
-                    // onClick={() => {preViewImage('../../assets/BTC.jpg')}}
-                  />
-                  {/* <View className='contactEmail'>
-                    <Text className='coin-key' maxLines={2}>{COINKEY.BTC}</Text>
-                    <View className='contactCopy' onClick={() => {copy(COINKEY.BTC)}}>
-                      <IconFont name='file-copy' size={40} />
-                    </View>
-                  </View> */}
+                  <Image className='attendPic' mode='aspectFit' lazyLoad showMenuByLongpress src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/wechat_pay.jpg' />
                 </View>
                 <View className='rewardBox'>
-                  <Image
-                    className='attendPic'
-                    mode='aspectFit'
-                    lazyLoad={true}
-                    showMenuByLongpress={true}
-                    // style='width: 300px;height: 100px;background: #fff;'
-                    src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/BTC-simple.jpg'
-                    // onClick={() => {preViewImage('../../assets/BTC.jpg')}}
-                  />
+                  <Image className='attendPic' mode='aspectFit' lazyLoad showMenuByLongpress src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/BTC-simple.jpg' />
                   <View className='contactEmail'>
                     <Text className='coin-key' maxLines={2}>{COINKEY.BTC}</Text>
-                    <View className='contactCopy' onClick={() => {copy(COINKEY.BTC)}}>
-                      <IconFont name='file-copy' size={40} />
-                    </View>
                   </View>
                 </View>
                 <View className='rewardBox'>
-                  <Image
-                    className='attendPic'
-                    mode='aspectFit'
-                    lazyLoad={true}
-                    showMenuByLongpress={true}
-                    // style='width: 300px;height: 100px;background: #fff;'
-                    src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/ETH-simple.jpg'
-                    // onClick={() => {preViewImage('../../assets/ETH.jpg')}}
-                  />
+                  <Image className='attendPic' mode='aspectFit' lazyLoad showMenuByLongpress src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/ETH-simple.jpg' />
                   <View className='contactEmail'>
                     <View>{COINKEY.ETH}</View>
-                    <View className='contactCopy' onClick={() => {copy(COINKEY.ETH)}}>
-                      <IconFont name='file-copy' size={40} />
-                    </View>
                   </View>
                 </View>
                 <View className='rewardBox'>
-                  <Image
-                    className='attendPic'
-                    mode='aspectFit'
-                    lazyLoad={true}
-                    showMenuByLongpress={true}
-                    // style='width: 300px;height: 100px;background: #fff;'
-                    src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/Tron-simple.jpg'
-                    // onClick={() => {preViewImage('../../assets/Tron.jpg')}}
-                  />
+                  <Image className='attendPic' mode='aspectFit' lazyLoad showMenuByLongpress src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/Tron-simple.jpg' />
                   <View className='contactEmail'>
                     <Text>{COINKEY.TRON}</Text>
-                    <View className='contactCopy' onClick={() => {copy(COINKEY.TRON)}}>
-                      <IconFont name='file-copy' size={40} />
-                    </View>
                   </View>
                 </View>
               </ScrollView>
-          </View>
+            </View>
           )
         }
+        */}
       </PageContainer>
+
+      {/* 新捐赠弹窗 */}
+      <DonateModal
+        visible={donateVisible}
+        onClose={() => setDonateVisible(false)}
+        image={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/wechat_pay.jpg'}
+        text={'如果觉得好用，欢迎打赏支持'}
+      />
     </View>
   )
 }
