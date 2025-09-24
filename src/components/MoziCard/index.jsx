@@ -23,6 +23,7 @@ export const MoziCard = (props) => {
 
   return (
     <Card
+      {...otherProps}
       title={
         props.customTitle ? props.customTitle : (
           <div className='title' onClick={props.callback}>

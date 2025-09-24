@@ -510,15 +510,32 @@ export default function Search() {
               </View>
             )}
             <Layout isLoading={platformData.loading} isClose={platformData.close}>
-              <MoziCard>
+              <MoziCard
+                bodyClassName='clickable-card'
+                onClick={() => {
+                  jump2List({
+                    showHeader: true,
+                    rankTitle: `可交易${(searchValue || '').toUpperCase()}平台`,
+                    fromPlatform: true,
+                    searchCoin: searchValue,
+                    interFace: Interface.COIN_PLATFORM,
+                    requestData: { coin: searchValue },
+                    gridTitle: ['交易所', '链', '提取手续费', '最小提币量'],
+                    gridCon: [
+                      { type: 'Img+Text', data: ['url', 'exchanges'] },
+                      { type: 'Text', data: 'chain' },
+                      { type: 'Text', data: 'withdrawfee' },
+                      { type: 'Text', data: 'withdrawmin' }
+                    ]
+                  });
+                }}
+              >
                 <MoziGrid
                   length={4}
                   colName={['平台', '所属链', '提取手续费', '最小提币量']}
                   gridContent={platformData.data}
-                  // callback={(gridCon) => {jump2Detail(gridCon.key)}}
                   gridTitleBgColor="transparent"
                 >
-
                 </MoziGrid>
               </MoziCard>
             </Layout>
@@ -560,7 +577,27 @@ export default function Search() {
               </View>
             )}
             <Layout isLoading={spotData.loading} isClose={spotData.close}>
-              <MoziCard>
+              <MoziCard
+                onClick={() => {
+                  jump2List({
+                    showHeader: true,
+                    rankTitle: `${(searchValue || '').toUpperCase()}交易对`,
+                    interFace: Interface.COIN_SPOT,
+                    requestData: { coin: searchValue },
+                    rankName: '交易对',
+                    selectArr: ['现货交易对', '衍生品交易对'],
+                    reponseData: ['spot', 'nonSpot'],
+                    gridTitle: ['交易对', '交易所', '最新价', '24H变化'],
+                    gridCon: [
+                      { type: 'Img+Text', data: ['url', 'exchanges'] },
+                      { type: 'Text', data: 'symbol' },
+                      { type: 'Text', data: 'lasts' },
+                      { type: 'HighlightArea', data: 'price24h' },
+                      { type: 'img', data: 'url' }
+                    ]
+                  });
+                }}
+              >
                 {
                   spotData?.data && spotData.data.map((pairItem, pairIndex) => {
                     
