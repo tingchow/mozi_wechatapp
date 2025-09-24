@@ -1,6 +1,6 @@
 .indexBox {
   background-color: #efefef;
-  padding-bottom: 50px;
+  padding-bottom: 160px; // 预留底部操作栏高度，避免被固定footer遮挡
   box-sizing: border-box;
   min-height: 100vh;
 
@@ -273,8 +273,8 @@
 
       .chart-arrawsalt {
         position: absolute;
-        right: 50px;
-        bottom: 60px;
+        right: 14px;
+        bottom: 110px; // 默认按钮位置
         background-color: #d5d5d5;
         border-radius: 50%;
         padding: 6px;
@@ -283,16 +283,31 @@
       }
     }
   }
+
+  /* 仅币种详情页的 K 线放大版本，不影响其他页面 */
+  .detail-kline-large {
+    /* 视口高度 - 顶部 tabs/按钮等预留区域(约 220px) - 底部安全区和内边距 */
+    min-height: calc(100vh - 650px);
+    height: auto;
+  }
+
+  /* 横屏按钮专用类，避免与底部缩略滑块重叠，可独立调整 */
+  .detail-landscape-btn {
+    right: 16px !important;
+    bottom: 140px !important; // 往上抬，避开滑动选择器
+  }
   
   .tabContainer {
     background-color: transparent;
 
     .adm-tab-bar-item {
       border-bottom: 1px solid transparent;
+      color: #8E8E8E;
     }
 
     .adm-tab-bar-item-active {
       border-bottom: none;
+      color: #8E8E8E;
       position: relative;
       
       &::after {

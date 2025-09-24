@@ -370,8 +370,8 @@ export default function Detail() {
     let scrollClass = '';
     if (value === 'chart') {
       scrollClass = '.f2Box';
-    } else if (value === 'ai') {
-      scrollClass = '.ai-box';
+    } else if (value === 'roi') {
+      scrollClass = '.roiBox';
     } else if (value === 'market') {
       scrollClass = '.marketBox';
     }
@@ -577,10 +577,8 @@ export default function Detail() {
       {/* tab选择 */}
       <TabBar className='tabContainer' activeKey={pageActiveKey} onChange={pageActiveClick}>
         <TabBar.Item key='chart' title='图表' />
-        {/* TODO-暂时下掉 */}
-        {/* <TabBar.Item key='ai' title='AI解读' /> */}
         <TabBar.Item key='market' title='市场' />
-        {/* <TabBar.Item key='comment' title='评论' /> */}
+        <TabBar.Item key='roi' title='投资回报率' />
       </TabBar>
 
 
@@ -601,8 +599,8 @@ export default function Detail() {
             <TabBar.Item key='week' title='1周' />
             <TabBar.Item key='month' title='1月' />
           </TabBar>
-          <View className='chartBox'>
-            <View className='chart-arrawsalt' onClick={jump2Land}>
+          <View className='chartBox detail-kline-large'>
+            <View className='chart-arrawsalt detail-landscape-btn' onClick={jump2Land}>
               <IconFont name='arrawsalt' size={30} color='#fff' />
             </View>
             <ec-canvas canvas-id="mychart-kline" ec={ec}></ec-canvas>
@@ -655,6 +653,13 @@ export default function Detail() {
             </MoziGrid>
           </MoziCard>
         </Layout>
+      </View>
+
+      {/* 投资回报率 */}
+      <View className='roiBox'>
+        <MoziCard title='投资回报率' moreDesc='敬请期待'>
+          <View style={{ padding: '20px', color: '#999', fontSize: '24px' }}>敬请期待</View>
+        </MoziCard>
       </View>
       {/* <div className='marketBox'>
         <MoziCard
