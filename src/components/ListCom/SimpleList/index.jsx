@@ -1,4 +1,4 @@
-import { View, Image, ScrollView, Text } from '@tarojs/components';
+import { View, Image, ScrollView, Text, Button } from '@tarojs/components';
 import { useState, useEffect, useRef } from 'react';
 import Taro, { useLoad, getCurrentInstance, useDidShow, useReady, useReachBottom } from '@tarojs/taro'
 import { Grid } from 'antd-mobile';
@@ -6,6 +6,7 @@ import { MoziGrid } from '../../MoziGrid';
 // import IconFont from '../../iconfont';
 import { HighlightArea } from '../../HighlightArea';
 import './index.less';
+import IconFont from '../../iconfont';
 import { request } from '../../../utils/request';
 import { jump2Detail } from '../../../utils/core';
 import { AddCollect } from '../../AddCollect';
@@ -33,7 +34,9 @@ export const SimpleList = ({
   // loginCb,
   showHeader,
   headerImg,
-  extraClass = ''
+  extraClass = '',
+  commentCount = 0,
+  shareCount = 0
 }) => {
   const isHotSpecial =
     rankTitle === '热门币种' ||
@@ -220,6 +223,36 @@ export const SimpleList = ({
                 }
               </View>
             )}
+          {/* 右侧操作胶囊：评论与分享 */}
+          <View className='actions-capsule'>
+            <View
+              className='capsule comment-capsule'
+              onClick={() => {
+                try { Taro.setStorageSync('communityMainTabPreset', 'hot'); } catch (e) {}
+                Taro.switchTab({ url: '/pages/community/index' });
+              }}
+            >
+              <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/comment.png' />
+              <Text className='capsule-text'>{commentCount || 0}</Text>
+            </View>
+            <View className='divider'></View>
+            <Button
+              className='capsule share-capsule'
+              openType='share'
+              onClick={() => {
+                try {
+                  request({
+                    url: Interface.SHARE_REPORT,
+                    method: 'POST',
+                    data: { from: 'button', page: 'list' }
+                  });
+                } catch (e) {}
+              }}
+            >
+              <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png' />
+              <Text className='capsule-text'>{shareCount || 0}</Text>
+            </Button>
+          </View>
           </View>
         )
       }

@@ -811,7 +811,7 @@ export default function Find() {
           {/* 市场概况横向滑动卡片 - 独立在marketBox上方 */}
           <MarketOverview />
           
-          <View className='marketBox'>   
+          <View className='marketBox market-large-font'>   
             <Layout isLoading={marketLoading} isError={isMarketError}>
             <Grid className='gridTitle' columns={3}>
               {

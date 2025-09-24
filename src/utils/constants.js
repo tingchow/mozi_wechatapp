@@ -64,6 +64,8 @@ export const Interface = {
   MOZI_USER: '/user/info',
   // 评分
   MOZI_COMMENT: '/feedback/add',
+  // 分享上报
+  SHARE_REPORT: '/share/report',
 
   // 添加自选
   ADD_OWN: '/selfselect/add',

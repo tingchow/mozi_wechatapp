@@ -409,7 +409,11 @@ export default function TopicInfo() {
       {/* 添加悬浮发帖按钮 */}
       <View className="float-post-btn">
         <Button className="post-btn" onClick={handlePost}>
-          <Text className="icon-plus">+</Text>
+          <Image
+            className='post-btn-icon'
+            mode='aspectFit'
+            src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/community/publish.png'}
+          />
         </Button>
       </View>
     </View>

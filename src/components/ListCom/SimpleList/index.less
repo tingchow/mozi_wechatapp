@@ -250,5 +250,51 @@
         }
       }
     }
+
+    /* 右侧操作胶囊：评论/分享，与左侧周期胶囊同风格 */
+    .actions-capsule {
+      position: absolute;
+      right: 20rpx;
+      bottom: 6px;
+      display: inline-flex;
+      align-items: center;
+      z-index: 20;
+      background: #ffffff;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.12);
+      padding: 0 15px;
+
+      .capsule {
+        height: 50px;
+        background: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 10rpx;
+        color: #666;
+        font-size: 26rpx;
+
+        .capsule-icon {
+          width: 42rpx;
+          height: 42rpx;
+        }
+
+        .capsule-text {
+          margin-left: 5rpx;
+        }
+      }
+
+      .divider {
+        width: 1px;
+        height: 28px;
+        background: #E6E6E6;
+      }
+
+      /* 去掉 Button 默认样式，保持与 View 一致 */
+      .share-capsule {
+        border: none;
+        &::after { display: none; }
+      }
+    }
   }
 }

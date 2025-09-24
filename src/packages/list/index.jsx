@@ -24,7 +24,19 @@ export default function List() {
   const [ popVis, setPopVis ] = useState(false);
   const [ selectedPick, setSelected ] = useState('');
 
-  useShareAppMessage(() => {
+  useShareAppMessage((res) => {
+    try {
+      // 分享触发上报（菜单或按钮触发都会进入这里）
+      request({
+        url: Interface.SHARE_REPORT,
+        method: 'POST',
+        data: {
+          from: res && res.from ? res.from : 'unknown',
+          page: 'list',
+          rankTitle: listParam && listParam.rankTitle ? listParam.rankTitle : ''
+        }
+      });
+    } catch (e) {}
     return {
       title: '你能用微信盯盘啦！'
     };
