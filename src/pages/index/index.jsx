@@ -707,6 +707,10 @@ export default function Index() {
         </Layout>
       </MoziCard> */}
       
+      {/* 首页悬浮机器人图标 */}
+      <View className='float-robot-btn' onClick={() => jump2NoTab('robot')}>
+        <Image className='robot-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/AI_Bot.png'} mode='aspectFit' />
+      </View>
     </View>
   )
 }

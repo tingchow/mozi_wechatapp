@@ -72,6 +72,13 @@ export default defineAppConfig({
       ]
     },
     {
+      root: "packages/robot",
+      name: "robot",
+      pages: [
+        "index"
+      ]
+    },
+    {
       root: "packages/list",
       name: "list",
       pages: [
