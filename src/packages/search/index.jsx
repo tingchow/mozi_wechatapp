@@ -288,8 +288,8 @@ export default function Search() {
   }, []);
 
   const spotColNameList = [
-    ['现货交易对', '交易所', '最新价', '24H变化'],
-    ['衍生品交易对', '交易所', '最新价', '24H变化'],
+    [<Text className='pair-title-strong'>现货交易对</Text>, '交易所', '最新价', '24H变化'],
+    [<Text className='pair-title-strong'>衍生品交易对</Text>, '交易所', '最新价', '24H变化'],
   ];
 
   console.log('spotData', spotData);
