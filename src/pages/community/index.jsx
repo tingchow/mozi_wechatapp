@@ -91,7 +91,7 @@ export default function CommunityPage() {
   const [pullRefresh, setPullRefresh] = useState(false)
   const [voteChoice, setVoteChoice] = useState(null)
   const [showQuestionButtons, setShowQuestionButtons] = useState(false) // 新增状态来控制按钮的显示/隐藏
-  const [showBullBearVote, setShowBullBearVote] = useState(false) // 新增状态来控制BullBearVote的显示/隐藏
+  const [showBullBearVote, setShowBullBearVote] = useState(true) // 默认显示看涨看跌投票组件（币种子标签下）
   // const [showActionSheet, setShowActionSheet] = useState(false)
   // const [selectedPost, setSelectedPost] = useState(null)
 
