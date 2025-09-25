@@ -11,6 +11,8 @@ export const Layout = (props) => {
 
   const phoneLogin = (e)=> {
     const phoneCode = e.detail.code || '';
+    // 点击登录时立即展示 Loading，防止用户误以为无响应
+    try { Taro.showLoading({ title: '登录中...', mask: true }); } catch (err) {}
     Taro.login({
       complete: async (res) => {
         if (res.code) {
@@ -29,6 +31,17 @@ export const Layout = (props) => {
           if (tokenInfo?.data?.token) {
             Taro.setStorageSync('token', tokenInfo?.data?.token);
             console.log('用户信息本地缓存成功');
+            // 写入用户信息（若后端返回），供“我的”页展示
+            try {
+              const userInfo = tokenInfo?.data?.userInfo;
+              if (userInfo?.avatar && userInfo?.nickName) {
+                Taro.setStorageSync('userInfo', {
+                  avatar: userInfo.avatar,
+                  nickName: userInfo.nickName,
+                  userId: tokenInfo?.data?.userId
+                });
+              }
+            } catch (e) {}
 
             // todo 请求用户的信息
             // todo 成功后
@@ -36,12 +49,15 @@ export const Layout = (props) => {
             // setUserInfo(userInfo);
             // Taro.setStorage('userInfo', userInfo);
             if (props?.needAccount) {
+              try { Taro.hideLoading(); } catch (err) {}
               registerAccount();
               return;
             }
+            try { Taro.hideLoading(); } catch (err) {}
             props.loginCallback();
           } else {
             console.log('数据失败');
+            try { Taro.hideLoading(); } catch (err) {}
             Taro.showToast({
               title: '登录失败',
               icon: 'error',
@@ -50,6 +66,7 @@ export const Layout = (props) => {
           }
         } else {
           console.log('登录失败！' + res.errMsg)
+          try { Taro.hideLoading(); } catch (err) {}
         }
       }
     })

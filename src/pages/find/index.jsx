@@ -87,6 +87,9 @@ export default function Find() {
       return;
     }
 
+    // 登录成功或已登录：确保隐藏登录提示
+    setLogin(false);
+
     if (isEmpty(coinSelectRes?.data)) {
       setOwnError(true);
       return;

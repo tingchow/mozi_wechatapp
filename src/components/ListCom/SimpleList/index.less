@@ -164,6 +164,12 @@
   .show-header {
     height: calc(100vh - (@headerHeight - 32rpx)) !important;
   }
+  // 热门币种：隐藏右侧操作胶囊（评论/分享）
+  .header-new {
+    .actions-capsule {
+      display: none;
+    }
+  }
   // 热门币种：滚动容器与表头贴近时，额外增大内边距
   .scroll {
     padding-top: calc(@gridTitleHeight - 60rpx) !important;

@@ -12,6 +12,7 @@ export const SearchInput = (props) => {
   // const newValue = value? value: '';
   const [ closeColor, setCloseColor ] = useState('#b2b2b2');
   const [inputValue, setInputValue] = useState(value);
+  const inputValueRef = useRef(value);
   // const inputNode = useRef(null);
 
   // useEffect(() => {
@@ -19,10 +20,11 @@ export const SearchInput = (props) => {
   // }, []);
   
   const jump2Search = (e) => {
-    const { value } = e.detail;
+    const raw = e?.detail?.value ?? inputValueRef.current;
+    const value = (raw || '').trim();
     const { reloadFun } = props;
 
-    reloadFun(value);
+    if (value) reloadFun(value);
     
     // if (reloadFun) {
     //   reloadFun(value);
@@ -36,6 +38,7 @@ export const SearchInput = (props) => {
   const onChange = (e) => {
     if (e.detail.value) setCloseColor('#b2b2b2');
     setInputValue(e.detail.value);
+    inputValueRef.current = e.detail.value;
     // console.log(e);
   };
 
@@ -48,11 +51,11 @@ export const SearchInput = (props) => {
   return (
     <>
       <div className='searchBox'>
-        <Input className='searchInput' type='text' placeholder={props?.placeholder || '请搜索币种'} value={inputValue} onInput={onChange} confirmType='search' onConfirm={(e) => {jump2Search(e)}} focus/>
+        <Input className='searchInput' type='text' placeholder={props?.placeholder || '请搜索币种'} value={inputValue} onInput={onChange} confirmType='search' onConfirm={(e) => {jump2Search(e)}} />
         <div className='searchCancel' onClick={clear}>
           <IconFont name='close-circle-fill' color={closeColor} size={30} />
         </div>
-        <div className='searchButton' onClick={() => jump2Search({detail: {value: inputValue}})}>
+        <div className='searchButton' onClick={() => jump2Search()}>
           <Image src={searchIcon} className='searchIconImg' />
           <span className='searchText'>搜索</span>
         </div>

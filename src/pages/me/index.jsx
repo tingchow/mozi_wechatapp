@@ -46,19 +46,19 @@ export default function Index() {
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/skin%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '皮肤中心',
     extra: <IconFont name='right' size={32} color='#ccc' />,
-    callback: () => {console.log('皮肤中心')}
+    callback: () => {comingSoon()}
   }, {
     key: 'contact',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '联系我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
-    callback: () => {contact()}
+    callback: () => {comingSoon()}
   }, {
     key: 'social',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/social%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '到社交媒体找我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
-    callback: () => {console.log('社交媒体')}
+    callback: () => {comingSoon()}
   }, {
     key: 'about',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/about%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
@@ -122,6 +122,10 @@ export default function Index() {
   const score = () => {
     setPopVis(true);
     setPopType('score');
+  };
+  const comingSoon = () => {
+    setPopVis(true);
+    setPopType('coming');
   };
   const about = () => {
     setPopVis(true);
@@ -371,20 +375,20 @@ export default function Index() {
       {showSecondaryActions && (
         <View className='secondaryActions'>
           <View className='actionRow'>
-            <View className='actionButton' onClick={score}>
+            <View className='actionButton' onClick={comingSoon}>
               <View className='actionIcon secondary'>
                 <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/comment%402x.png'} />
               </View>
               <Text className='actionText secondary'>我的评论</Text>
             </View>
-            <View className='actionButton' onClick={score}>
+            <View className='actionButton' onClick={comingSoon}>
               <View className='actionIcon secondary'>
                 <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/mail%402x.png'} />
                 <View className='badge'>3</View>
               </View>
               <Text className='actionText secondary'>消息通知</Text>
             </View>
-            <View className='actionButton' onClick={score}>
+            <View className='actionButton' onClick={comingSoon}>
               <View className='actionIcon secondary'>
                 <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/like%402x.png'} />
               </View>
@@ -550,6 +554,13 @@ export default function Index() {
             <View className='aboutItem'>
               <Text>Mozi价值观：</Text>
               兼爱 务实 专注 创新 自由</View>
+          </View>
+          )
+        }
+        {
+          popType === 'coming' && (
+          <View className='popContainer'>
+            <Text style={{ textAlign: 'center' }}>敬请期待</Text>
           </View>
           )
         }
