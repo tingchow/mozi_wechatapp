@@ -470,12 +470,7 @@ export default function Index() {
         </View>
       )}
 
-      {/* 新币上线组件 */}
-      {showNewCoinListing && (
-        <NewCoinListing />
-      )}
-
-      {/* 日历组件 */}
+      {/* 日历组件（上） */}
       {showCalendarSection && (
         <View className='calendarSection'>
           <CalendarCard
@@ -484,6 +479,11 @@ export default function Index() {
             defaultToggle={true}
           />
         </View>
+      )}
+
+      {/* 新币上线组件（下） */}
+      {showNewCoinListing && (
+        <NewCoinListing />
       )}
 
       {/* 当日历隐藏时，插入一个弹性占位将退出登录推到底部 */}

@@ -417,34 +417,33 @@ export default function Index() {
               </SwiperItem>
             ))}
           </Swiper>
-        </View>
-        {/* 头部-搜索框 */}
-        {/* <Button openType='contact'>测试-跟我聊天</Button> */}
-        <View className='header' onClick={jump2Search}>
-          <View className='searchBox'>
-            <View className='searchInput'>请输入搜索的币种</View>
-            <View className='searchCancel'>
-              <IconFont name='search' size={42} color='#fff' />
-              搜索
+          {/* 头部-搜索框（改为相对 bg-banner 定位） */}
+          <View className='header' onClick={jump2Search}>
+            <View className='searchBox'>
+              <View className='searchInput'>请输入搜索的币种</View>
+              <View className='searchCancel'>
+                <IconFont name='search' size={42} color='#fff' />
+                搜索
+              </View>
             </View>
           </View>
-        </View>
-        {/* 通知条：定位在 banner 底部 */}
-        <View className='notice'>
-          <NoticeBar
-            className='notice-item'
-            content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
-            color='alert'
-            wrap
-            icon={<Image src={HomeAlertIcon} className='notice-icon' />}
-          />
+          {/* 通知条：放入 bg-banner 内，相对其定位 */}
+          <View className='notice'>
+            <NoticeBar
+              className='notice-item'
+              content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
+              color='alert'
+              wrap
+              icon={<Image src={HomeAlertIcon} className='notice-icon' />}
+            />
+          </View>
         </View>
       </View>
 
       {/* 合约专区 */}
       <MoziCard
         title={area.derivativeArea.title}
-        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px'}}
+        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px',paddingTop: '25px'}}
       >
         <Grid columns={4}>
         {
