@@ -388,22 +388,14 @@ export default function Index() {
   };
   return (
     <View className='indexBox'>
-      {/* 顶部安全区背景色 */}
+      {/* 顶部安全区纯背景色 */}
       {safeTop > 0 && (
-        <View style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: safeTop,
-          backgroundColor: '#0A1017',
-          zIndex: 1
-        }} />
+        <View className='safe-area-top' style={{ height: safeTop }} />
       )}
       {/* 顶部区域：banner + 搜索框（同容器） */}
-      <View className='hero-wrap'>
+      <View className='hero-wrap' style={{ paddingTop: safeTop }}>
         {/* 顶部背景轮播 */}
-        <View className='bg-banner' style={{ top: safeTop }}>
+        <View className='bg-banner'>
           <Swiper
             className='bg-banner-swiper'
             circular
@@ -443,7 +435,7 @@ export default function Index() {
       {/* 合约专区 */}
       <MoziCard
         title={area.derivativeArea.title}
-        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px',paddingTop: '25px'}}
+        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px',paddingTop: '20px'}}
       >
         <Grid columns={4}>
         {
