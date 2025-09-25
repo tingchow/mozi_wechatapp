@@ -701,6 +701,10 @@ export default function Detail() {
       {/* )} */}
       {/* <Canvas canvasId="screenshotCanvas"/> */}
       {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
+      {/* 悬浮机器人按钮 */}
+      <View className='float-robot-btn' onClick={() => jump2NoTab('robot')}>
+        <Image className='robot-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/AI_Bot.png'} mode='aspectFit' />
+      </View>
     </View>
   )
 }

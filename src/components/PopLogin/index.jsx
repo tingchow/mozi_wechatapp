@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Taro from '@tarojs/taro'
-import { View, Text, Input, Button } from '@tarojs/components'
+import { View, Text, Input, Button, Image } from '@tarojs/components'
 import { Interface } from '../../utils/constants'
 import { request } from '../../utils/request'
 
@@ -86,6 +86,11 @@ export const PopLogin = ({ show = false, hideCb }) => {
     return (
       <View className="popup-wrap" onClick={handleMask}>
         <View className='login-container'>
+          <Image
+            className='login-warn-icon'
+            src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/login_warn.png'
+            mode='aspectFit'
+          />
           <View className='login-title'>您还未登录</View>
           <Button className='login-btn' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>登录/注册</Button>
         </View>

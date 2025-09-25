@@ -376,6 +376,19 @@
     
   }
 
+  /* 悬浮机器人按钮（复用首页样式，位置避开底部栏） */
+  .float-robot-btn {
+    position: fixed;
+    right: 30px;
+    bottom: 170px; // 高于底部操作栏
+    z-index: 999;
+
+    .robot-icon {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
   .coin-info-caret {
     .arrow-icon {
       width: 40px;
