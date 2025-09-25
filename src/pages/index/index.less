@@ -145,6 +145,8 @@
     .ownImg {
       height: 36px;
       width: 36px;
+      flex: 0 0 36px; // 固定占位，避免受文字挤压改变尺寸
+      display: block; // 避免内联元素受行高影响
       margin-right: 10px;
     }
   }
