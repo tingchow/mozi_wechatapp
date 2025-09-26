@@ -435,7 +435,7 @@ export default function Index() {
       {/* 合约专区 */}
       <MoziCard
         title={area.derivativeArea.title}
-        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px',paddingTop: '20px'}}
+        customStyle={{ borderRadius: '0 0 8px 8px', paddingBottom: '20px',paddingTop: '10px'}}
       >
         <Grid columns={4}>
         {
