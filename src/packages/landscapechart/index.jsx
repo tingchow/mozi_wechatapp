@@ -12,6 +12,9 @@ export default function Landscapechart() {
   // const chart = useRef(null);
   const [tabShow, setTabShow] = useState(false);
   const [activeKey, setActiveKey] = useState('hour');
+  const [isPositionSize, setIsPositionSize] = useState(false);
+  const [safePadding, setSafePadding] = useState({});
+  const [isPCRHis, setIsPCRHis] = useState(false);
 
   const chartRef = useRef(null);
 
@@ -40,6 +43,45 @@ export default function Landscapechart() {
     return {
       title: '你能用微信盯盘啦！'
     };
+  });
+
+  // 仅在“持仓量”横屏时，根据设备安全区增加左右内边距，避免被刘海遮挡
+  useLoad(() => {
+    const app = Taro.getApp();
+    if (app.chartData?.msg === '持仓量') {
+      setIsPositionSize(true);
+      try {
+        const sys = Taro.getSystemInfoSync();
+        const leftInset = sys?.safeArea?.left ? sys.safeArea.left : 0;
+        const rightInset = sys?.safeArea?.right ? (sys.screenWidth - sys.safeArea.right) : 0;
+        if (leftInset || rightInset) {
+          setSafePadding({ paddingLeft: `${leftInset}px`, paddingRight: `${rightInset}px` });
+        }
+      } catch (e) {
+        // ignore
+      }
+    } else if (app.chartData?.msg === '历史多空比') {
+      // 历史多空比横屏：也开启安全区
+      try {
+        const sys = Taro.getSystemInfoSync();
+        const leftInset = sys?.safeArea?.left ? sys.safeArea.left : 0;
+        const rightInset = sys?.safeArea?.right ? (sys.screenWidth - sys.safeArea.right) : 0;
+        if (leftInset || rightInset) {
+          setSafePadding({ paddingLeft: `${leftInset}px`, paddingRight: `${rightInset}px` });
+        }
+      } catch (e) {}
+      setIsPCRHis(true);
+    } else if (app.chartData?.msg === '成交量') {
+      // 当前成交额（treemap）横屏：与持仓量同样的左右安全区
+      try {
+        const sys = Taro.getSystemInfoSync();
+        const leftInset = sys?.safeArea?.left ? sys.safeArea.left : 0;
+        const rightInset = sys?.safeArea?.right ? (sys.screenWidth - sys.safeArea.right) : 0;
+        if (leftInset || rightInset) {
+          setSafePadding({ paddingLeft: `${leftInset}px`, paddingRight: `${rightInset}px` });
+        }
+      } catch (e) {}
+    }
   });
 
   const initChart = (canvas, width, height, dpr) => {
@@ -96,22 +138,20 @@ export default function Landscapechart() {
 
 
   return (
-    <View className='chart-box'>
-      {
-        tabShow && (
-          <View className='chartHeader'>
-            <View className='chart-close' onClick={backPage}>
-              <IconFont name='close' size={18} color='#000' />
-            </View>
-            <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
-              <TabBar.Item key='hour' title='1H' />
-              <TabBar.Item key='day' title='1日' />
-              <TabBar.Item key='week' title='1周' />
-              <TabBar.Item key='month' title='1月' />
-            </TabBar>
-          </View>
-        )
-      }
+    <View className='chart-box' style={Object.keys(safePadding).length ? safePadding : {}}>
+      <View className='chartHeader'>
+        <View className={`chart-close ${isPositionSize ? 'chart-close--ps' : ''}`} onClick={backPage}>
+          <IconFont name='close' size={18} color='#000' />
+        </View>
+        {tabShow && (
+          <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>
+            <TabBar.Item key='hour' title='1H' />
+            <TabBar.Item key='day' title='1日' />
+            <TabBar.Item key='week' title='1周' />
+            <TabBar.Item key='month' title='1月' />
+          </TabBar>
+        )}
+      </View>
       <View className='mychart'>
         <ec-canvas canvas-id="mychart-landscape" ec={{onInit: initChart}}></ec-canvas>
       </View>

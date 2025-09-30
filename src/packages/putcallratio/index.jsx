@@ -177,7 +177,8 @@ export default function Putcallratio() {
     console.log('pcrData', JSON.stringify(pcrHisData?.data));
     chartData.current = {
       data: pcrHisData?.data,
-      type: 'samebar'
+      type: 'samebar',
+      msg: '历史多空比'
     };
     const hisOption = handleOptions(pcrHisData?.data, 'samebar');
     applyOptionWhenReady(chartRef, hisOption, () => setHisLoading(false));

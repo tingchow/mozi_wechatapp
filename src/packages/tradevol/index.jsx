@@ -231,7 +231,7 @@ export default function Tradevol() {
           {hisLoading && (
             <View className='chart-loading'><View className='spinner' /></View>
           )}
-          <View className='chart-arrawsalt' onClick={() => {jump2Land('cur')}}>
+          <View className='chart-arrawsalt' onClick={() => {jump2Land('his')}}>
             <IconFont name='arrawsalt' size={30} color='#fff' />
           </View>
           <ec-canvas className='chart' canvas-id="mychart-pshis" ec={{onInit: initChart1}}></ec-canvas>
