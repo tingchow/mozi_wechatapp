@@ -15,6 +15,7 @@ export default function Landscapechart() {
   const [isPositionSize, setIsPositionSize] = useState(false);
   const [safePadding, setSafePadding] = useState({});
   const [isPCRHis, setIsPCRHis] = useState(false);
+  const [isTradeCur, setIsTradeCur] = useState(false);
 
   const chartRef = useRef(null);
 
@@ -81,6 +82,7 @@ export default function Landscapechart() {
           setSafePadding({ paddingLeft: `${leftInset}px`, paddingRight: `${rightInset}px` });
         }
       } catch (e) {}
+      setIsTradeCur(true);
     }
   });
 
@@ -139,9 +141,9 @@ export default function Landscapechart() {
 
   return (
     <View className='chart-box' style={Object.keys(safePadding).length ? safePadding : {}}>
-      <View className='chartHeader'>
-        <View className={`chart-close ${isPositionSize ? 'chart-close--ps' : ''}`} onClick={backPage}>
-          <IconFont name='close' size={18} color='#000' />
+      <View className={`chartHeader ${isPositionSize ? 'chartHeader--ps' : ''} ${isTradeCur ? 'chartHeader--tra' : ''}`}>
+        <View className={`chart-close ${isPositionSize ? 'chart-close--ps' : ''} ${tabShow ? 'chart-close--align-tab' : ''} ${isTradeCur ? 'chart-close--tra' : ''}`} onClick={backPage}>
+          <IconFont name='close' size={28} color='#000' />
         </View>
         {tabShow && (
           <TabBar className='chartTab' activeKey={activeKey} onChange={activeClick}>

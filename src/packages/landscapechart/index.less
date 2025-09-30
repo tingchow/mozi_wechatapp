@@ -11,6 +11,16 @@
     padding-left: 20px;
   }
 
+  /* 当前持仓量横屏：移除左侧内边距 */
+  .chartHeader--ps {
+    padding-left: 0;
+  }
+
+  /* 当前成交额横屏：移除左侧内边距 */
+  .chartHeader--tra {
+    padding-left: 0;
+  }
+
   .chartTab {
     width: fit-content;
     height: 30px;
@@ -53,10 +63,26 @@
 
   .chart-close {
     margin: 24px 12px 0 24px;
+    // width: 56px;
+    // height: 56px;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
+    /* 增大可点击热区 */
   }
 
   /* 当前持仓量横屏专用：恢复更靠左靠上的位置 */
   .chart-close--ps {
     margin: 12px 12px 0 12px;
+  }
+
+  /* K线/有时间胶囊时：让关闭按钮与胶囊底部对齐 */
+  .chart-close--align-tab {
+    margin-bottom: 20px; /* 与 .chartTab 的高度和 margin 对齐 */
+  }
+
+  /* 当前成交额横屏：右侧贴齐，去掉左外边距 */
+  .chart-close--tra {
+    margin: 12px 12px 0 0;
   }
 }
