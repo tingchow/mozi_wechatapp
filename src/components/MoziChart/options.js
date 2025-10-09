@@ -636,6 +636,15 @@ export const handleOptions = (data, type, msg) => {
       yAxis: [
         {
           type: 'value',
+          scale: true,
+          min: function(value) {
+            if (msg === '持仓') {
+              // 动态计算最小值：取数据最小值的90%，确保显示10亿以上的波动
+              return Math.floor(value.min * 0.9);
+            }
+            return undefined;
+          },
+          minInterval: msg === '持仓' ? 1 : undefined,
           axisLabel: {
             formatter: (value) => {
               if (msg === '成交额') {
@@ -643,8 +652,9 @@ export const handleOptions = (data, type, msg) => {
                 let formattedValue = data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
                 return formattedValue.toString().replace('$', '');
               } else if (msg === '持仓') {
-                // 针对历史持仓量页面去掉$符号
-                let formattedValue = data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', value) : value;
+                // 针对历史持仓量页面去掉$符号，并去掉小数（因为已经是亿为单位）
+                let intValue = Math.floor(value);
+                let formattedValue = data.yAxisLeftSlot ? data.yAxisLeftSlot.replace('{}', intValue) : intValue;
                 return formattedValue.toString().replace('$', '');
               } else {
                 // 其他页面保持原来的格式
@@ -655,6 +665,15 @@ export const handleOptions = (data, type, msg) => {
         },
         {
           type: 'value',
+          scale: true,
+          min: msg === '持仓' ? 20000 : undefined,
+          max: msg === '持仓' ? function(value) {
+            // 限制最大值为数据最大值
+            return value.max;
+          } : undefined,
+          splitLine: {
+            show: false  // 右侧Y轴不显示辅助线，只用左侧持仓量的辅助线
+          },
           axisLabel: {
             formatter: (value) => {
               if (msg === '成交额') {
@@ -662,9 +681,9 @@ export const handleOptions = (data, type, msg) => {
                 let tenThousandValue = (value / 10000).toFixed(1);
                 return tenThousandValue + '万';
               } else if (msg === '持仓') {
-                // 针对历史持仓量页面去掉$符号
-                let formattedValue = data.yAxisRightSlot ? data.yAxisRightSlot.replace('{}', value) : value;
-                return formattedValue.toString().replace('$', '');
+                // 针对历史持仓量页面：当前数据是"千"单位，除以10转换为"万"单位
+                let tenThousandValue = (value / 10).toFixed(1);
+                return tenThousandValue + '万';
               } else {
                 // 其他页面保持原来的格式
                 return data.yAxisRightSlot ? data.yAxisRightSlot.replace('{}', value) : value;
