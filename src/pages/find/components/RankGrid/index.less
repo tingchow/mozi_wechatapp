@@ -29,14 +29,42 @@
       .text {
         text-align: right;
       }
+
+      .ranking-header {
+        width: 48px !important;
+        flex: 0 0 48px !important;
+      }
+
+      /* 将第二个标题项（DOM 中第 2 个子元素）左移，靠近序号列 */
+      .gridTitleItem:nth-child(2) {
+        transform: translateX(-100px);
+        padding-left: 0 !important;
+      }
     }
       
     .gridListItem {
       padding-left: 0;
     }
+
+    .ranking-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .ranking-number {
+      width: 40px;
+      flex: 0 0 40px;
+      font-size: 24px;
+      font-weight: 500;
+      color: #333;
+      text-align: center;
+      margin-right: 8px;
+    }
     
     .gridContent {
       font-size: 24px;
+      flex: 1;
     
       .gridConItem {
         display: flex;

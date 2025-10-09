@@ -131,12 +131,34 @@
   }
 }
 
+// 排名行容器
+.ranking-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+// 排名序号样式
+.ranking-number {
+  width: 22px;
+  flex: 0 0 22px;
+  font-size: 22px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+}
+
 // 交易所排行榜的特定紧凑布局
 .exchange-ranking-grid {
   // 标题行向右偏移与logo对齐（160px logo列 + 16px 间距）
   // .gridTitle {
   //   // padding-left: 176px !important;
   // }
+  
+  // 第一列标题添加左边距，对齐序号后的内容
+  .gridTitle .gridTitleItem:first-child {
+    padding-left: 48px !important;
+  }
 
   .ranking-layout {
     .ranking-column {
@@ -151,6 +173,7 @@
       // 使右侧更紧凑些
       .gridContent {
         column-gap: 0;
+        flex: 1;
         .gridConItem {
           padding: 0 8px !important;
           font-size: 22px !important;

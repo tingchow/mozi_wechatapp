@@ -65,22 +65,25 @@ export const MoziGrid = (props) => {
                   props.gridContent.map((gridCon, index) => {
                     return (
                       <List.Item key={index} className='gridListItem' onClick={(e) => { e.stopPropagation; props.callback && props.callback(gridCon) }} clickable={false}>
-                        <Grid className='gridContent' columns={props.length}>
-                          {
-                            Object.keys(gridCon).map((gridConItem, girdConIndex) => {
-                              if (gridConItem === 'key' || gridConItem === 'img') {
-                                return null;
-                              }
-                              const rawCellValue = gridCon[gridConItem];
-                              const displayValue = typeof rawCellValue === 'string' ? rawCellValue.replace(/^\$/,'') : rawCellValue;
-                              return (
-                                <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
-                                  {displayValue}
-                                </Grid.Item>
-                              )
-                            })
-                          }
-                        </Grid>
+                        <View className='ranking-row'>
+                          <Text className='ranking-number'>{index + 1}</Text>
+                          <Grid className='gridContent' columns={props.length}>
+                            {
+                              Object.keys(gridCon).map((gridConItem, girdConIndex) => {
+                                if (gridConItem === 'key' || gridConItem === 'img') {
+                                  return null;
+                                }
+                                const rawCellValue = gridCon[gridConItem];
+                                const displayValue = typeof rawCellValue === 'string' ? rawCellValue.replace(/^\$/,'') : rawCellValue;
+                                return (
+                                  <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
+                                    {displayValue}
+                                  </Grid.Item>
+                                )
+                              })
+                            }
+                          </Grid>
+                        </View>
                       </List.Item>
                     )
                   })

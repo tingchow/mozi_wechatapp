@@ -12,7 +12,8 @@ export const RankGrid = (props) => {
         <Text>{props.gridContent[0].key}</Text>
       </View>
       <View className='rankGridDesc'>
-        <Grid className='gridTitle' columns={props.length}>
+        <Grid className='gridTitle' columns={props.length + 1}>
+          <Grid.Item className="gridTitleItem ranking-header"></Grid.Item>
           {
             props.colName.map((colNameItem, colNameIndex) => {
               // console.log(colNameItem);
@@ -22,24 +23,27 @@ export const RankGrid = (props) => {
         </Grid>
         <List>
           {
-            props.gridContent.map((gridCon) => {
+            props.gridContent.map((gridCon, index) => {
               return (
                 <List.Item className='gridListItem' onClick={() => { props.callback && props.callback(gridCon) }} clickable={false}>
-                  <Grid className='gridContent' columns={props.length}>
-                    {
-                      Object.keys(gridCon).map((gridConItem, girdConIndex) => {
-                        // console.log(gridConItem);
-                        if (gridConItem === 'key' || gridConItem === 'img') {
-                          return null;
-                        }
-                        return (
-                          <Grid.Item className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
-                            {gridCon[gridConItem]}
-                          </Grid.Item>
-                        )
-                      })
-                    }
-                  </Grid>
+                  <View className='ranking-row'>
+                    <Text className='ranking-number'>{index + 1}</Text>
+                    <Grid className='gridContent' columns={props.length}>
+                      {
+                        Object.keys(gridCon).map((gridConItem, girdConIndex) => {
+                          // console.log(gridConItem);
+                          if (gridConItem === 'key' || gridConItem === 'img') {
+                            return null;
+                          }
+                          return (
+                            <Grid.Item className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
+                              {gridCon[gridConItem]}
+                            </Grid.Item>
+                          )
+                        })
+                      }
+                    </Grid>
+                  </View>
                 </List.Item>
               )
             })

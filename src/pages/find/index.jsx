@@ -567,7 +567,7 @@ export default function Find() {
       }
     });
   }
-  const tradePickArr = ['今日', '7天', '15天', '1月'];
+  const tradePickArr = ['实时', '7天', '15天', '1月'];
   const [tradeData, setTradeData] = useState({
     tradeSelect: [],
     tradeArr: []
