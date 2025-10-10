@@ -737,7 +737,7 @@ export const handleOptions = (data, type, msg) => {
       baseConfig.grid = {
         left: '15%',
         right: '15%',
-        top: '5%',
+        top: '12%',    // 增加顶部间距，让价格线和图例有足够空间
         bottom: '25%',
         containLabel: false
       };
@@ -748,7 +748,7 @@ export const handleOptions = (data, type, msg) => {
       baseConfig.grid = {
         left: '10%',
         right: '15%',  // 增加右侧边距，确保Y轴标签显示完整
-        top: '5%',
+        top: '12%',    // 增加顶部间距，让价格线和图例有足够空间
         bottom: '25%',
         containLabel: false
       };
