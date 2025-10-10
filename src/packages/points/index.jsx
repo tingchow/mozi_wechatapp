@@ -7,6 +7,18 @@ import './index.less'
 export default function PointsPage() {
   const [activeTab, setActiveTab] = useState('myPoints')
   
+  // 导入图片资源
+  const imgMozLogo = require('../../assets/image/point/moz_logo@2x.png')
+  const imgCoinIcon = require('../../assets/image/point/coin_icon@2x.png')
+  const imgEmoji1 = require('../../assets/image/point/Emoji_1@2x.png')
+  const imgEmoji2 = require('../../assets/image/point/Emoji_2@2x.png')
+  const imgEmoji3 = require('../../assets/image/point/Emoji_3@2x.png')
+  const imgInvite = require('../../assets/image/point/invite@2x.png')
+  const imgCopy = require('../../assets/image/point/copy@2x.png')
+  const imgInfo = require('../../assets/image/point/info@2x.png')
+  const imgPointAlert = require('../../assets/image/point/point_alert@2x.png')
+  const imgCertification = require('../../assets/image/point/Certification@2x.png')
+  
   const pointsData = {
     totalPoints: 45123,
     season: 'S5赛季',
@@ -20,21 +32,34 @@ export default function PointsPage() {
     pendingRewards: 0
   }
 
+  // 导入图片资源
+  const iconContactPerson = require('../../assets/image/point/contact_person@2x.png')
+  const iconLike = require('../../assets/image/point/like@2x.png')
+  const iconSocialGroup = require('../../assets/image/point/social_group@2x.png')
+  const iconTwitter = require('../../assets/image/point/twitter@2x.png')
+  const iconSetAlert = require('../../assets/image/point/set_alert@2x.png')
+  const iconVideo = require('../../assets/image/point/video@2x.png')
+  const iconGlovePraise = require('../../assets/image/point/glove_praise@2x.png')
+  const iconPaperAirplane = require('../../assets/image/point/paper_airplane@2x.png')
+  const iconNoGlovePraise = require('../../assets/image/point/no_glove_praise@2x.png')
+  const iconNotification1 = require('../../assets/image/point/notification_1@2x.png')
+  const iconNotification2 = require('../../assets/image/point/notification_2@2x.png')
+
   const tasks = [
-    { id: 1, icon: '/point/contact_person@2x.png', title: '首次注册账号', points: 50, status: 'pending', btnText: '去注册' },
-    { id: 2, icon: '/point/like@2x.png', title: '关注我们的公众号', points: 50, status: 'completed', btnText: '已关注' },
-    { id: 3, icon: '/point/social_group@2x.png', title: '加入我们的社群', points: 50, status: 'pending', btnText: '去加入' },
-    { id: 4, icon: '/point/twitter@2x.png', title: '早鸟活动', points: 200, status: 'pending', btnText: '去参加' },
-    { id: 5, icon: '/point/set_alert@2x.png', title: '设置报警功能', points: 100, status: 'completed', btnText: '已设置' },
-    { id: 6, icon: '/point/video@2x.png', title: '完成视频学习', points: 50, status: 'pending', btnText: '去学习' }
+    { id: 1, icon: iconContactPerson, title: '首次注册账号', points: 50, status: 'pending', btnText: '去注册' },
+    { id: 2, icon: iconLike, title: '关注我们的公众号', points: 50, status: 'completed', btnText: '已关注' },
+    { id: 3, icon: iconSocialGroup, title: '加入我们的社群', points: 50, status: 'pending', btnText: '去加入' },
+    { id: 4, icon: iconTwitter, title: '早鸟活动', points: 200, status: 'pending', btnText: '去参加' },
+    { id: 5, icon: iconSetAlert, title: '设置报警功能', points: 100, status: 'completed', btnText: '已设置' },
+    { id: 6, icon: iconVideo, title: '完成视频学习', points: 50, status: 'pending', btnText: '去学习' }
   ]
 
   const dailyInvestments = [
-    { id: 1, icon: '/point/glove_praise@2x.png', title: '每日点赞', rewardLabel: '每个赞', reward: 4, current: 3, total: 47 },
-    { id: 2, icon: '/point/paper_airplane@2x.png', title: '发帖', rewardLabel: '每条帖子', reward: 10, current: 10, total: 47 },
-    { id: 3, icon: '/point/no_glove_praise@2x.png', title: '收到赞', rewardLabel: '每次被赞', reward: 4, current: 7, total: 47 },
-    { id: 4, icon: '/point/notification_1@2x.png', title: '回复', rewardLabel: '回复一次', reward: 4, current: 9, total: 10 },
-    { id: 5, icon: '/point/notification_2@2x.png', title: '帖子收到回复', rewardLabel: '收到回复', reward: 4, current: 10, total: 10, completed: true }
+    { id: 1, icon: iconGlovePraise, title: '每日点赞', rewardLabel: '每个赞', reward: 4, current: 3, total: 47 },
+    { id: 2, icon: iconPaperAirplane, title: '发帖', rewardLabel: '每条帖子', reward: 10, current: 10, total: 47 },
+    { id: 3, icon: iconNoGlovePraise, title: '收到赞', rewardLabel: '每次被赞', reward: 4, current: 7, total: 47 },
+    { id: 4, icon: iconNotification1, title: '回复', rewardLabel: '回复一次', reward: 4, current: 9, total: 10 },
+    { id: 5, icon: iconNotification2, title: '帖子收到回复', rewardLabel: '收到回复', reward: 4, current: 10, total: 10, completed: true }
   ]
 
   useLoad(() => {
@@ -62,7 +87,7 @@ export default function PointsPage() {
       return
     }
 
-    if (task.icon && task.icon.includes('twitter')) {
+    if (task.title === '早鸟活动') {
       Taro.showToast({
         title: '即将打开推特',
         icon: 'none',
@@ -104,13 +129,13 @@ export default function PointsPage() {
 
   return (
     <View className='points-detail-container'>
-      {/* 顶部导航 */}
-      <View className='top-nav'>
+      {/* 顶部导航 - 微信小程序不需要，使用原生导航栏 */}
+      {/* <View className='top-nav'>
         <View className='back-btn' onClick={goBack}>
           <Text className='back-icon'>←</Text>
         </View>
         <View className='nav-title'>积分中心</View>
-      </View>
+      </View> */}
 
       {/* 顶部Tab */}
       <View className='tabs-container'>
@@ -133,7 +158,7 @@ export default function PointsPage() {
         <View className='points-card'>
           <View className='season-background-card'>
             <View className='card-header'>
-              <Image src='../../assets/image/point/moz_logo@2x.png' className='logo' mode='aspectFit' />
+              <Image src={imgMozLogo} className='logo' mode='aspectFit' />
             </View>
             <View className='season-info'>
               <Text className='season-title'>{pointsData.season}</Text>
@@ -144,7 +169,7 @@ export default function PointsPage() {
             </View>
           </View>
           <View className='points-display'>
-            <Image src='../../assets/image/point/coin_icon@2x.png' className='coin-icon' mode='aspectFit' />
+            <Image src={imgCoinIcon} className='coin-icon' mode='aspectFit' />
             <Text className='points-value'>{pointsData.totalPoints}</Text>
             <View className='history-btn' onClick={() => Taro.showToast({ title: '历史记录开发中', icon: 'none' })}>
               <Text className='history-icon'>🕐</Text>
@@ -168,20 +193,20 @@ export default function PointsPage() {
         <View className='invite-section'>
           {/* 标题区域 */}
           <View className='invite-header'>
-            <Image src='../../assets/image/point/Emoji_1@2x.png' className='emoji-icon' mode='aspectFit' />
+            <Image src={imgEmoji1} className='emoji-icon' mode='aspectFit' />
             <Text className='invite-title'>邀请推荐</Text>
           </View>
 
           {/* 邀请有奖卡片 */}
           <View className='reward-card'>
-            <Image src='../../assets/image/point/invite@2x.png' className='reward-icon' mode='aspectFit' />
+            <Image src={imgInvite} className='reward-icon' mode='aspectFit' />
             <View className='reward-info'>
               <Text className='reward-title'>邀请有奖</Text>
               <View className='reward-desc'>
                 <Text>每邀请1人 </Text>
                 <Text className='bonus-points'>
                   +500
-                  <Image src='../../assets/image/point/coin_icon@2x.png' className='bonus-coin-icon' mode='aspectFit' />
+                  <Image src={imgCoinIcon} className='bonus-coin-icon' mode='aspectFit' />
                 </Text>
               </View>
             </View>
@@ -193,7 +218,7 @@ export default function PointsPage() {
             <View className='invite-input-content'>
               <Text className='invite-input-text'>{pointsData.inviteLink}</Text>
               <View className='copy-icon-btn' onClick={() => copyToClipboard(pointsData.inviteLink, '邀请链接')}>
-                <Image src='../../assets/image/point/copy@2x.png' className='copy-icon' mode='aspectFit' />
+                <Image src={imgCopy} className='copy-icon' mode='aspectFit' />
               </View>
             </View>
           </View>
@@ -204,7 +229,7 @@ export default function PointsPage() {
             <View className='invite-input-content'>
               <Text className='invite-input-text'>{pointsData.inviteCode}</Text>
               <View className='copy-icon-btn' onClick={() => copyToClipboard(pointsData.inviteCode, '邀请码')}>
-                <Image src='../../assets/image/point/copy@2x.png' className='copy-icon' mode='aspectFit' />
+                <Image src={imgCopy} className='copy-icon' mode='aspectFit' />
               </View>
             </View>
           </View>
@@ -226,7 +251,7 @@ export default function PointsPage() {
             <View className='stat-card'>
               <View className='stat-value'>
                 {pointsData.pendingRewards === 0 ? (
-                  <Image src='../../assets/image/point/info@2x.png' className='info-icon' mode='aspectFit' />
+                  <Image src={imgInfo} className='info-icon' mode='aspectFit' />
                 ) : (
                   <Text>{pointsData.pendingRewards}</Text>
                 )}
@@ -246,7 +271,7 @@ export default function PointsPage() {
         {/* 疯狂爱好者积分奖励 */}
         <View className='tasks-section'>
           <View className='tasks-section-header'>
-            <Image src='../../assets/image/point/Emoji_2@2x.png' className='header-icon-img' mode='aspectFit' />
+            <Image src={imgEmoji2} className='header-icon-img' mode='aspectFit' />
             <Text className='tasks-title'>疯狂爱好者积分奖励</Text>
           </View>
           
@@ -254,13 +279,13 @@ export default function PointsPage() {
             {tasks.map(task => (
               <View key={task.id} className={`task-item ${task.status === 'completed' ? 'completed' : ''}`}>
                 <View className='task-icon-wrapper'>
-                  <Image src={`../../assets/image${task.icon}`} className='task-icon-img' mode='aspectFit' />
+                  <Image src={task.icon} className='task-icon-img' mode='aspectFit' />
                 </View>
                 <View className='task-info'>
                   <Text className='task-title'>{task.title}</Text>
                   <View className='task-points'>
                     <Text className='task-points-text'>+{task.points}</Text>
-                    <Image src='../../assets/image/point/coin_icon@2x.png' className='task-coin-icon' mode='aspectFit' />
+                    <Image src={imgCoinIcon} className='task-coin-icon' mode='aspectFit' />
                   </View>
                 </View>
                 <View 
@@ -280,7 +305,7 @@ export default function PointsPage() {
         {/* 每日投资排行 */}
         <View className='daily-investment-section'>
           <View className='section-header'>
-            <Image src='../../assets/image/point/Emoji_3@2x.png' className='header-icon-img' mode='aspectFit' />
+            <Image src={imgEmoji3} className='header-icon-img' mode='aspectFit' />
             <Text className='section-title'>每日奖励任务</Text>
           </View>
 
@@ -288,14 +313,14 @@ export default function PointsPage() {
             {dailyInvestments.map(item => (
               <View key={item.id} className='investment-item'>
                 <View className='investment-icon'>
-                  <Image src={`../../assets/image${item.icon}`} className='investment-icon-img' mode='aspectFit' />
+                  <Image src={item.icon} className='investment-icon-img' mode='aspectFit' />
                 </View>
                 <View className='investment-info'>
                   <Text className='investment-title'>{item.title}</Text>
                   <View className='investment-subtitle'>
                     <Text>{item.rewardLabel}</Text>
                     <Text className='reward-value'>+{item.reward}</Text>
-                    <Image src='../../assets/image/point/coin_icon@2x.png' className='investment-coin-icon' mode='aspectFit' />
+                    <Image src={imgCoinIcon} className='investment-coin-icon' mode='aspectFit' />
                   </View>
                   <View className='progress-row'>
                     <View className='progress-bar'>
@@ -331,7 +356,7 @@ export default function PointsPage() {
               <Text className='bottom-btn-title'>加入报警</Text>
               <Text className='bottom-btn-subtitle'>Add an alarm</Text>
             </View>
-            <Image src='../../assets/image/point/point_alert@2x.png' className='bottom-icon' mode='aspectFit' />
+            <Image src={imgPointAlert} className='bottom-icon' mode='aspectFit' />
           </View>
 
           <View className='bottom-btn' onClick={() => Taro.showToast({ title: '认证功能开发中', icon: 'none' })}>
@@ -339,7 +364,7 @@ export default function PointsPage() {
               <Text className='bottom-btn-title'>认证</Text>
               <Text className='bottom-btn-subtitle'>certification</Text>
             </View>
-            <Image src='../../assets/image/point/Certification@2x.png' className='bottom-icon' mode='aspectFit' />
+            <Image src={imgCertification} className='bottom-icon' mode='aspectFit' />
           </View>
         </View>
       </View>
