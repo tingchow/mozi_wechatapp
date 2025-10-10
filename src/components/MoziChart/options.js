@@ -681,8 +681,8 @@ export const handleOptions = (data, type, msg) => {
                 let tenThousandValue = (value / 10000).toFixed(1);
                 return tenThousandValue + '万';
               } else if (msg === '持仓') {
-                // 针对历史持仓量页面：当前数据是"千"单位，除以10转换为"万"单位
-                let tenThousandValue = (value / 10).toFixed(1);
+                // 针对历史持仓量页面：当前数据是"千"单位，除以10转换为"万"单位，不显示小数点
+                let tenThousandValue = Math.floor(value / 10);
                 return tenThousandValue + '万';
               } else {
                 // 其他页面保持原来的格式
