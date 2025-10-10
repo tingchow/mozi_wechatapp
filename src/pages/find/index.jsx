@@ -322,7 +322,7 @@ export default function Find() {
   };
 
   // 涨幅排行
-  const dimArr = ['1_day', '1_week', '1_month', '1_year'];
+  const dimArr = ['today', '1_day', '7_day', '1_month', '1_year'];
   const dimRequestData = () => {
     return dimArr.map((item) => {
       return {
@@ -330,7 +330,7 @@ export default function Find() {
       }
     });
   };
-  const pickArr = ['1天', '1周', '1月', '1年']
+  const pickArr = ['实时', '1天', '1周', '1月', '1年']
   // 涨幅详情
   const [priceData, setPriceData] = useState({
     priceSelect: [],
@@ -404,7 +404,7 @@ export default function Find() {
   };
 
   // 跌幅排行
-  const downDimArr = ['1_day', '3_day', '5_day', '7_day', '15_day', '1_month', '3_month', '6_month', '1_year'];
+  const downDimArr = ['today', '1_day', '7_day', '1_month', '1_year'];
   const downDimRequestData = () => {
     return downDimArr.map((item) => {
       return {
@@ -412,7 +412,7 @@ export default function Find() {
       }
     });
   };
-  const downPickArr = ['1天', '3天', '5天', '7天', '15天', '1月', '3个月', '6个月', '1年']
+  const downPickArr = ['实时', '1天', '1周', '1月', '1年']
   // 涨幅详情
   const [downData, setDownData] = useState({
     downSelect: [],
@@ -429,11 +429,11 @@ export default function Find() {
     downArr.current = []; // 清空数组
     const tempDownSelect = [];
     
-    for (let i = 0; i < dimArr.length; i++) {
+    for (let i = 0; i < downDimArr.length; i++) {
       const price = await request({
         url: Interface.PRICE_DOWNCHANGE,
         data: {
-          dim: dimArr[i]
+          dim: downDimArr[i]
         }
       });
 
@@ -451,7 +451,7 @@ export default function Find() {
       }
       if (tempPrice) {
         downArr.current.push(tempPrice);
-        tempDownSelect.push(pickArr[i]);
+        tempDownSelect.push(downPickArr[i]);
       }
       
     }
@@ -487,6 +487,8 @@ export default function Find() {
   };
 
   // 波幅详情
+  const waveDimArr = ['today', '1_day', '7_day', '1_month', '1_year'];
+  const wavePickArr = ['实时', '1天', '1周', '1月', '1年'];
   const [waveData, setWaveData] = useState({
     waveSelect: [],
     waveArr: []
@@ -503,11 +505,11 @@ export default function Find() {
     waveArr.current = []; // 清空数组
     const tempWaveSelect = [];
     
-    for (let i = 0; i < dimArr.length; i++) {
+    for (let i = 0; i < waveDimArr.length; i++) {
       const wave = await request({
         url: Interface.price_wave,
         data: {
-          dim: dimArr[i]
+          dim: waveDimArr[i]
         }
       });
 
@@ -525,7 +527,7 @@ export default function Find() {
       }
       if (tempWave) {
         waveArr.current.push(tempWave);
-        tempWaveSelect.push(pickArr[i]);
+        tempWaveSelect.push(wavePickArr[i]);
       }
       
     }
@@ -559,7 +561,7 @@ export default function Find() {
   };
 
   // 交易额榜
-  const intervalsArr = ['today', '7_day', '15_day', '1_month'];
+  const intervalsArr = ['today', '1_day', '7_day', '1_month', '1_year'];
   const tradeRequestData = () => {
     return intervalsArr.map((item) => {
       return {
@@ -567,7 +569,7 @@ export default function Find() {
       }
     });
   }
-  const tradePickArr = ['实时', '7天', '15天', '1月'];
+  const tradePickArr = ['实时', '1天', '1周', '1月', '1年'];
   const [tradeData, setTradeData] = useState({
     tradeSelect: [],
     tradeArr: []
@@ -931,9 +933,11 @@ export default function Find() {
 
           {/* 涨幅榜 */}
           <Layout isLoading={isPriceLoading} isError={isPriceError}>
-            <MoziCard
+          <MoziCard
               title={<View className='rank-title title-with-range-bg'><View>涨幅榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
+              customStyle={{ '--tabs-width': '320px' }}
+              className='trade-rank-card'
               selectArr={priceData.priceSelect}
               callback={() => {
                 jump2List({
@@ -1015,9 +1019,11 @@ export default function Find() {
 
           {/* 跌幅榜 */}
           <Layout isLoading={isDownLoading} isError={isDownError}>
-            <MoziCard
+          <MoziCard
               title={<View className='rank-title title-with-range-bg'><View>跌幅榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
+              customStyle={{ '--tabs-width': '320px' }}
+              className='trade-rank-card'
               selectArr={downData.downSelect}
               callback={() => {
                 jump2List({
@@ -1099,9 +1105,11 @@ export default function Find() {
 
           {/* 波幅榜 */}
           <Layout isLoading={isWaveLoading} isError={isWaveError}>
-            <MoziCard
+          <MoziCard
               title={<View className='rank-title title-with-range-bg'><View>波幅榜</View><Image className='rank-arrow' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/find/range-arrow.png'} /></View>}
               type='tabs'
+              customStyle={{ '--tabs-width': '320px' }}
+              className='trade-rank-card'
               selectArr={waveData.waveSelect}
               callback={() => {
                 jump2List({
