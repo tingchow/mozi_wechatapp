@@ -246,6 +246,7 @@ export default function List() {
         showHeader={showHeader}
         headerImg={headerImg || listParam.headerImg}
         extraClass='rank-large'
+        showRanking={listParam.showRanking}
         // loginCb={() => {setPopVis(true)}}
       />
        }

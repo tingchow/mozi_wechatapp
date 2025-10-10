@@ -193,3 +193,25 @@
     }
   }
 }
+
+// 简单序号模式样式
+.simple-ranking-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 16px; // 序号和内容之间的间距
+  
+  .gridContent {
+    flex: 1;
+    min-width: 0; // 防止内容溢出
+  }
+}
+
+.simple-ranking-number {
+  width: 40px;
+  flex: 0 0 40px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}

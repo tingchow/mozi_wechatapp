@@ -36,7 +36,8 @@ export const SimpleList = ({
   headerImg,
   extraClass = '',
   commentCount = 0,
-  shareCount = 0
+  shareCount = 0,
+  showRanking = false
 }) => {
   const isHotSpecial =
     rankTitle === '热门币种' ||
@@ -256,10 +257,10 @@ export const SimpleList = ({
           </View>
         )
       }
-      <Grid className={`gridTitle ${(showHeader || selectArr.length > 0)? 'show-header-grid': ''}`} columns={gridTitle.length}>
+      <Grid className={`gridTitle ${(showHeader || selectArr.length > 0)? 'show-header-grid': ''} ${showRanking ? 'with-ranking' : ''}`} columns={gridTitle.length}>
         {
           gridTitle.map((colNameItem, colNameIndex) => {
-            return <Grid.Item className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
+            return <Grid.Item key={colNameIndex} className={`gridTitleItem ${colNameIndex !== 0 && 'text'}`}>{colNameItem}</Grid.Item>
           })
         }
       </Grid>
@@ -280,6 +281,7 @@ export const SimpleList = ({
             jump2Detail(gridCon.key);
           }}
           hideTitle={true}
+          simpleRanking={showRanking}
         />
       </ScrollView>
     </View>

@@ -136,6 +136,13 @@
     .text {
       text-align: right;
     }
+    
+    // 当有序号时，第一列标题向右偏移
+    &.with-ranking {
+      .gridTitleItem:first-child {
+        padding-left: 56px; // 序号宽度40px + gap 16px
+      }
+    }
   }
 
   .show-header-grid {

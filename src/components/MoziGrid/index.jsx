@@ -4,7 +4,7 @@ import './index.less';
 // import IconFont from '../iconfont';
 
 export const MoziGrid = (props) => {
-  const { gridTitleBgColor = '#F6F6F6', showRanking = false, className = '' } = props;
+  const { gridTitleBgColor = '#F6F6F6', showRanking = false, simpleRanking = false, className = '' } = props;
   
   return (
     <View className={className}>
@@ -25,7 +25,7 @@ export const MoziGrid = (props) => {
       }
       
       <View className='list'>
-        {showRanking ? (
+        {showRanking && !simpleRanking ? (
           // 当显示排名时，使用自定义布局让logo跨越三行
           <View className='ranking-layout'>
             <View className='ranking-column'>
@@ -91,6 +91,37 @@ export const MoziGrid = (props) => {
               </List>
             </View>
           </View>
+        ) : simpleRanking ? (
+          // 简单序号模式：只显示序号，不显示大logo
+          <List className='mozi-grid-list'>
+            {
+              props.gridContent.map((gridCon, index) => {
+                return (
+                  <List.Item key={index} className='gridListItem' onClick={(e) => { e.stopPropagation; props.callback && props.callback(gridCon) }} clickable={false}>
+                    <View className='simple-ranking-row'>
+                      <Text className='simple-ranking-number'>{index + 1}</Text>
+                      <Grid className='gridContent' columns={props.length}>
+                        {
+                          Object.keys(gridCon).map((gridConItem, girdConIndex) => {
+                            if (gridConItem === 'key' || gridConItem === 'img') {
+                              return null;
+                            }
+                            const rawCellValue = gridCon[gridConItem];
+                            const displayValue = typeof rawCellValue === 'string' ? rawCellValue.replace(/^\$/,'') : rawCellValue;
+                            return (
+                              <Grid.Item key={gridConItem} className={`gridConItem  ${girdConIndex !== 0 && 'text'}`}>
+                                {displayValue}
+                              </Grid.Item>
+                            )
+                          })
+                        }
+                      </Grid>
+                    </View>
+                  </List.Item>
+                )
+              })
+            }
+          </List>
         ) : (
           // 原有的普通布局
           <List className='mozi-grid-list'>

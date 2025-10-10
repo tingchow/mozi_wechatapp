@@ -879,7 +879,8 @@ export default function Find() {
                   rankTitle: '交易所排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: exchangeData.exchangeSelect
+                  selectArr: exchangeData.exchangeSelect,
+                  showRanking: true
                 });
               }}
               pickChange={exchangePickChange}
@@ -912,7 +913,8 @@ export default function Find() {
                   rankTitle: '交易所排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: exchangeData.exchangeSelect
+                  selectArr: exchangeData.exchangeSelect,
+                  showRanking: true
                 });
               }}>
                 <MoziGrid
@@ -969,7 +971,8 @@ export default function Find() {
                   rankTitle: '涨幅排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: priceData.priceSelect
+                  selectArr: priceData.priceSelect,
+                  showRanking: true
                 });
               }}
               pickChange={pricePickChange}
@@ -1004,7 +1007,8 @@ export default function Find() {
                   rankTitle: '涨幅排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: priceData.priceSelect
+                  selectArr: priceData.priceSelect,
+                  showRanking: true
                 });
               }}>
                 <RankGrid
@@ -1055,7 +1059,8 @@ export default function Find() {
                   rankTitle: '跌幅排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: downData.downSelect
+                  selectArr: downData.downSelect,
+                  showRanking: true
                 });
               }}
               pickChange={downPickChange}
@@ -1090,7 +1095,8 @@ export default function Find() {
                   rankTitle: '跌幅排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: downData.downSelect
+                  selectArr: downData.downSelect,
+                  showRanking: true
                 });
               }}>
                 <RankGrid
@@ -1141,7 +1147,8 @@ export default function Find() {
                   rankTitle: '波幅排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: waveData.waveSelect
+                  selectArr: waveData.waveSelect,
+                  showRanking: true
                 });
               }}
               pickChange={wavePickChange}
@@ -1176,7 +1183,8 @@ export default function Find() {
                   rankTitle: '波幅排行榜',
                   rankName: 'Top100',
                   rankDesc: '实时更新',
-                  selectArr: waveData.waveSelect
+                  selectArr: waveData.waveSelect,
+                  showRanking: true
                 });
               }}>
                 <RankGrid
@@ -1223,7 +1231,8 @@ export default function Find() {
                   rankTitle: '成交额排行榜',
                   rankName: 'Top100',
                   rankDesc: '每天更新',
-                  selectArr: tradeData.tradeSelect
+                  selectArr: tradeData.tradeSelect,
+                  showRanking: true
                 });
               }}
               pickChange={tradePickChange}
@@ -1255,7 +1264,8 @@ export default function Find() {
                   rankTitle: '成交额排行榜',
                   rankName: 'Top100',
                   rankDesc: '每天更新',
-                  selectArr: tradeData.tradeSelect
+                  selectArr: tradeData.tradeSelect,
+                  showRanking: true
                 });
               }}>
                 <RankGrid
@@ -1340,6 +1350,7 @@ export default function Find() {
                   rankName: 'Top100',
                   rankDesc: '每天更新',
                   showHeader: true,
+                  showRanking: true
                   // selectArr: tradeData.tradeSelect
                 });
               }}>
@@ -1388,7 +1399,8 @@ export default function Find() {
                   rankTitle: '飙升榜排行榜',
                   rankName: 'Top100',
                   rankDesc: '每天更新',
-                  selectArr: upTradeData.upTradeSelect
+                  selectArr: upTradeData.upTradeSelect,
+                  showRanking: true
                 });
               }}
               pickChange={upTradePickChange}
@@ -1423,7 +1435,8 @@ export default function Find() {
                   rankTitle: '飙升榜排行榜',
                   rankName: 'Top100',
                   rankDesc: '每天更新',
-                  selectArr: upTradeData.upTradeSelect
+                  selectArr: upTradeData.upTradeSelect,
+                  showRanking: true
                 });
               }}>
                 <RankGrid
