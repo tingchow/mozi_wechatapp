@@ -1,11 +1,14 @@
 import { View, Text, Button, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useLoad } from '@tarojs/taro'
+import { useLoad, useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
+import request from '../../utils/request'
+import Interface from '../../utils/constants'
 import './index.less'
 
 export default function PointsPage() {
   const [activeTab, setActiveTab] = useState('myPoints')
+  const [tasksList, setTasksList] = useState([])
   
   // 导入图片资源
   const imgMozLogo = require('../../assets/image/point/moz_logo@2x.png')
@@ -46,12 +49,12 @@ export default function PointsPage() {
   const iconNotification1 = require('../../assets/image/point/notification_1@2x.png')
   const iconNotification2 = require('../../assets/image/point/notification_2@2x.png')
 
-  const tasks = [
+  const initialTasks = [
     { id: 1, icon: iconContactPerson, title: '首次注册账号', points: 50, status: 'pending', btnText: '去注册' },
-    { id: 2, icon: iconLike, title: '关注我们的公众号', points: 50, status: 'completed', btnText: '已关注' },
+    { id: 2, icon: iconLike, title: '关注我们的公众号', points: 50, status: 'pending', btnText: '去关注' },
     { id: 3, icon: iconSocialGroup, title: '加入我们的社群', points: 50, status: 'pending', btnText: '去加入' },
     { id: 4, icon: iconTwitter, title: '早鸟活动', points: 200, status: 'pending', btnText: '去参加' },
-    { id: 5, icon: iconSetAlert, title: '设置报警功能', points: 100, status: 'completed', btnText: '已设置' },
+    { id: 5, icon: iconSetAlert, title: '设置报警功能', points: 100, status: 'pending', btnText: '去设置' },
     { id: 6, icon: iconVideo, title: '完成视频学习', points: 50, status: 'pending', btnText: '去学习' }
   ]
 
@@ -60,11 +63,42 @@ export default function PointsPage() {
     { id: 2, icon: iconPaperAirplane, title: '发帖', rewardLabel: '每条帖子', reward: 10, current: 10, total: 47 },
     { id: 3, icon: iconNoGlovePraise, title: '收到赞', rewardLabel: '每次被赞', reward: 4, current: 7, total: 47 },
     { id: 4, icon: iconNotification1, title: '回复', rewardLabel: '回复一次', reward: 4, current: 9, total: 10 },
-    { id: 5, icon: iconNotification2, title: '帖子收到回复', rewardLabel: '收到回复', reward: 4, current: 10, total: 10, completed: true }
+    { id: 5, icon: iconNotification2, title: '帖子收到回复', rewardLabel: '收到回复', reward: 4, current: 10, total: 10, completed: false }
   ]
+
+  // 检查报警状态
+  const checkAlarmStatus = async () => {
+    try {
+      const { data } = await request({
+        url: Interface.MY_WARN,
+      })
+
+      // 如果用户已设置报警（返回的data不为空且不是登录失败）
+      if (data && Object.keys(data).length > 0 && data.isLogin !== false) {
+        setTasksList(prevTasks => 
+          prevTasks.map(task => 
+            task.title === '设置报警功能' 
+              ? { ...task, status: 'completed', btnText: '已设置' }
+              : task
+          )
+        )
+      }
+    } catch (error) {
+      console.error('检查报警状态失败:', error)
+    }
+  }
 
   useLoad(() => {
     console.log('积分页面加载')
+    // 初始化任务列表
+    setTasksList(initialTasks)
+    // 检查报警状态
+    checkAlarmStatus()
+  })
+
+  // 页面显示时重新检查报警状态（从报警页面返回时会触发）
+  useDidShow(() => {
+    checkAlarmStatus()
   })
 
   const goBack = () => {
@@ -93,6 +127,20 @@ export default function PointsPage() {
         title: '即将打开推特',
         icon: 'none',
         duration: 2000
+      })
+      return
+    }
+
+    if (task.title === '完成视频学习') {
+      Taro.navigateTo({
+        url: '/packages/videolearn/index'
+      })
+      return
+    }
+
+    if (task.title === '设置报警功能') {
+      Taro.navigateTo({
+        url: '/packages/addwarn/index?symbol=BTC'
       })
       return
     }
@@ -277,7 +325,7 @@ export default function PointsPage() {
           </View>
           
           <View className='tasks-list'>
-            {tasks.map(task => (
+            {tasksList.map(task => (
               <View key={task.id} className={`task-item ${task.status === 'completed' ? 'completed' : ''}`}>
                 <View className='task-icon-wrapper'>
                   <Image src={task.icon} className='task-icon-img' mode='aspectFit' />
@@ -352,7 +400,7 @@ export default function PointsPage() {
 
         {/* 底部按钮 */}
         <View className='bottom-buttons'>
-          <View className='bottom-btn' onClick={() => Taro.showToast({ title: '加入报警功能开发中', icon: 'none' })}>
+          <View className='bottom-btn' onClick={() => Taro.navigateTo({ url: '/packages/addwarn/index?symbol=BTC' })}>
             <View className='bottom-btn-content'>
               <Text className='bottom-btn-title'>加入报警</Text>
               <Text className='bottom-btn-subtitle'>Add an alarm</Text>
@@ -360,7 +408,7 @@ export default function PointsPage() {
             <Image src={imgPointAlert} className='bottom-icon' mode='aspectFit' />
           </View>
 
-          <View className='bottom-btn' onClick={() => Taro.showToast({ title: '认证功能开发中', icon: 'none' })}>
+          <View className='bottom-btn' onClick={() => Taro.navigateTo({ url: '/packages/kyc/index' })}>
             <View className='bottom-btn-content'>
               <Text className='bottom-btn-title'>认证</Text>
               <Text className='bottom-btn-subtitle'>certification</Text>

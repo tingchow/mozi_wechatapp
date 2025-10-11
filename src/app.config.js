@@ -119,6 +119,20 @@ export default defineAppConfig({
       pages: [
         "index"
       ]
+    },
+    {
+      root: "packages/videolearn",
+      name: "videolearn",
+      pages: [
+        "index"
+      ]
+    },
+    {
+      root: "packages/kyc",
+      name: "kyc",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {
