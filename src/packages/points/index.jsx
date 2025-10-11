@@ -10,6 +10,7 @@ export default function PointsPage() {
   // 导入图片资源
   const imgMozLogo = require('../../assets/image/point/moz_logo@2x.png')
   const imgCoinIcon = require('../../assets/image/point/coin_icon@2x.png')
+  const imgClockIcon = require('../../assets/image/point/clock.svg')
   const imgEmoji1 = require('../../assets/image/point/Emoji_1@2x.png')
   const imgEmoji2 = require('../../assets/image/point/Emoji_2@2x.png')
   const imgEmoji3 = require('../../assets/image/point/Emoji_3@2x.png')
@@ -163,8 +164,8 @@ export default function PointsPage() {
             <View className='season-info'>
               <Text className='season-title'>{pointsData.season}</Text>
               <View className='season-duration'>
-                <Text className='clock-icon'>🕐</Text>
-                <Text>{pointsData.seasonStart} 至 {pointsData.seasonEnd}</Text>
+                <Image src={imgClockIcon} className='clock-icon' mode='aspectFit' />
+                <Text className='season-duration-text'>{pointsData.seasonStart} 至 {pointsData.seasonEnd}</Text>
               </View>
             </View>
           </View>
@@ -172,7 +173,7 @@ export default function PointsPage() {
             <Image src={imgCoinIcon} className='coin-icon' mode='aspectFit' />
             <Text className='points-value'>{pointsData.totalPoints}</Text>
             <View className='history-btn' onClick={() => Taro.showToast({ title: '历史记录开发中', icon: 'none' })}>
-              <Text className='history-icon'>🕐</Text>
+              <Image src={imgClockIcon} className='history-icon' mode='aspectFit' />
               <Text className='history-text'>历史记录</Text>
             </View>
           </View>
@@ -194,7 +195,7 @@ export default function PointsPage() {
           {/* 标题区域 */}
           <View className='invite-header'>
             <Image src={imgEmoji1} className='emoji-icon' mode='aspectFit' />
-            <Text className='invite-title'>邀请推荐</Text>
+            <Text className='invite-title'>每次推荐均可获得积分奖励！</Text>
           </View>
 
           {/* 邀请有奖卡片 */}
@@ -203,11 +204,11 @@ export default function PointsPage() {
             <View className='reward-info'>
               <Text className='reward-title'>邀请有奖</Text>
               <View className='reward-desc'>
-                <Text>每邀请1人 </Text>
-                <Text className='bonus-points'>
-                  +500
+                <Text>每邀请一人 </Text>
+                <View className='bonus-points'>
+                  <Text>+500</Text>
                   <Image src={imgCoinIcon} className='bonus-coin-icon' mode='aspectFit' />
-                </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -238,15 +239,15 @@ export default function PointsPage() {
           <View className='stats-grid'>
             <View className='stat-card'>
               <Text className='stat-value'>{pointsData.totalInvites}</Text>
-              <Text className='stat-label'>累计邀请</Text>
+              <Text className='stat-label'>总邀请数</Text>
             </View>
             <View className='stat-card'>
               <Text className='stat-value'>{pointsData.earnedPoints}</Text>
-              <Text className='stat-label'>已赚积分</Text>
+              <Text className='stat-label'>积分</Text>
             </View>
             <View className='stat-card'>
               <Text className='stat-value'>{pointsData.activeInvites}</Text>
-              <Text className='stat-label'>活跃邀请</Text>
+              <Text className='stat-label'>申请ETH</Text>
             </View>
             <View className='stat-card'>
               <View className='stat-value'>
@@ -256,15 +257,15 @@ export default function PointsPage() {
                   <Text>{pointsData.pendingRewards}</Text>
                 )}
               </View>
-              <Text className='stat-label'>待领取奖励</Text>
+              <Text className='stat-label'>OwO 之后可领取</Text>
             </View>
           </View>
 
           {/* 说明文字 */}
           <View className='invite-notes'>
-            <Text className='note-text'>1. 邀请好友注册并完成首次登录即可获得积分</Text>
-            <Text className='note-text'>2. 被邀请人需在7天内完成首次登录</Text>
-            <Text className='note-text'>3. 每个账号仅可被邀请一次</Text>
+            <Text className='note-text'>1. 每天前20个推荐均可获得积分。</Text>
+            <Text className='note-text'>2. 如果您的推荐人购买会员资格，您将获得积分和20%的费用回扣。</Text>
+            <Text className='note-text'>3. 推荐有效的前提是被邀请用户必须输入邀请码</Text>
           </View>
         </View>
 
@@ -272,7 +273,7 @@ export default function PointsPage() {
         <View className='tasks-section'>
           <View className='tasks-section-header'>
             <Image src={imgEmoji2} className='header-icon-img' mode='aspectFit' />
-            <Text className='tasks-title'>疯狂爱好者积分奖励</Text>
+            <Text className='tasks-title'>做任务得积分奖励</Text>
           </View>
           
           <View className='tasks-list'>
@@ -371,5 +372,3 @@ export default function PointsPage() {
     </View>
   )
 }
-
-
