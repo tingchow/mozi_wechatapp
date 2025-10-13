@@ -10,18 +10,19 @@ export default function PointsPage() {
   const [activeTab, setActiveTab] = useState('myPoints')
   const [tasksList, setTasksList] = useState([])
   
-  // 导入图片资源
-  const imgMozLogo = require('../../assets/image/point/moz_logo@2x.png')
-  const imgCoinIcon = require('../../assets/image/point/coin_icon@2x.png')
-  const imgClockIcon = require('../../assets/image/point/clock.svg')
-  const imgEmoji1 = require('../../assets/image/point/Emoji_1@2x.png')
-  const imgEmoji2 = require('../../assets/image/point/Emoji_2@2x.png')
-  const imgEmoji3 = require('../../assets/image/point/Emoji_3@2x.png')
-  const imgInvite = require('../../assets/image/point/invite@2x.png')
-  const imgCopy = require('../../assets/image/point/copy@2x.png')
-  const imgInfo = require('../../assets/image/point/info@2x.png')
-  const imgPointAlert = require('../../assets/image/point/point_alert@2x.png')
-  const imgCertification = require('../../assets/image/point/Certification@2x.png')
+  // CDN 图片资源
+  const CDN_BASE = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point'
+  const imgMozLogo = `${CDN_BASE}/moz_logo@2x.png`
+  const imgCoinIcon = `${CDN_BASE}/coin_icon@2x.png`
+  const imgClockIcon = `${CDN_BASE}/clock.svg`
+  const imgEmoji1 = `${CDN_BASE}/Emoji_1@2x.png`
+  const imgEmoji2 = `${CDN_BASE}/Emoji_2@2x.png`
+  const imgEmoji3 = `${CDN_BASE}/Emoji_3@2x.png`
+  const imgInvite = `${CDN_BASE}/invite@2x.png`
+  const imgCopy = `${CDN_BASE}/copy@2x.png`
+  const imgInfo = `${CDN_BASE}/info@2x.png`
+  const imgPointAlert = `${CDN_BASE}/point_alert@2x.png`
+  const imgCertification = `${CDN_BASE}/Certification@2x.png`
   
   const pointsData = {
     totalPoints: 45123,
@@ -36,18 +37,18 @@ export default function PointsPage() {
     pendingRewards: 0
   }
 
-  // 导入图片资源
-  const iconContactPerson = require('../../assets/image/point/contact_person@2x.png')
-  const iconLike = require('../../assets/image/point/like@2x.png')
-  const iconSocialGroup = require('../../assets/image/point/social_group@2x.png')
-  const iconTwitter = require('../../assets/image/point/twitter@2x.png')
-  const iconSetAlert = require('../../assets/image/point/set_alert@2x.png')
-  const iconVideo = require('../../assets/image/point/video@2x.png')
-  const iconGlovePraise = require('../../assets/image/point/glove_praise@2x.png')
-  const iconPaperAirplane = require('../../assets/image/point/paper_airplane@2x.png')
-  const iconNoGlovePraise = require('../../assets/image/point/no_glove_praise@2x.png')
-  const iconNotification1 = require('../../assets/image/point/notification_1@2x.png')
-  const iconNotification2 = require('../../assets/image/point/notification_2@2x.png')
+  // 任务和每日任务图标
+  const iconContactPerson = `${CDN_BASE}/contact_person@2x.png`
+  const iconLike = `${CDN_BASE}/like@2x.png`
+  const iconSocialGroup = `${CDN_BASE}/social_group@2x.png`
+  const iconTwitter = `${CDN_BASE}/twitter@2x.png`
+  const iconSetAlert = `${CDN_BASE}/set_alert@2x.png`
+  const iconVideo = `${CDN_BASE}/video@2x.png`
+  const iconGlovePraise = `${CDN_BASE}/glove_praise@2x.png`
+  const iconPaperAirplane = `${CDN_BASE}/paper_airplane@2x.png`
+  const iconNoGlovePraise = `${CDN_BASE}/%20no_glove_praise@2x.png`
+  const iconNotification1 = `${CDN_BASE}/notification_1@2x.png`
+  const iconNotification2 = `${CDN_BASE}/notification_2@2x.png`
 
   const initialTasks = [
     { id: 1, icon: iconContactPerson, title: '首次注册账号', points: 50, status: 'pending', btnText: '去注册' },
