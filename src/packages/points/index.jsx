@@ -3,12 +3,32 @@ import Taro from '@tarojs/taro'
 import { useLoad, useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
 import request from '../../utils/request'
-import Interface from '../../utils/constants'
+import { Interface } from '../../utils/constants'
 import './index.less'
 
 export default function PointsPage() {
   const [activeTab, setActiveTab] = useState('myPoints')
   const [tasksList, setTasksList] = useState([])
+  const [verifyingTaskId, setVerifyingTaskId] = useState(null) // 正在验证的任务ID
+  
+  // 获取当前用户ID（用于任务状态与用户绑定）
+  const getUserId = () => {
+    const userInfo = Taro.getStorageSync('userInfo')
+    return userInfo?.userId || 'default'
+  }
+  
+  // 获取用户专属的任务存储key
+  const getTasksStorageKey = () => {
+    const userId = getUserId()
+    return `pointsTasks_${userId}`
+  }
+  
+  // 检查是否在2026年之前（早鸟活动有效期）
+  const isBeforeYear2025 = () => {
+    const now = new Date()
+    const year2025 = new Date('2026-01-01 00:00:00')
+    return now < year2025
+  }
   
   // CDN 图片资源
   const CDN_BASE = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point'
@@ -51,12 +71,12 @@ export default function PointsPage() {
   const iconNotification2 = `${CDN_BASE}/notification_2@2x.png`
 
   const initialTasks = [
-    { id: 1, icon: iconContactPerson, title: '首次注册账号', points: 50, status: 'pending', btnText: '去注册' },
-    { id: 2, icon: iconLike, title: '关注我们的公众号', points: 50, status: 'pending', btnText: '去关注' },
-    { id: 3, icon: iconSocialGroup, title: '加入我们的社群', points: 50, status: 'pending', btnText: '去加入' },
-    { id: 4, icon: iconTwitter, title: '早鸟活动', points: 200, status: 'pending', btnText: '去参加' },
-    { id: 5, icon: iconSetAlert, title: '设置报警功能', points: 100, status: 'pending', btnText: '去设置' },
-    { id: 6, icon: iconVideo, title: '完成视频学习', points: 50, status: 'pending', btnText: '去学习' }
+    { id: 1, icon: iconContactPerson, title: '首次登录账号', points: 50, status: 'pending', btnText: '去登录', needsAction: true },
+    { id: 2, icon: iconLike, title: '关注我们的公众号', points: 50, status: 'pending', btnText: '去关注', needsAction: true },
+    { id: 3, icon: iconSocialGroup, title: '加入我们的社群', points: 50, status: 'pending', btnText: '去加入', needsAction: true },
+    { id: 4, icon: iconTwitter, title: '早鸟活动', points: 200, status: 'pending', btnText: '去参加', needsAction: true },
+    { id: 5, icon: iconSetAlert, title: '设置报警功能', points: 100, status: 'pending', btnText: '去设置', needsAction: true },
+    { id: 6, icon: iconVideo, title: '完成视频学习', points: 50, status: 'pending', btnText: '去学习', needsAction: true }
   ]
 
   const dailyInvestments = [
@@ -67,46 +87,347 @@ export default function PointsPage() {
     { id: 5, icon: iconNotification2, title: '帖子收到回复', rewardLabel: '收到回复', reward: 4, current: 10, total: 10, completed: false }
   ]
 
-  // 检查报警状态
-  const checkAlarmStatus = async () => {
+  // 检查已完成的任务（页面加载时）
+  const checkCompletedTasks = async () => {
     try {
-      const { data } = await request({
-        url: Interface.MY_WARN,
-      })
-
-      // 如果用户已设置报警（返回的data不为空且不是登录失败）
-      if (data && Object.keys(data).length > 0 && data.isLogin !== false) {
-        setTasksList(prevTasks => 
-          prevTasks.map(task => 
-            task.title === '设置报警功能' 
-              ? { ...task, status: 'completed', btnText: '已设置' }
-              : task
-          )
-        )
+      // 检查首次登录任务 - 如果已登录且任务未完成，将按钮改为"验证"状态
+      const token = Taro.getStorageSync('token')
+      
+      if (token) {
+        // 用户已登录，检查任务是否已完成
+        const tasksKey = getTasksStorageKey()
+        const savedTasks = Taro.getStorageSync(tasksKey) || []
+        const firstLoginTask = savedTasks.find(task => task.title === '首次登录账号')
+        const earlyBirdTask = savedTasks.find(task => task.title === '早鸟活动')
+        
+        // 如果首次登录任务未完成，将按钮改为"验证"
+        if (!firstLoginTask || firstLoginTask.status !== 'completed') {
+          setTasksList(prevTasks => {
+            const updatedTasks = prevTasks.map(task => 
+              task.title === '首次登录账号' 
+                ? { ...task, status: 'pending', btnText: '验证', needsAction: false }
+                : task
+            )
+            // 保存到本地存储（按用户ID）
+            Taro.setStorageSync(tasksKey, updatedTasks)
+            return updatedTasks
+          })
+          console.log('🔔 用户已登录，可点击验证按钮完成任务')
+        }
+        
+        // 检查早鸟活动任务 - 在2026年之前，用户登录了就可以领取
+        if (isBeforeYear2025() && (!earlyBirdTask || earlyBirdTask.status !== 'completed')) {
+          setTasksList(prevTasks => {
+            const updatedTasks = prevTasks.map(task => 
+              task.title === '早鸟活动' 
+                ? { ...task, status: 'pending', btnText: '验证', needsAction: false }
+                : task
+            )
+            // 保存到本地存储（按用户ID）
+            Taro.setStorageSync(tasksKey, updatedTasks)
+            return updatedTasks
+          })
+          console.log('🎉 早鸟活动进行中，可点击验证按钮完成任务')
+        } else if (!isBeforeYear2025() && (!earlyBirdTask || earlyBirdTask.status !== 'completed')) {
+          // 如果已过期，标记为不可用
+          setTasksList(prevTasks => {
+            const updatedTasks = prevTasks.map(task => 
+              task.title === '早鸟活动' 
+                ? { ...task, status: 'expired', btnText: '已过期', needsAction: false }
+                : task
+            )
+            return updatedTasks
+          })
+          console.log('⏰ 早鸟活动已过期')
+        }
       }
+      
+      // 如果未登录但在活动期内，早鸟活动按钮仍显示"去参加"
+      if (!token && isBeforeYear2025()) {
+        const tasksKey = getTasksStorageKey()
+        const savedTasks = Taro.getStorageSync(tasksKey) || []
+        const earlyBirdTask = savedTasks.find(task => task.title === '早鸟活动')
+        
+        if (!earlyBirdTask || earlyBirdTask.status !== 'completed') {
+          console.log('🎯 早鸟活动进行中，请先登录')
+        }
+      }
+      
+      // 检查报警任务 - 如果已登录且任务未完成，将按钮改为"验证"状态
+      if (token) {
+        const tasksKey = getTasksStorageKey()
+        const savedTasks = Taro.getStorageSync(tasksKey) || []
+        const setWarnTask = savedTasks.find(task => task.title === '设置报警功能')
+        
+        // 如果任务未完成，将按钮改为"验证"
+        if (!setWarnTask || setWarnTask.status !== 'completed') {
+          setTasksList(prevTasks => {
+            const updatedTasks = prevTasks.map(task => 
+              task.title === '设置报警功能' 
+                ? { ...task, status: 'pending', btnText: '验证', needsAction: false }
+                : task
+            )
+            // 保存到本地存储（按用户ID）
+            Taro.setStorageSync(tasksKey, updatedTasks)
+            return updatedTasks
+          })
+          console.log('🔔 用户已登录，可点击验证按钮完成设置报警任务')
+        }
+      }
+      
+      // TODO: 可以在这里检查其他已完成的任务
+      // 比如检查是否已关注公众号等
     } catch (error) {
-      console.error('检查报警状态失败:', error)
+      console.error('检查任务状态失败:', error)
     }
   }
 
   useLoad(() => {
     console.log('积分页面加载')
-    // 初始化任务列表
-    setTasksList(initialTasks)
-    // 检查报警状态
-    checkAlarmStatus()
+    
+    // 从本地存储恢复任务状态（按用户ID）
+    const tasksKey = getTasksStorageKey()
+    const savedTasks = Taro.getStorageSync(tasksKey)
+    const userId = getUserId()
+    
+    if (savedTasks && savedTasks.length > 0) {
+      console.log(`📦 用户[${userId}]从本地存储恢复任务状态`, savedTasks)
+      setTasksList(savedTasks)
+    } else {
+      console.log(`🆕 用户[${userId}]使用初始任务列表`)
+      setTasksList(initialTasks)
+    }
+    
+    // 检查已完成的任务
+    checkCompletedTasks()
   })
+  
+  // 重置任务状态（开发调试用）
+  const resetTasksStatus = () => {
+    const tasksKey = getTasksStorageKey()
+    const userId = getUserId()
+    Taro.removeStorageSync(tasksKey)
+    setTasksList(initialTasks)
+    console.log(`🔄 用户[${userId}]的任务状态已重置`)
+  }
 
-  // 页面显示时重新检查报警状态（从报警页面返回时会触发）
+  // 重置首次登录状态（开发调试用）
+  const resetFirstLoginStatus = () => {
+    const tasksKey = getTasksStorageKey()
+    const userId = getUserId()
+    const hasLoggedInBeforeKey = `hasLoggedInBefore_${userId}`
+    
+    Taro.removeStorageSync(hasLoggedInBeforeKey)
+    Taro.removeStorageSync('isFirstLogin')
+    Taro.removeStorageSync(tasksKey)
+    setTasksList(initialTasks)
+    console.log(`🔄 用户[${userId}]的首次登录状态已重置，请重新登录以测试首次登录功能`)
+    Taro.showToast({
+      title: '首次登录状态已重置',
+      icon: 'success',
+      duration: 2000
+    })
+  }
+
+  // 页面显示时重新检查任务状态（从任务页面返回时会触发）
   useDidShow(() => {
-    checkAlarmStatus()
+    checkCompletedTasks()
   })
 
   const goBack = () => {
     Taro.navigateBack()
   }
 
+  // 验证任务完成
+  const verifyTask = async (task) => {
+    try {
+      setVerifyingTaskId(task.id)
+      
+      let isCompleted = false
+      
+      // 根据不同任务调用不同的验证接口
+      if (task.title === '首次登录账号') {
+        // 检查用户是否已登录
+        const token = Taro.getStorageSync('token')
+        
+        console.log('🔍 验证首次登录 - 检查登录状态:', { hasToken: !!token })
+        
+        if (token) {
+          // 只要有 token 就验证成功
+          isCompleted = true
+          console.log('✅ 用户已登录，验证成功')
+          
+          // 调用后端接口进行积分发放（不管结果如何都不影响前端验证成功）
+          try {
+            console.log('📤 调用后端接口进行积分发放')
+            request({
+              url: Interface.POINTS_FIRST_LOGIN,
+              method: 'POST',
+              data: {
+                isFirstLogin: true,
+                taskId: task.id
+              }
+            }).then(result => {
+              console.log('📥 后端返回成功:', result)
+            }).catch(error => {
+              console.log('⚠️ 后端调用失败（不影响前端验证）:', error)
+            })
+          } catch (error) {
+            console.log('⚠️ 后端接口调用异常（不影响前端验证）:', error)
+          }
+          
+          // 清除首次登录标记
+          Taro.removeStorageSync('isFirstLogin')
+        } else {
+          console.log('❌ 用户未登录，无法验证')
+        }
+      } else if (task.title === '早鸟活动') {
+        // 早鸟活动：在2026年之前，用户登录了就算完成
+        const token = Taro.getStorageSync('token')
+        
+        console.log('🔍 验证早鸟活动:', { hasToken: !!token, isBeforeYear2025: isBeforeYear2025() })
+        
+        if (!isBeforeYear2025()) {
+          // 活动已过期
+          console.log('❌ 早鸟活动已过期')
+          Taro.showToast({
+            title: '活动已过期',
+            icon: 'none',
+            duration: 2000
+          })
+        } else if (token) {
+          // 只要有 token 且在活动期内就验证成功
+          isCompleted = true
+          console.log('✅ 早鸟活动验证成功')
+          
+          // 调用后端接口进行积分发放（不管结果如何都不影响前端验证成功）
+          try {
+            console.log('📤 调用后端接口进行早鸟活动积分发放')
+            request({
+              url: Interface.POINTS_EARLY_BIRD,
+              method: 'POST',
+              data: {
+                taskId: task.id,
+                taskType: 'earlyBird'
+              }
+            }).then(result => {
+              console.log('📥 后端返回成功:', result)
+            }).catch(error => {
+              console.log('⚠️ 后端调用失败（不影响前端验证）:', error)
+            })
+          } catch (error) {
+            console.log('⚠️ 后端接口调用异常（不影响前端验证）:', error)
+          }
+        } else {
+          console.log('❌ 用户未登录，无法验证')
+        }
+      } else if (task.title === '设置报警功能') {
+        // 检查用户是否已登录
+        const token = Taro.getStorageSync('token')
+        
+        console.log('🔍 验证设置报警 - 检查登录状态:', { hasToken: !!token })
+        
+        if (token) {
+          // 只要有 token 就验证成功
+          isCompleted = true
+          console.log('✅ 用户已登录，验证成功')
+          
+          // 调用后端接口进行积分发放（不管结果如何都不影响前端验证成功）
+          try {
+            console.log('📤 调用后端接口进行报警任务积分发放')
+            request({
+              url: Interface.POINTS_SET_WARN,
+              method: 'POST',
+              data: {
+                taskId: task.id,
+                taskType: 'setWarn'
+              }
+            }).then(result => {
+              console.log('📥 后端返回成功:', result)
+            }).catch(error => {
+              console.log('⚠️ 后端调用失败（不影响前端验证）:', error)
+            })
+          } catch (error) {
+            console.log('⚠️ 后端接口调用异常（不影响前端验证）:', error)
+          }
+        } else {
+          console.log('❌ 用户未登录，无法验证')
+        }
+      } else if (task.title === '完成视频学习') {
+        // TODO: 调用视频学习验证接口
+        // const { data } = await request({ url: '/api/points/tasks/verify', method: 'POST', data: { taskId: task.id, taskType: 'video' }})
+        // isCompleted = data.isCompleted
+      } else if (task.title === '关注我们的公众号') {
+        // TODO: 调用公众号验证接口
+      } else if (task.title === '加入我们的社群') {
+        // TODO: 调用社群验证接口
+      }
+      
+      if (isCompleted) {
+        // 验证成功，更新为已完成
+        const updatedTasks = tasksList.map(t => 
+          t.id === task.id 
+            ? { ...t, status: 'completed', btnText: '已完成', needsAction: false }
+            : t
+        )
+        setTasksList(updatedTasks)
+        
+        // 保存到本地存储（按用户ID）
+        const tasksKey = getTasksStorageKey()
+        Taro.setStorageSync(tasksKey, updatedTasks)
+        
+        Taro.showToast({
+          title: `+${task.points}积分`,
+          icon: 'success',
+          duration: 2000
+        })
+      } else {
+        // 验证失败，恢复为去完成状态
+        const originalBtnText = getOriginalBtnText(task.title)
+        const updatedTasks = tasksList.map(t => 
+          t.id === task.id 
+            ? { ...t, status: 'pending', btnText: originalBtnText, needsAction: true }
+            : t
+        )
+        setTasksList(updatedTasks)
+        
+        // 保存到本地存储（按用户ID）
+        const tasksKey = getTasksStorageKey()
+        Taro.setStorageSync(tasksKey, updatedTasks)
+        
+        Taro.showToast({
+          title: '任务尚未完成，请先完成任务',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    } catch (error) {
+      console.error('验证任务失败:', error)
+      Taro.showToast({
+        title: '验证失败，请稍后重试',
+        icon: 'none',
+        duration: 2000
+      })
+    } finally {
+      setVerifyingTaskId(null)
+    }
+  }
+  
+  // 获取任务的原始按钮文本
+  const getOriginalBtnText = (title) => {
+    const btnTextMap = {
+      '首次登录账号': '去登录',
+      '关注我们的公众号': '去关注',
+      '加入我们的社群': '去加入',
+      '早鸟活动': '去参加',
+      '设置报警功能': '去设置',
+      '完成视频学习': '去学习'
+    }
+    return btnTextMap[title] || '去完成'
+  }
+
   const handleTaskClick = (task) => {
+    // 如果任务已完成，不处理
     if (task.status === 'completed') {
       Taro.showToast({
         title: '任务已完成',
@@ -116,41 +437,88 @@ export default function PointsPage() {
       return
     }
 
-    if (task.btnText === '去注册' || task.title === '首次注册账号') {
-      Taro.switchTab({
-        url: '/pages/me/index'
-      })
+    // 如果正在验证中，不处理
+    if (verifyingTaskId === task.id) {
       return
     }
 
-    if (task.title === '早鸟活动') {
+    // 如果需要先去完成任务（needsAction为true）
+    if (task.needsAction) {
+      // 立即标记为待验证状态
+      const updatedTasks = tasksList.map(t => 
+        t.id === task.id 
+          ? { ...t, btnText: '验证', needsAction: false }
+          : t
+      )
+      setTasksList(updatedTasks)
+      
+      // 保存到本地存储（按用户ID），防止页面刷新后丢失状态
+      const tasksKey = getTasksStorageKey()
+      Taro.setStorageSync(tasksKey, updatedTasks)
+      
+      console.log('✅ 任务状态已更新为"验证":', task.title)
+      
+      // 跳转到对应页面
+      if (task.title === '首次登录账号') {
+        Taro.switchTab({
+          url: '/pages/me/index'
+        })
+        return
+      }
+
+      if (task.title === '早鸟活动') {
+        // 早鸟活动不需要跳转，检查是否登录
+        const token = Taro.getStorageSync('token')
+        if (!token) {
+          Taro.showToast({
+            title: '请先登录',
+            icon: 'none',
+            duration: 2000
+          })
+          // 跳转到登录页面
+          Taro.switchTab({
+            url: '/pages/me/index'
+          })
+          return
+        }
+        
+        // 已登录，检查活动是否过期
+        if (!isBeforeYear2025()) {
+          Taro.showToast({
+            title: '活动已过期',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        
+        // 已登录且活动进行中，按钮已经变为"验证"，不需要额外操作
+        return
+      }
+
+      if (task.title === '完成视频学习') {
+        Taro.navigateTo({
+          url: '/packages/videolearn/index'
+        })
+        return
+      }
+
+      if (task.title === '设置报警功能') {
+        Taro.navigateTo({
+          url: '/packages/addwarn/index?symbol=BTC'
+        })
+        return
+      }
+
       Taro.showToast({
-        title: '即将打开推特',
+        title: `${task.title}功能开发中`,
         icon: 'none',
         duration: 2000
       })
-      return
+    } else {
+      // 如果是验证状态（needsAction为false），点击进行验证
+      verifyTask(task)
     }
-
-    if (task.title === '完成视频学习') {
-      Taro.navigateTo({
-        url: '/packages/videolearn/index'
-      })
-      return
-    }
-
-    if (task.title === '设置报警功能') {
-      Taro.navigateTo({
-        url: '/packages/addwarn/index?symbol=BTC'
-      })
-      return
-    }
-
-    Taro.showToast({
-      title: `${task.btnText}功能开发中`,
-      icon: 'none',
-      duration: 2000
-    })
   }
 
   const copyToClipboard = (text, label) => {
@@ -327,26 +695,43 @@ export default function PointsPage() {
           </View>
           
           <View className='tasks-list'>
-            {tasksList.map(task => (
-              <View key={task.id} className={`task-item ${task.status === 'completed' ? 'completed' : ''}`}>
-                <View className='task-icon-wrapper'>
-                  <Image src={task.icon} className='task-icon-img' mode='aspectFit' />
-                </View>
-                <View className='task-info'>
-                  <Text className='task-title'>{task.title}</Text>
-                  <View className='task-points'>
-                    <Text className='task-points-text'>+{task.points}</Text>
-                    <Image src={imgCoinIcon} className='task-coin-icon' mode='aspectFit' />
+            {tasksList.map(task => {
+              // 判断按钮状态
+              const isVerifying = verifyingTaskId === task.id
+              const isCompleted = task.status === 'completed'
+              const isWaitingVerify = !task.needsAction && task.status === 'pending' // 待验证状态
+              
+              // 按钮文本
+              let btnText = task.btnText
+              if (isVerifying) btnText = '验证中'
+              
+              // 按钮样式
+              let btnClass = 'task-btn'
+              if (isCompleted) btnClass += ' completed-btn'
+              else if (isVerifying) btnClass += ' verifying-btn'
+              else if (isWaitingVerify) btnClass += ' verify-btn'
+              
+              return (
+                <View key={task.id} className={`task-item ${isCompleted ? 'completed' : ''}`}>
+                  <View className='task-icon-wrapper'>
+                    <Image src={task.icon} className='task-icon-img' mode='aspectFit' />
+                  </View>
+                  <View className='task-info'>
+                    <Text className='task-title'>{task.title}</Text>
+                    <View className='task-points'>
+                      <Text className='task-points-text'>+{task.points}</Text>
+                      <Image src={imgCoinIcon} className='task-coin-icon' mode='aspectFit' />
+                    </View>
+                  </View>
+                  <View 
+                    className={btnClass}
+                    onClick={() => handleTaskClick(task)}
+                  >
+                    <Text className='task-btn-text'>{btnText}</Text>
                   </View>
                 </View>
-                <View 
-                  className={`task-btn ${task.status === 'completed' ? 'completed-btn' : ''}`}
-                  onClick={() => handleTaskClick(task)}
-                >
-                  <Text className='task-btn-text'>{task.btnText}</Text>
-                </View>
-              </View>
-            ))}
+              )
+            })}
           </View>
         </View>
 

@@ -254,13 +254,11 @@ export default function Index() {
             console.log('用户信息本地缓存成功');
             setIsLogin(true);
 
-            // 如果是登录，表示有用户信息，不需要跳转
-            // setUserInfo(userInfo);
-            // Taro.setStorage('userInfo', userInfo);
-            // 如果是注册，表示没有用户信息，跳转到用户信息页
-            // jump2NoTab('user');
+            // 先保存用户信息
             console.log('userId', tokenInfo?.data?.userId);
             const userInfo = tokenInfo?.data?.userInfo;
+            const userId = tokenInfo?.data?.userId;
+            
             Taro.setStorageSync('needRefreshCommunity', true);
             if (!userInfo?.avatar || !userInfo?.nickName ) {
               jump2User();
@@ -268,12 +266,24 @@ export default function Index() {
               Taro.setStorageSync('userInfo', {
                 avatar: userInfo?.avatar,
                 nickName: userInfo?.nickName,
-                userId: tokenInfo?.data?.userId
+                userId: userId
               });
               setUserInfo({
                 avatar: userInfo?.avatar,
                 nickName: userInfo?.nickName
               });
+            }
+
+            // 检查是否是该用户的首次登录（按用户ID绑定）
+            const hasLoggedInBeforeKey = `hasLoggedInBefore_${userId}`;
+            const hasLoggedInBefore = Taro.getStorageSync(hasLoggedInBeforeKey);
+            if (!hasLoggedInBefore) {
+              // 该用户首次登录，设置标记
+              Taro.setStorageSync(hasLoggedInBeforeKey, true);
+              Taro.setStorageSync('isFirstLogin', true);
+              console.log(`✨ 检测到用户[${userId}]首次登录！`);
+            } else {
+              console.log(`📝 用户[${userId}]之前已登录过`);
             }
 
             

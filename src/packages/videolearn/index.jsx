@@ -13,8 +13,8 @@ export default function VideoLearnPage() {
       id: 1,
       title: 'MOZI 平台使用教程',
       description: '了解如何使用 MOZI 平台的基本功能',
-      url: 'https://example.com/video1.mp4',
-      poster: 'https://example.com/poster1.jpg',
+      url: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/video/Record_2025-10-14-09-14-37_e39d2c7de19156b0683cd93e8735f348.mp4',
+      // poster: '',  // 不设置封面图，使用视频首帧
       duration: '5:30',
       points: 10
     },
@@ -22,8 +22,8 @@ export default function VideoLearnPage() {
       id: 2,
       title: '加密货币交易基础',
       description: '学习加密货币交易的基本知识',
-      url: 'https://example.com/video2.mp4',
-      poster: 'https://example.com/poster2.jpg',
+      url: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/video/Record_2025-10-14-09-14-37_e39d2c7de19156b0683cd93e8735f348.mp4',
+      // poster: '',
       duration: '8:20',
       points: 15
     },
@@ -31,8 +31,8 @@ export default function VideoLearnPage() {
       id: 3,
       title: '技术分析入门',
       description: '掌握基本的技术分析方法',
-      url: 'https://example.com/video3.mp4',
-      poster: 'https://example.com/poster3.jpg',
+      url: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/video/Record_2025-10-14-09-14-37_e39d2c7de19156b0683cd93e8735f348.mp4',
+      // poster: '',
       duration: '10:15',
       points: 20
     }
@@ -65,7 +65,6 @@ export default function VideoLearnPage() {
         <Video
           className='video-player'
           src={videos[currentVideo].url}
-          poster={videos[currentVideo].poster}
           controls={true}
           autoplay={false}
           onEnded={handleVideoEnd}
@@ -74,6 +73,9 @@ export default function VideoLearnPage() {
           showPlayBtn={true}
           showFullscreenBtn={true}
           enableProgressGesture={true}
+          enablePlayGesture={true}
+          objectFit='contain'
+          direction={0}
         />
         
         <View className='video-info'>

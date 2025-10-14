@@ -66,6 +66,14 @@ export const Interface = {
   MOZI_COMMENT: '/feedback/add',
   // 分享上报
   SHARE_REPORT: '/share/report',
+  
+  // 积分系统
+  // 首次登录积分奖励
+  POINTS_FIRST_LOGIN: '/points/tasks/first-login',
+  // 早鸟活动积分奖励
+  POINTS_EARLY_BIRD: '/points/tasks/early-bird',
+  // 设置报警积分奖励
+  POINTS_SET_WARN: '/points/tasks/set-warn',
 
   // 添加自选
   ADD_OWN: '/selfselect/add',
