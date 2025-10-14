@@ -887,6 +887,46 @@
     background: #000;
     border-radius: 30px;
   }
+
+  /* 弹窗：关注公众号 - 适配积分页深色主题 */
+  .popContainer {
+    background: #1a1a1a;
+    border-radius: 24px 24px 0 0;
+    padding: 38px 24px 38px 24px;
+    text-align: center;
+    color: #fff;
+    min-height: 45vh; /* 再提高一些高度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* 顶部对齐，缩小标题与顶部距离 */
+
+    .contactTitle {
+      font-size: 28px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 12px;
+      display: block;
+      text-align: center;
+    }
+
+    .qr-wrap {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .attendPic {
+      width: 90%;
+      max-width: 560px;
+      border-radius: 16px;
+      padding: 12px;
+      box-sizing: border-box;
+      display: block;
+    }
+  }
 }
 
 @media (max-width: 768px) {

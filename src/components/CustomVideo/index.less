@@ -1,0 +1,97 @@
+.custom-video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 422px;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+
+  .custom-video-player {
+    width: 100%;
+    height: 100%;
+  }
+
+  // 自定义控制栏
+  .custom-video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 20px 20px 10px 20px;
+    z-index: 10;
+  }
+
+  // 控制行（按钮 + 进度条）
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  // 进度条区域（居中扩展）
+  .progress-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+
+    .progress-played {
+      height: 100%;
+      background: linear-gradient(90deg, #6AFF41 0%, #EDE75C 100%);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  .time-text {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+  }
+
+  // 进度条占位（未完成时使用）
+  .progress-placeholder {
+    width: 100%;
+    height: 34px; // 6px (进度条高度) + 8px (gap) + 20px (时间文本行高)
+  }
+
+  // 控制按钮
+  .control-btn {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+
+    &:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.95);
+    }
+
+    .btn-icon {
+      // font-size: 32px;
+      color: #fff;
+      display: inline-block;
+    }
+    // 针对图片图标设定尺寸
+    image.btn-icon {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+

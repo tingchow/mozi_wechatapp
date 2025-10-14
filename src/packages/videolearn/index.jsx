@@ -1,13 +1,16 @@
-import { View, Text, Video } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useLoad } from '@tarojs/taro'
 import { useState } from 'react'
+import CustomVideo from '../../components/CustomVideo'
 import './index.less'
 
 export default function VideoLearnPage() {
   const [currentVideo, setCurrentVideo] = useState(0)
+  const [completedVideos, setCompletedVideos] = useState({})
+  const COIN_ICON = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/coin_icon@2x.png'
   
-  // 视频列表数据
+  // 视频列表数据 - 聚焦于 MOZI 平台功能
   const videos = [
     {
       id: 1,
@@ -15,34 +18,56 @@ export default function VideoLearnPage() {
       description: '了解如何使用 MOZI 平台的基本功能',
       url: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/video/Record_2025-10-14-09-14-37_e39d2c7de19156b0683cd93e8735f348.mp4',
       // poster: '',  // 不设置封面图，使用视频首帧
-      duration: '5:30',
+      duration: '00:58',
       points: 10
     },
     {
       id: 2,
-      title: '加密货币交易基础',
-      description: '学习加密货币交易的基本知识',
+      title: '如何设置价格告警',
+      description: '学习如何设置和管理币种价格告警功能',
       url: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/video/Record_2025-10-14-09-14-37_e39d2c7de19156b0683cd93e8735f348.mp4',
       // poster: '',
-      duration: '8:20',
+      duration: '00:58',
       points: 15
     },
     {
       id: 3,
-      title: '技术分析入门',
-      description: '掌握基本的技术分析方法',
+      title: '积分系统玩法介绍',
+      description: '了解如何通过完成任务、互动获得积分奖励',
       url: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/video/Record_2025-10-14-09-14-37_e39d2c7de19156b0683cd93e8735f348.mp4',
       // poster: '',
-      duration: '10:15',
+      duration: '00:58',
       points: 20
     }
   ]
 
   useLoad(() => {
     console.log('视频学习页面加载')
+    // 从本地存储加载已完成的视频记录
+    try {
+      const saved = Taro.getStorageSync('completedVideos')
+      if (saved) {
+        setCompletedVideos(JSON.parse(saved))
+      }
+    } catch (e) {
+      console.error('加载视频完成记录失败:', e)
+    }
   })
 
   const handleVideoEnd = () => {
+    const videoId = videos[currentVideo].id
+    
+    // 标记当前视频为已完成
+    const newCompleted = { ...completedVideos, [videoId]: true }
+    setCompletedVideos(newCompleted)
+    
+    // 保存到本地存储
+    try {
+      Taro.setStorageSync('completedVideos', JSON.stringify(newCompleted))
+    } catch (e) {
+      console.error('保存视频完成记录失败:', e)
+    }
+    
     Taro.showToast({
       title: `恭喜获得 ${videos[currentVideo].points} 积分！`,
       icon: 'success',
@@ -50,11 +75,12 @@ export default function VideoLearnPage() {
     })
   }
 
+  // 视频错误回调
   const handleVideoError = (e) => {
     console.error('视频播放错误:', e)
     Taro.showToast({
       title: '视频加载失败',
-      icon: 'error',
+      icon: 'none',
       duration: 2000
     })
   }
@@ -62,20 +88,13 @@ export default function VideoLearnPage() {
   return (
     <View className='videolearn-container'>
       <View className='video-section'>
-        <Video
-          className='video-player'
+        <CustomVideo
+          key={`kv-${videos[currentVideo].id}`}
+          videoId={`video-${videos[currentVideo].id}`}
           src={videos[currentVideo].url}
-          controls={true}
-          autoplay={false}
-          onEnded={handleVideoEnd}
+          isCompleted={completedVideos[videos[currentVideo].id] || false}
+          onComplete={handleVideoEnd}
           onError={handleVideoError}
-          showCenterPlayBtn={true}
-          showPlayBtn={true}
-          showFullscreenBtn={true}
-          enableProgressGesture={true}
-          enablePlayGesture={true}
-          objectFit='contain'
-          direction={0}
         />
         
         <View className='video-info'>
@@ -83,7 +102,11 @@ export default function VideoLearnPage() {
           <Text className='video-desc'>{videos[currentVideo].description}</Text>
           <View className='video-meta'>
             <Text className='video-duration'>时长: {videos[currentVideo].duration}</Text>
-            <Text className='video-points'>完成可获得 +{videos[currentVideo].points} 积分</Text>
+            <View className='video-points'>
+              <Text>完成可获得</Text>
+              <Text className='points-num'>+{videos[currentVideo].points}</Text>
+              <Image className='coin-inline-icon' src={COIN_ICON} mode='widthFix' />
+            </View>
           </View>
         </View>
       </View>
@@ -94,15 +117,21 @@ export default function VideoLearnPage() {
           {videos.map((video, index) => (
             <View
               key={video.id}
-              className={`video-item ${currentVideo === index ? 'active' : ''}`}
+              className={`video-item ${currentVideo === index ? 'active' : ''} ${completedVideos[video.id] ? 'completed' : ''}`}
               onClick={() => setCurrentVideo(index)}
             >
               <View className='video-item-number'>{index + 1}</View>
               <View className='video-item-info'>
                 <Text className='video-item-title'>{video.title}</Text>
-                <Text className='video-item-duration'>{video.duration}</Text>
+                <Text className='video-item-duration'>
+                  {video.duration}
+                  {completedVideos[video.id] && ' ✓'}
+                </Text>
               </View>
-              <View className='video-item-points'>+{video.points}</View>
+              <View className='video-item-points'>
+                <Text>+{video.points}</Text>
+                <Image className='coin-inline-icon' src={COIN_ICON} mode='widthFix' />
+              </View>
             </View>
           ))}
         </View>

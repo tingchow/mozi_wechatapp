@@ -8,12 +8,8 @@
     border-radius: 0 0 30px 30px;
     overflow: hidden;
     margin-bottom: 30px;
-
-    .video-player {
-      width: 100%;
-      height: 420px;
-      background: #000;
-    }
+    
+    // CustomVideo组件会自带样式
 
     .video-info {
       padding: 30px;
@@ -47,9 +43,13 @@
         }
 
         .video-points {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #fff;
           font-size: 24px;
-          font-weight: 600;
-          color: #FEBE64;
+          .points-num { color: #FEBE64; font-weight: 700; }
+          .coin-inline-icon { width: 22px; height: 22px; }
         }
       }
     }
@@ -88,6 +88,14 @@
           background: linear-gradient(135deg, rgba(106, 255, 65, 0.1) 0%, rgba(237, 231, 92, 0.05) 100%);
         }
 
+        &.completed {
+          opacity: 0.8;
+
+          .video-item-number {
+            background: linear-gradient(135deg, #888 0%, #666 100%);
+          }
+        }
+
         .video-item-number {
           width: 48px;
           height: 48px;
@@ -123,10 +131,14 @@
         }
 
         .video-item-points {
+          display: flex;
+          align-items: center;
+          gap: 6px;
           font-size: 24px;
           font-weight: 700;
           color: #FEBE64;
           flex-shrink: 0;
+          .coin-inline-icon { width: 20px; height: 20px; }
         }
       }
     }

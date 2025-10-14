@@ -1,4 +1,4 @@
-import { View, Text, Button, Image } from '@tarojs/components'
+import { View, Text, Button, Image, PageContainer } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useLoad, useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
@@ -10,6 +10,8 @@ export default function PointsPage() {
   const [activeTab, setActiveTab] = useState('myPoints')
   const [tasksList, setTasksList] = useState([])
   const [verifyingTaskId, setVerifyingTaskId] = useState(null) // 正在验证的任务ID
+  const [popVisible, setPopVisible] = useState(false)
+  const [popType, setPopType] = useState('')
   
   // 获取当前用户ID（用于任务状态与用户绑定）
   const getUserId = () => {
@@ -503,6 +505,20 @@ export default function PointsPage() {
         return
       }
 
+      if (task.title === '关注我们的公众号') {
+        // 直接弹出与“我的页面”相同的关注公众号二维码弹窗
+        setPopType('attend')
+        setPopVisible(true)
+        return
+      }
+
+      if (task.title === '加入我们的社群') {
+        // 弹出社群图片弹窗
+        setPopType('community')
+        setPopVisible(true)
+        return
+      }
+
       if (task.title === '设置报警功能') {
         Taro.navigateTo({
           url: '/packages/addwarn/index?symbol=BTC'
@@ -734,6 +750,49 @@ export default function PointsPage() {
             })}
           </View>
         </View>
+
+      {/* 关注公众号弹窗 */}
+      <PageContainer
+        show={popVisible}
+        onAfterLeave={() => setPopVisible(false)}
+        closeOnSlideDown
+        round
+        forceRender
+        position='bottom'
+      >
+        {
+          popType === 'attend' && (
+            <View className='popContainer'>
+              <Text className='contactTitle'>欢迎关注我们的公众号</Text>
+              <View className='qr-wrap'>
+                <Image
+                  className='attendPic'
+                  mode='widthFix'
+                  lazyLoad
+                  showMenuByLongpress
+                  src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/wechat_account.jpg'
+                />
+              </View>
+            </View>
+          )
+        }
+        {
+          popType === 'community' && (
+            <View className='popContainer'>
+              <Text className='contactTitle'>欢迎加入我们的社群</Text>
+              <View className='qr-wrap'>
+                <Image
+                  className='attendPic'
+                  mode='widthFix'
+                  lazyLoad
+                  showMenuByLongpress
+                  src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/community.png'
+                />
+              </View>
+            </View>
+          )
+        }
+      </PageContainer>
 
         {/* 获得更多积分横幅 */}
         <View className='earn-more-banner' />
