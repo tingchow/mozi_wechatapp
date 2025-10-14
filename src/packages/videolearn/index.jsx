@@ -43,6 +43,10 @@ export default function VideoLearnPage() {
 
   useLoad(() => {
     console.log('视频学习页面加载')
+    // 保存视频总数供任务页验证使用
+    try {
+      Taro.setStorageSync('videoLearnTotal', videos.length)
+    } catch (e) {}
     // 从本地存储加载已完成的视频记录
     try {
       const saved = Taro.getStorageSync('completedVideos')
@@ -64,6 +68,7 @@ export default function VideoLearnPage() {
     // 保存到本地存储
     try {
       Taro.setStorageSync('completedVideos', JSON.stringify(newCompleted))
+      Taro.setStorageSync('videoLearnTotal', videos.length)
     } catch (e) {
       console.error('保存视频完成记录失败:', e)
     }

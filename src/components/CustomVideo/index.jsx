@@ -27,6 +27,8 @@ export default function CustomVideo({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [maxPlayedTime, setMaxPlayedTime] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showControls, setShowControls] = useState(true)
   const videoContextRef = useRef(null)
 
   // 初始化视频上下文，并在切换时停止旧实例
@@ -59,10 +61,24 @@ export default function CustomVideo({
     }
   }
 
-  // 全屏
+  // 全屏/退出全屏
   const handleFullscreen = () => {
-    if (!videoContextRef.current) return
-    videoContextRef.current.requestFullScreen()
+    if (isCompleted) {
+      // 已完成：使用系统原生全屏
+      if (!videoContextRef.current) return
+      videoContextRef.current.requestFullScreen()
+    } else {
+      // 未完成：使用伪全屏（固定定位铺满屏幕）
+      setIsFullscreen(!isFullscreen)
+      setShowControls(true)
+    }
+  }
+
+  // 点击视频区域切换控件显示
+  const handleVideoClick = () => {
+    if (isFullscreen && !isCompleted) {
+      setShowControls(!showControls)
+    }
   }
 
   // 监听播放
@@ -140,7 +156,10 @@ export default function CustomVideo({
   }
 
   return (
-    <View className='custom-video-wrapper'>
+    <View className={`custom-video-wrapper ${isFullscreen ? 'fullscreen-mode' : ''}`}>
+      {isFullscreen && !isCompleted && (
+        <View className='video-mask' onClick={handleVideoClick} />
+      )}
       <Video
         id={videoId}
         className='custom-video-player'
@@ -164,7 +183,7 @@ export default function CustomVideo({
       />
       
       {/* 自定义控制栏 - 仅未完成时显示 */}
-      {!isCompleted && (
+      {!isCompleted && (!isFullscreen || (isFullscreen && showControls)) && (
         <View className='custom-video-controls'>
           <View className='control-row'>
             {/* 播放/暂停按钮 - 左侧 */}
@@ -179,7 +198,7 @@ export default function CustomVideo({
             
             {/* 全屏按钮 - 右侧 */}
             <View className='control-btn' onClick={handleFullscreen}>
-              <Text className='btn-icon'>⛶</Text>
+              <Text className='btn-icon'>{isFullscreen ? '✕' : '⛶'}</Text>
             </View>
           </View>
         </View>

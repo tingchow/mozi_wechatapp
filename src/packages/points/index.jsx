@@ -356,9 +356,18 @@ export default function PointsPage() {
           console.log('❌ 用户未登录，无法验证')
         }
       } else if (task.title === '完成视频学习') {
-        // TODO: 调用视频学习验证接口
-        // const { data } = await request({ url: '/api/points/tasks/verify', method: 'POST', data: { taskId: task.id, taskType: 'video' }})
-        // isCompleted = data.isCompleted
+        // 验证本地是否全部视频已完成
+        try {
+          const saved = Taro.getStorageSync('completedVideos')
+          const total = Taro.getStorageSync('videoLearnTotal') || 0
+          const map = saved ? JSON.parse(saved) : {}
+          const finished = Object.values(map).filter(Boolean).length
+          if (total > 0 && finished >= total) {
+            isCompleted = true
+          }
+        } catch (e) {
+          console.error('校验视频学习完成状态失败', e)
+        }
       } else if (task.title === '关注我们的公众号') {
         // TODO: 调用公众号验证接口
       } else if (task.title === '加入我们的社群') {

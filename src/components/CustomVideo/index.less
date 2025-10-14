@@ -11,6 +11,26 @@
     height: 100%;
   }
 
+  // 伪全屏模式
+  &.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    border-radius: 0;
+  }
+
+  // 视频遮罩层（用于点击切换控件显示）
+  .video-mask {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+  }
+
   // 自定义控制栏
   .custom-video-controls {
     position: absolute;
@@ -19,7 +39,7 @@
     right: 0;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     padding: 20px 20px 10px 20px;
-    z-index: 10;
+    z-index: 15;
   }
 
   // 控制行（按钮 + 进度条）
@@ -83,7 +103,7 @@
     }
 
     .btn-icon {
-      // font-size: 32px;
+      font-size: 34px; // 调大放大图标（Text 图标）字号
       color: #fff;
       display: inline-block;
     }
