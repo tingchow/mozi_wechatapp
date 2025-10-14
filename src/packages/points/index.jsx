@@ -795,7 +795,7 @@ export default function PointsPage() {
                   mode='widthFix'
                   lazyLoad
                   showMenuByLongpress
-                  src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/community.png'
+                  src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/community.jpg'
                 />
               </View>
             </View>
