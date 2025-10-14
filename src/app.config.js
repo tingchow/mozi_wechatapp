@@ -41,6 +41,13 @@ export default defineAppConfig({
       ]
     },
     {
+      root: "packages/pointshistory",
+      name: "pointshistory",
+      pages: [
+        "index"
+      ]
+    },
+    {
       root: "packages/community",
       name: "community",
       pages: [

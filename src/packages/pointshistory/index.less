@@ -1,0 +1,157 @@
+.points-history-container {
+  min-height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  // 滚动区域
+  .history-scroll {
+    flex: 1;
+    padding: 30px 20px;
+    box-sizing: border-box;
+  }
+
+  // 历史记录项
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: #1a1a1a;
+    border-radius: 24px;
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, #6AFF41 0%, #EDE75C 100%);
+    }
+
+    .item-icon {
+      width: 80px;
+      height: 80px;
+      background: #2E2E2E;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      .icon-img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    .item-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0; // 防止 flex 子元素溢出
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .item-title {
+          font-size: 28px;
+          font-weight: 600;
+          color: #FFFFFF;
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin-right: 16px;
+        }
+
+        .item-points {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+
+          .points-text {
+            font-size: 32px;
+            font-weight: 700;
+            
+            &.add {
+              color: #6AFF41;
+            }
+            
+            &.sub {
+              color: #FF4D4F;
+            }
+          }
+
+          .coin-icon {
+            width: 32px;
+            height: 32px;
+          }
+        }
+      }
+
+      .item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+
+        .item-type {
+          font-size: 22px;
+          color: rgba(255, 255, 255, 0.5);
+          padding: 4px 16px;
+          background: rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .item-time {
+          font-size: 22px;
+          color: rgba(255, 255, 255, 0.4);
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  // 空状态
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 200px 40px;
+
+    .empty-text {
+      font-size: 28px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 20px;
+    }
+  }
+
+  // 加载更多
+  .loading-more,
+  .no-more {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+}
+

@@ -117,8 +117,8 @@ export default function PointsPage() {
     }
 
     if (task.btnText === '去注册' || task.title === '首次注册账号') {
-      Taro.navigateTo({
-        url: '/pages/user/index'
+      Taro.switchTab({
+        url: '/pages/me/index'
       })
       return
     }
@@ -195,12 +195,13 @@ export default function PointsPage() {
         >
           <Text className='tab-text'>我的积分</Text>
         </View>
-        <View 
+        {/* 暂时隐藏"我的邀请"Tab */}
+        {/* <View 
           className={`tab-item ${activeTab === 'myInvites' ? 'tab-active' : ''}`}
           onClick={() => handleTabChange('myInvites')}
         >
           <Text className='tab-text'>我的邀请</Text>
-        </View>
+        </View> */}
       </View>
 
       <View className='top-section'>
@@ -221,7 +222,7 @@ export default function PointsPage() {
           <View className='points-display'>
             <Image src={imgCoinIcon} className='coin-icon' mode='aspectFit' />
             <Text className='points-value'>{pointsData.totalPoints}</Text>
-            <View className='history-btn' onClick={() => Taro.showToast({ title: '历史记录开发中', icon: 'none' })}>
+            <View className='history-btn' onClick={() => Taro.navigateTo({ url: '/packages/pointshistory/index' })}>
               <Image src={imgClockIcon} className='history-icon' mode='aspectFit' />
               <Text className='history-text'>历史记录</Text>
             </View>
