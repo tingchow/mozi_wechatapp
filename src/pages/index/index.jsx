@@ -165,10 +165,24 @@ export default function Index() {
         });
       } else {
         tempData = (itemListData.data?.slice(0, 10) || [] ).map((item) => {
+          // 根据不同榜单类型确定显示字段
+          let priceField = item.last;
+          let changeField = item.priceRange;
+          
+          if (i === 4) {
+            // 成交额榜：显示成交额 + 24小时幅度
+            priceField = item.volume_24h;
+            changeField = item.price_24h;
+          } else if (i === 5 || i === 6) {
+            // 新币榜、飙升榜：显示最新价 + 24小时幅度
+            priceField = item.last;
+            changeField = item.price_24h;
+          }
+          
           return {
             symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
-            last: item.last || item.volume_24h,
-            priceRange: <HighlightArea value={item.priceRange || item.movers || item.price_24h}></HighlightArea>,
+            last: priceField,
+            priceRange: <HighlightArea value={changeField}></HighlightArea>,
             own: (<AddCollect symbol={item.symbol} isOwn={item.favorite} loginCb={() => {setPopVis(true)}} />),
             monitor: <AddMonitor symbol={item.symbol} />,
             key: item.symbol
@@ -263,17 +277,17 @@ export default function Index() {
       requestData: arrIndex === 0? {
         pageSize: 100,
         pageNo: 1
-      }: arrIndex === 4 || arrIndex === 5? requestintervalData : arrIndex === 6? requestbiaoshengintervalsData: requestdimData,
+      }: arrIndex === 5? [{}] : arrIndex === 4? requestintervalData : arrIndex === 6? requestbiaoshengintervalsData: requestdimData,
       gridTitle: colNameArr[arrIndex],
       gridCon: [{
         type: 'Img+Text',
         data: ['url', 'symbol']
       }, {
         type: 'Text',
-        data: arrIndex === 0? 'currentPrice':  arrIndex === 6? 'movers': arrIndex === 5? 'volume_24h': 'last'
+        data: arrIndex === 0? 'currentPrice': arrIndex === 5? 'volume_24h': 'last'
       }, {
         type: 'HighlightArea',
-        data: arrIndex === 0? 'priceChangePercentage24h': arrIndex === 6? 'movers': arrIndex === 4 || arrIndex === 5 ? 'price_24h': 'priceRange'
+        data: arrIndex === 0? 'priceChangePercentage24h': arrIndex === 4 || arrIndex === 5 || arrIndex === 6 ? 'price_24h': 'priceRange'
       }, {
         type: 'AddCollect',
         data: ['favorite', 'symbol']
@@ -290,7 +304,7 @@ export default function Index() {
       rankTitle: activeArrValue[arrIndex],
       rankName: 'Top100',
       rankDesc: '实时更新',
-      selectArr: arrIndex === 6? selectbiaoshengArr: selectArr
+      selectArr: arrIndex === 5? undefined : arrIndex === 6? selectbiaoshengArr: selectArr
     });
   };
   const cardRequest = async (url, data) => {

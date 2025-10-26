@@ -27,6 +27,8 @@ export const PopLogin = ({ show = false, hideCb }) => {
               const tokenInfo = await request({
                 url: Interface.MOZI_LOGIN,
                 data: {
+                  chanel:1, 
+                  type:'login',
                   phoneCode,
                   loginCode: openIdCode,
                 },
