@@ -135,6 +135,96 @@
 
     .text {
       white-space: pre-wrap;
+      line-height: 1.6;
+      
+      // Markdown 包装器
+      .markdown-wrapper {
+        font-size: 28px;
+        line-height: 1.6;
+        
+        // 标题
+        .md-h1 {
+          font-size: 38px;
+          font-weight: 600;
+          margin: 16px 0 12px;
+        }
+        
+        .md-h2 {
+          font-size: 34px;
+          font-weight: 600;
+          margin: 14px 0 10px;
+        }
+        
+        .md-h3 {
+          font-size: 30px;
+          font-weight: 600;
+          margin: 12px 0 8px;
+        }
+        
+        // 段落
+        .md-p {
+          margin: 6px 0;
+          line-height: 1.6;
+        }
+        
+        // 行内代码
+        .md-code-inline {
+          background: #f5f5f5;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-family: Consolas, Monaco, monospace;
+          font-size: 26px;
+          color: #e83e8c;
+        }
+        
+        // 代码块
+        .md-pre {
+          background: #282c34;
+          padding: 20px;
+          border-radius: 8px;
+          margin: 12px 0;
+          overflow-x: auto;
+          
+          .md-code-block {
+            font-family: Consolas, Monaco, monospace;
+            font-size: 24px;
+            color: #abb2bf;
+            line-height: 1.5;
+          }
+        }
+        
+        // 强调文本
+        .md-strong {
+          font-weight: 600;
+        }
+        
+        .md-em {
+          font-style: italic;
+        }
+        
+        // 列表
+        .md-ul {
+          padding-left: 30px;
+          margin: 8px 0;
+        }
+        
+        .md-li {
+          margin: 4px 0;
+          line-height: 1.6;
+        }
+        
+        // 引用
+        .md-blockquote {
+          border-left: 6px solid #11B787;
+          padding-left: 16px;
+          margin: 12px 0;
+          color: #666;
+        }
+      }
+      
+      .markdown-text {
+        line-height: 1.6;
+      }
     }
 
     .loading-dots {

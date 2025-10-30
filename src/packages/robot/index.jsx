@@ -1,6 +1,7 @@
 import { View, Text, Button, Image, ScrollView, Input } from '@tarojs/components'
-import Taro, { useLoad, useShareAppMessage, useDidShow, useUnload } from '@tarojs/taro'
+import Taro, { useLoad, useShareAppMessage, useUnload } from '@tarojs/taro'
 import { useEffect, useRef, useState } from 'react'
+import { marked } from 'marked'
 import ThinkingAnimation from '../../components/ThinkingAnimation'
 import { MoziWebSocket } from '../../utils/moziWebSocket'
 import { WS_URL } from '../../utils/constants'
@@ -67,7 +68,7 @@ export default function Robot() {
     wsRef.current = ws
 
     // 监听认证成功
-    ws.on('authenticated', (data) => {
+    ws.on('authenticated', () => {
       console.log('✅ AI 对话 WebSocket 认证成功')
       setIsConnecting(false)
       
@@ -119,7 +120,7 @@ export default function Robot() {
     // 监听 AI 流式响应
     ws.on(WS_EVENTS.AI_CHAT_STREAM, (data) => {
       console.log('📝 AI 流式响应:', data)
-      const { content, delta, isComplete, conversationId, messageId } = data.data || {}
+      const { content, isComplete, conversationId, messageId } = data.data || {}
       
       setMessages(prev => {
         const lastMsg = prev[prev.length - 1]
@@ -391,6 +392,165 @@ export default function Robot() {
     return `${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
 
+  // Markdown 渲染组件 - 流式逐行渲染（类似 H5 项目）
+  const MarkdownMessage = ({ content, isLoading }) => {
+    if (!content) return null
+
+    // 使用 marked 解析 markdown 为 tokens
+    const renderMarkdown = (text) => {
+      try {
+        const tokens = marked.lexer(text)
+        const elements = []
+
+        const renderToken = (token, idx) => {
+          switch (token.type) {
+            case 'heading':
+              const HeadingClass = `md-h${token.depth}`
+              return (
+                <View key={`h-${idx}`} className={HeadingClass}>
+                  <Text>{token.text}</Text>
+                </View>
+              )
+            
+            case 'paragraph':
+              return (
+                <View key={`p-${idx}`} className='md-p'>
+                  <Text>{renderInlineText(token.text)}</Text>
+                </View>
+              )
+            
+            case 'code':
+              return (
+                <View key={`code-${idx}`} className='md-pre'>
+                  <Text className='md-code-block'>{token.text}</Text>
+                </View>
+              )
+            
+            case 'blockquote':
+              return (
+                <View key={`quote-${idx}`} className='md-blockquote'>
+                  <Text>{token.text}</Text>
+                </View>
+              )
+            
+            case 'list':
+              return (
+                <View key={`list-${idx}`} className='md-ul'>
+                  {token.items.map((item, i) => (
+                    <View key={`li-${i}`} className='md-li'>
+                      <Text>{token.ordered ? `${i + 1}. ` : '• '}{item.text}</Text>
+                    </View>
+                  ))}
+                </View>
+              )
+            
+            case 'space':
+              return <View key={`space-${idx}`} style={{ height: '8px' }} />
+            
+            default:
+              return (
+                <View key={`default-${idx}`} className='md-p'>
+                  <Text>{token.raw}</Text>
+                </View>
+              )
+          }
+        }
+
+        const renderInlineText = (text) => {
+          // 简单处理行内代码、粗体、斜体
+          const parts = []
+          let remaining = text
+          let key = 0
+
+          while (remaining) {
+            // 行内代码
+            const codeMatch = remaining.match(/^`([^`]+)`/)
+            if (codeMatch) {
+              parts.push(<Text key={key++} className='md-code-inline'>{codeMatch[1]}</Text>)
+              remaining = remaining.slice(codeMatch[0].length)
+              continue
+            }
+
+            // 粗体
+            const boldMatch = remaining.match(/^\*\*(.+?)\*\*/)
+            if (boldMatch) {
+              parts.push(<Text key={key++} className='md-strong'>{boldMatch[1]}</Text>)
+              remaining = remaining.slice(boldMatch[0].length)
+              continue
+            }
+
+            // 斜体
+            const italicMatch = remaining.match(/^\*(.+?)\*/)
+            if (italicMatch) {
+              parts.push(<Text key={key++} className='md-em'>{italicMatch[1]}</Text>)
+              remaining = remaining.slice(italicMatch[0].length)
+              continue
+            }
+
+            // 普通文本
+            const nextSpecial = remaining.search(/[`*]/)
+            if (nextSpecial === -1) {
+              parts.push(<Text key={key++}>{remaining}</Text>)
+              break
+            }
+            
+            if (nextSpecial > 0) {
+              parts.push(<Text key={key++}>{remaining.slice(0, nextSpecial)}</Text>)
+            }
+            remaining = remaining.slice(nextSpecial)
+          }
+
+          return parts.length > 0 ? parts : text
+        }
+
+        tokens.forEach((token, idx) => {
+          elements.push(renderToken(token, idx))
+        })
+
+        return elements
+      } catch (error) {
+        console.error('Markdown 解析失败:', error)
+        return <Text>{text}</Text>
+      }
+    }
+
+    // 流式输出时的逐行渲染逻辑
+    if (isLoading) {
+      const lines = content.split('\n')
+      
+      // 只有一行，显示纯文本
+      if (lines.length === 1) {
+        return (
+          <View className='markdown-wrapper'>
+            <Text className='markdown-text'>{content}</Text>
+          </View>
+        )
+      }
+      
+      // 多行：前面已完成的行用 markdown 渲染，最后一行显示纯文本
+      const completedLines = lines.slice(0, -1).join('\n')
+      const currentLine = lines[lines.length - 1]
+      
+      return (
+        <View className='markdown-wrapper'>
+          {completedLines && renderMarkdown(completedLines)}
+          {currentLine && (
+            <View className='md-p'>
+              <Text className='markdown-text'>{currentLine}</Text>
+            </View>
+          )}
+        </View>
+      )
+    }
+
+    // 消息完成后，整体渲染
+    return (
+      <View className='markdown-wrapper'>
+        {renderMarkdown(content)}
+      </View>
+    )
+  }
+
   return (
     <View className='robot-page'>
       <View className='chat-header'>
@@ -431,10 +591,14 @@ export default function Robot() {
                   <View className='text'>
                     {msg.loading && !msg.content ? (
                       <ThinkingAnimation />
+                    ) : msg.role === 'assistant' ? (
+                      <>
+                        <MarkdownMessage content={msg.content} isLoading={msg.loading} />
+                        {msg.loading && <Text className='loading-dots'>...</Text>}
+                      </>
                     ) : (
                       <Text>{msg.content || ''}</Text>
                     )}
-                    {msg.loading && msg.content && <Text className='loading-dots'>...</Text>}
                   </View>
                   
                   {/* Token 消耗信息 */}
