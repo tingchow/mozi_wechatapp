@@ -3,6 +3,9 @@ export const COMMON_MSG = '网络繁忙，请稍后再试';
 
 export const INTERFACE_URL = 'https://moziinnovations.com';
 
+// WebSocket 服务器地址
+export const WS_URL = 'wss://moziinnovations.com/ws';
+
 // 接口内容
 export const Interface = {
   // 首页
