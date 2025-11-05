@@ -146,6 +146,14 @@ export const Interface = {
 
   // 是否展示全部内容
   SHOW_ALL: '/switch/status',
+
+  // 涨跌分布（市场数据）
+  // 获取涨跌分布数据
+  MARKET_DISTRIBUTION: '/easy/getGainAndLossDisDa',
+  // 获取恐慌贪婪指数
+  FEAR_GREED_INDEX: '/easy/getFearGreedIndex',
+  // 获取市场聚合数据（BTC市场占有率等）
+  AGGREGATION_DETAIL: '/easy/getAggregationDetail',
 };
 
 // 邮箱

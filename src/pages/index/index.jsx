@@ -661,7 +661,7 @@ export default function Index() {
       </MoziCard>
 
       {/* 涨跌分布（隐藏开关） */}
-      {SHOW_MARKET_DISTRIBUTION && <MarketDistribution />}
+      {SHOW_MARKET_DISTRIBUTION && <MarketDistribution enableDebug={true} />}
 
       {/* 自选 */}
       {/* <View className='own-box'> */}

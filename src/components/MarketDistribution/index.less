@@ -292,3 +292,135 @@
   font-size: 24px; /* 进一步调大到24px */
   font-weight: 500;
 }
+
+// 调试工具面板样式
+.debug-panel {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+  border: 2rpx dashed #999;
+}
+
+.debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #ddd;
+}
+
+.debug-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.debug-close-btn {
+  background-color: #ff4d4f;
+  color: #fff;
+  border: none;
+  padding: 5rpx 15rpx;
+  border-radius: 4rpx;
+}
+
+.debug-control {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.debug-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.debug-label {
+  font-size: 24rpx;
+  color: #666;
+  white-space: nowrap;
+}
+
+.debug-input {
+  flex: 1;
+  padding: 10rpx 15rpx;
+  background-color: #fff;
+  border: 1rpx solid #ddd;
+  border-radius: 4rpx;
+  font-size: 28rpx;
+}
+
+.debug-info {
+  display: flex;
+  gap: 20rpx;
+  padding: 10rpx;
+  background-color: #fff;
+  border-radius: 4rpx;
+}
+
+.debug-info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.debug-info-label {
+  font-size: 20rpx;
+  color: #999;
+  margin-bottom: 5rpx;
+}
+
+.debug-info-value {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.debug-quick-btns {
+  display: flex;
+  gap: 10rpx;
+  justify-content: space-between;
+}
+
+.debug-quick-btn {
+  flex: 1;
+  background-color: #fff;
+  border: 1rpx solid #ddd;
+  color: #333;
+  font-size: 24rpx;
+}
+
+.debug-tip {
+  padding: 10rpx;
+  background-color: #fff3cd;
+  border-radius: 4rpx;
+  border-left: 4rpx solid #ffc107;
+}
+
+.debug-tip-text {
+  font-size: 20rpx;
+  color: #856404;
+  line-height: 1.5;
+}
+
+.debug-trigger {
+  margin-top: 10rpx;
+  padding: 8rpx;
+  text-align: center;
+  background-color: transparent;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+  
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.debug-trigger-text {
+  font-size: 20rpx;
+  color: #999;
+}
