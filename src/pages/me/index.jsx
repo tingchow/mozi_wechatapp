@@ -30,6 +30,8 @@ export default function Index() {
   const [isLogin, setIsLogin] = useState(false);
   const [scoreDisable, setScoreDisable] = useState(true);
   const scoreInput = useRef('');
+  const [unreadCount, setUnreadCount] = useState(0); // 未读通知数量
+  const pollingTimer = useRef(null); // 轮询定时器
   const [showSecondaryActions, setShowSecondaryActions] = useState(true); // 控制第二排功能按钮的显示/隐藏
   const [showPointsSection, setShowPointsSection] = useState(true); // 控制我的积分板块的显示/隐藏
   const [showNewCoinListing, setShowNewCoinListing] = useState(true); // 控制新币上线组件的显示/隐藏
@@ -82,6 +84,48 @@ export default function Index() {
     
   });
 
+  // 获取未读通知数量
+  const getUnreadCount = async () => {
+    try {
+      const token = Taro.getStorageSync('token');
+      if (!token) return;
+      
+      const res = await request({
+        url: Interface.GET_UNREAD_COUNT
+      });
+      
+      if (res?.data?.unreadCount !== undefined) {
+        setUnreadCount(res.data.unreadCount);
+      }
+    } catch (error) {
+      console.error('获取未读数量失败:', error);
+    }
+  };
+
+  // 开始轮询未读通知数量
+  const startPolling = () => {
+    // 清除之前的定时器
+    if (pollingTimer.current) {
+      clearInterval(pollingTimer.current);
+    }
+    
+    // 立即获取一次
+    getUnreadCount();
+    
+    // 每1分钟轮询一次
+    pollingTimer.current = setInterval(() => {
+      getUnreadCount();
+    }, 60000);
+  };
+
+  // 停止轮询
+  const stopPolling = () => {
+    if (pollingTimer.current) {
+      clearInterval(pollingTimer.current);
+      pollingTimer.current = null;
+    }
+  };
+
   useDidShow(() => {
     // console.log('Page loaded.')
     Taro.getStorage({
@@ -91,8 +135,11 @@ export default function Index() {
         if (res.data) {
           console.log('');
           setIsLogin(true);
+          // 登录后开始轮询未读通知
+          startPolling();
         } else {
           setIsLogin(false);
+          stopPolling();
         }
       },
       // fail: () => {}
@@ -114,6 +161,13 @@ export default function Index() {
 
     
   })
+  
+  // 页面卸载时清除定时器
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, [])
 
   useShareTimeline(() => {
     console.log('onShareTimeline')
@@ -393,10 +447,14 @@ export default function Index() {
               </View>
               <Text className='actionText secondary'>我的评论</Text>
             </View>
-            <View className='actionButton' onClick={comingSoon}>
+            <View className='actionButton' onClick={() => {
+              jump2NoTab('mynotices');
+              // 进入通知页面后，清空角标
+              setUnreadCount(0);
+            }}>
               <View className='actionIcon secondary'>
                 <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/mail%402x.png'} />
-                <View className='badge'>3</View>
+                {unreadCount > 0 && <View className='badge'>{unreadCount > 99 ? '99+' : unreadCount}</View>}
               </View>
               <Text className='actionText secondary'>消息通知</Text>
             </View>

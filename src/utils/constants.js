@@ -149,6 +149,12 @@ export const Interface = {
   GET_MY_COMMENTS: '/easy/getMyComments',
   // 获取我的点赞
   GET_MY_LIKES: '/easy/getMyLikes',
+  // 获取我的消息通知
+  GET_MY_NOTICES: '/easy/getMyMsgAndNotices',
+  // 获取未读通知数量
+  GET_UNREAD_COUNT: '/easy/getUnreadCount',
+  // 标记通知为已读
+  MARK_NOTICES_READ: '/easy/markNoticesRead',
 
   // 是否展示全部内容
   SHOW_ALL: '/switch/status',

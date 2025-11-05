@@ -154,6 +154,13 @@ export default defineAppConfig({
       pages: [
         "index"
       ]
+    },
+    {
+      root: "packages/mynotices",
+      name: "mynotices",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {
