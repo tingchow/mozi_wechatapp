@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useLoad, useRouter } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import { request } from '../../../utils/request'
-import { Interface } from '../../../utils/constants'
+import { Interface, INTERFACE_URL } from '../../../utils/constants'
 import './index.less'
 
 // 确保接口定义存在
@@ -271,7 +271,8 @@ export default function PostPage() {
 
     try {
       // 处理内容字段，对于"发现好币"模板，使用formData.reason作为content
-      console.log('title', title, 'content', content);
+      console.log('发布帖子 - 标题:', title, '内容:', content);
+      console.log('发布帖子 - 图片列表:', images);
       const postData = {
         title,
         content: content,
@@ -283,6 +284,7 @@ export default function PostPage() {
         }).filter(Boolean) : [],
         images
       }
+      console.log('发布帖子 - 完整数据:', postData);
       
       // 如果有投票信息，添加到postData中
       if (hasVote) {
@@ -342,12 +344,78 @@ export default function PostPage() {
         sizeType: ['compressed'],
         sourceType: ['album', 'camera']
       })
-      if (res?.tempFilePaths) {
-        setImages([...images, ...res.tempFilePaths])
+      
+      if (res?.tempFilePaths && res.tempFilePaths.length > 0) {
+        // 显示加载提示
+        Taro.showLoading({
+          title: '上传中...',
+          mask: true
+        })
+        
+        // 上传所有选择的图片
+        const uploadPromises = res.tempFilePaths.map(async (filePath) => {
+          try {
+            const uploadRes = await Taro.uploadFile({
+              url: `${INTERFACE_URL}${Interface.UPLOAD_FILE}`,
+              filePath: filePath,
+              name: 'file',
+              header: {
+                'Authorization': Taro.getStorageSync('token') || ''
+              }
+            })
+            
+            // 解析返回结果
+            const data = JSON.parse(uploadRes.data)
+            console.log('图片上传响应:', data)
+            if (data.code === 0 && data.data) {
+              console.log('图片上传成功，URL:', data.data)
+              return data.data // 返回上传后的图片URL
+            } else {
+              console.error('上传失败:', data.msg)
+              return null
+            }
+          } catch (error) {
+            console.error('上传图片失败:', error)
+            return null
+          }
+        })
+        
+        const uploadedUrls = await Promise.all(uploadPromises)
+        // 过滤掉上传失败的图片
+        const validUrls = uploadedUrls.filter(url => url !== null)
+        
+        Taro.hideLoading()
+        
+        if (validUrls.length > 0) {
+          const newImages = [...images, ...validUrls]
+          console.log('更新图片列表:', newImages)
+          setImages(newImages)
+          Taro.showToast({
+            title: `成功上传${validUrls.length}张图片`,
+            icon: 'success'
+          })
+        } else {
+          Taro.showToast({
+            title: '图片上传失败',
+            icon: 'none'
+          })
+        }
       }
     } catch (e) {
+      Taro.hideLoading()
       console.error('选择图片失败', e)
+      Taro.showToast({
+        title: '选择图片失败',
+        icon: 'none'
+      })
     }
+  }
+
+  // 删除图片
+  const handleRemoveImage = (index) => {
+    const newImages = [...images]
+    newImages.splice(index, 1)
+    setImages(newImages)
   }
 
   // 检查是否为今日首次进入
@@ -700,7 +768,10 @@ export default function PostPage() {
         {SHOW_IMAGE_UPLOAD && (
           <View className='image-uploader'>
             {images.map((src, idx) => (
-              <Image key={idx} className='uploaded-img' src={src} mode='aspectFill' />
+              <View key={idx} className='image-wrapper'>
+                <Image className='uploaded-img' src={src} mode='aspectFill' />
+                <View className='delete-icon' onClick={() => handleRemoveImage(idx)}>×</View>
+              </View>
             ))}
             {images.length < 9 && (
               <View className='upload-tile' onClick={handleChooseImage}>+
