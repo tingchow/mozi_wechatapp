@@ -387,7 +387,7 @@ export default function Index() {
       {showSecondaryActions && (
         <View className='secondaryActions'>
           <View className='actionRow'>
-            <View className='actionButton' onClick={comingSoon}>
+            <View className='actionButton' onClick={() => jump2NoTab('mycomments')}>
               <View className='actionIcon secondary'>
                 <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/comment%402x.png'} />
               </View>

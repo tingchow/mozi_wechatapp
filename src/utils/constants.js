@@ -145,6 +145,8 @@ export const Interface = {
   CREATE_VOTE: '/api/vote/create',
   // 上传文件
   UPLOAD_FILE: '/easy/uploadFile',
+  // 获取我的评论
+  GET_MY_COMMENTS: '/easy/getMyComments',
 
   // 是否展示全部内容
   SHOW_ALL: '/switch/status',

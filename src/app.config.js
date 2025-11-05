@@ -140,6 +140,13 @@ export default defineAppConfig({
       pages: [
         "index"
       ]
+    },
+    {
+      root: "packages/mycomments",
+      name: "mycomments",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {
