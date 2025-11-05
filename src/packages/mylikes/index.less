@@ -1,0 +1,155 @@
+.mylikes-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+
+  .empty-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 200rpx 0;
+
+    .empty-text {
+      margin-top: 40rpx;
+      font-size: 28rpx;
+      color: #999;
+    }
+
+    .empty-btn {
+      margin-top: 60rpx;
+      padding: 20rpx 80rpx;
+      background: #11B787;
+      color: #fff;
+      border-radius: 40rpx;
+      font-size: 28rpx;
+    }
+  }
+
+  .like-scroll {
+    height: 100vh;
+    padding: 20rpx;
+    box-sizing: border-box;
+  }
+
+  .like-item {
+    background: #fff;
+    border-radius: 16rpx;
+    padding: 24rpx;
+    margin-bottom: 20rpx;
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+    width: 100%;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20rpx;
+
+      .avatar {
+        width: 72rpx;
+        height: 72rpx;
+        border-radius: 50%;
+        margin-right: 20rpx;
+        flex-shrink: 0;
+      }
+
+      .user-detail {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .username {
+          font-size: 28rpx;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 8rpx;
+        }
+
+        .post-time {
+          font-size: 24rpx;
+          color: #999;
+        }
+      }
+    }
+
+    .post-title {
+      font-size: 32rpx;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16rpx;
+      line-height: 1.5;
+    }
+
+    .post-content {
+      font-size: 28rpx;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16rpx;
+      border-top: 1rpx solid #f0f0f0;
+      box-sizing: border-box;
+      width: 100%;
+
+      .stats {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: 8rpx;
+
+          .like-icon {
+            width: 40rpx;
+            height: 40rpx;
+            flex-shrink: 0;
+          }
+
+          .comment-icon {
+            width: 48rpx;
+            height: 48rpx;
+            flex-shrink: 0;
+          }
+
+          .count {
+            font-size: 28rpx;
+            color: #999;
+            line-height: 1;
+
+            &.like-count {
+              color: #FA5F5F;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .loading-more {
+    text-align: center;
+    padding: 40rpx 0;
+    font-size: 26rpx;
+    color: #999;
+  }
+
+  .no-more {
+    text-align: center;
+    padding: 40rpx 0;
+    font-size: 26rpx;
+    color: #ccc;
+  }
+}
+

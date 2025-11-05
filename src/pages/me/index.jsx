@@ -400,7 +400,7 @@ export default function Index() {
               </View>
               <Text className='actionText secondary'>消息通知</Text>
             </View>
-            <View className='actionButton' onClick={comingSoon}>
+            <View className='actionButton' onClick={() => jump2NoTab('mylikes')}>
               <View className='actionIcon secondary'>
                 <Image className='actionIconImg secondary' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/like%402x.png'} />
               </View>

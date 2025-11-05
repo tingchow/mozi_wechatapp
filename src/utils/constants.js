@@ -147,6 +147,8 @@ export const Interface = {
   UPLOAD_FILE: '/easy/uploadFile',
   // 获取我的评论
   GET_MY_COMMENTS: '/easy/getMyComments',
+  // 获取我的点赞
+  GET_MY_LIKES: '/easy/getMyLikes',
 
   // 是否展示全部内容
   SHOW_ALL: '/switch/status',

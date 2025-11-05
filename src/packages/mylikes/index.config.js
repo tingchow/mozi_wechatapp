@@ -1,0 +1,6 @@
+export default {
+  navigationBarTitleText: '我的点赞',
+  navigationBarBackgroundColor: '#ffffff',
+  navigationBarTextStyle: 'black'
+}
+

@@ -147,6 +147,13 @@ export default defineAppConfig({
       pages: [
         "index"
       ]
+    },
+    {
+      root: "packages/mylikes",
+      name: "mylikes",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {
