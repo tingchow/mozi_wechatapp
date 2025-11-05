@@ -88,6 +88,14 @@ export default function Detail() {
   // 控制展开收起
   const [infoShow, setInfoShow] = useState(false);
 
+  // 投资回报率数据
+  const [roiData, setRoiData] = useState({
+    priceChange1Day: '--',
+    priceChange7Day: '--',
+    priceChange1Month: '--',
+    priceChange1Year: '--'
+  });
+
   const chartRef = useRef(null)
 
   const initChart = (canvas, width, height, dpr) => {
@@ -115,6 +123,7 @@ export default function Detail() {
     headRequest();
     kLineRequest();
     marketRequest();
+    getROIData(symbol);
     // 初次进入按默认类型渲染一次，避免先闪K再变线
     setTimeout(() => {
       renderCurrentChart();
@@ -314,6 +323,27 @@ export default function Detail() {
     // setHotIndustry(res.data);
     // console.log('响应信息', res);
     return res;
+  };
+
+  // 获取投资回报率数据
+  const getROIData = async (symbol) => {
+    try {
+      const res = await request({
+        url: Interface.RETURN_INVESTMENT,
+        data: { symbol }
+      });
+      if (res && res.data && res.data.length > 0) {
+        const data = res.data[0]; // 取数组第一个元素
+        setRoiData({
+          priceChange1Day: data.priceChange1Day || '--',
+          priceChange7Day: data.priceChange7Day || '--',
+          priceChange1Month: data.priceChange1Month || '--',
+          priceChange1Year: data.priceChange1Year || '--'
+        });
+      }
+    } catch (error) {
+      console.error('获取投资回报率失败:', error);
+    }
   };
 
   const changeShow = () => {
@@ -657,8 +687,25 @@ export default function Detail() {
 
       {/* 投资回报率 */}
       <View className='roiBox'>
-        <MoziCard title='投资回报率' moreDesc='敬请期待'>
-          <View style={{ padding: '20px', color: '#999', fontSize: '24px' }}>敬请期待</View>
+        <MoziCard title='投资回报率'>
+          <View className='roi-grid'>
+            <View className={`roi-card ${roiData.priceChange1Day !== '--' && parseFloat(roiData.priceChange1Day) < 0 ? 'negative' : 'positive'}`}>
+              <Text className='roi-value'>{roiData.priceChange1Day}</Text>
+              <Text className='roi-label'>日回报率</Text>
+            </View>
+            <View className={`roi-card ${roiData.priceChange7Day !== '--' && parseFloat(roiData.priceChange7Day) < 0 ? 'negative' : 'positive'}`}>
+              <Text className='roi-value'>{roiData.priceChange7Day}</Text>
+              <Text className='roi-label'>周回报率</Text>
+            </View>
+            <View className={`roi-card ${roiData.priceChange1Month !== '--' && parseFloat(roiData.priceChange1Month) < 0 ? 'negative' : 'positive'}`}>
+              <Text className='roi-value'>{roiData.priceChange1Month}</Text>
+              <Text className='roi-label'>月回报率</Text>
+            </View>
+            <View className={`roi-card ${roiData.priceChange1Year !== '--' && parseFloat(roiData.priceChange1Year) < 0 ? 'negative' : 'positive'}`}>
+              <Text className='roi-value'>{roiData.priceChange1Year}</Text>
+              <Text className='roi-label'>年回报率</Text>
+            </View>
+          </View>
         </MoziCard>
       </View>
       {/* <div className='marketBox'>

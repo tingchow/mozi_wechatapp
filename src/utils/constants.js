@@ -154,6 +154,9 @@ export const Interface = {
   FEAR_GREED_INDEX: '/easy/getFearGreedIndex',
   // 获取市场聚合数据（BTC市场占有率等）
   AGGREGATION_DETAIL: '/easy/getAggregationDetail',
+  
+  // 投资回报率
+  RETURN_INVESTMENT: '/easy/getReturnInvestment',
 };
 
 // 邮箱

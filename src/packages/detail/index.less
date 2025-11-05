@@ -417,6 +417,54 @@
       margin-right: 10px;
     }
   }
+
+  // 投资回报率样式
+  .roiBox {
+    .roi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16rpx;
+      padding: 16rpx 32rpx;
+    }
+
+    .roi-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16rpx 10rpx;
+      border-radius: 10rpx;
+      min-height: 100rpx;
+
+      &.positive {
+        background: linear-gradient(135deg, #d4f4e8 0%, #e8f9f1 100%);
+
+        .roi-value {
+          color: #11B787;
+        }
+      }
+
+      &.negative {
+        background: linear-gradient(135deg, #ffd4d4 0%, #ffe8e8 100%);
+
+        .roi-value {
+          color: #FA5F5F;
+        }
+      }
+    }
+
+    .roi-value {
+      font-size: 32rpx;
+      font-weight: 700;
+      margin-bottom: 4rpx;
+    }
+
+    .roi-label {
+      font-size: 20rpx;
+      color: #666;
+      font-weight: 500;
+    }
+  }
   
 }
 
