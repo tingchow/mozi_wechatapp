@@ -19,8 +19,11 @@ import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // 延迟加载 towxml，避免在非 AI 页面时增加主包体积
 let parseTowxml = null;
 import isEmpty from 'lodash/isEmpty';
-import { useMoziWebSocket } from '../../utils/useMoziWebSocket';
+import { useWebSocket } from '../../context/WebSocketContext';
 import { CHANNEL_TYPES } from '../../utils/websocketProtocol';
+import { SkeletonPage } from '../../components/Skeleton';
+import { detailPageSkeletonConfig } from '../../components/Skeleton/configs';
+import { GardenLoading } from '../../components/Loading';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
 const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
@@ -48,6 +51,8 @@ export default function Detail() {
   const [pageActiveKey, setPageActiveKey] = useState('chart');
   const [chartType, setChartType] = useState('line'); // kline | line
   const chartTypeRef = useRef('line');
+  const [isInitialLoad, setIsInitialLoad] = useState(true); // 是否首次加载
+  const [klineLoading, setKlineLoading] = useState(false); // K线数据加载状态
 
   const [coinInfo, setCoinInfo] = useState(null);
   const [ needLogin, setLogin ] = useState(false);
@@ -85,33 +90,74 @@ export default function Detail() {
   });
 
   const needLoop = useRef(true);
-  const useWebSocketData = useRef(true); // 标记是否使用 WebSocket 数据
-  const wsUnsubscribeRefs = useRef([]); // 存储取消订阅函数
+  
+  // WebSocket连接状态管理（与原H5项目保持一致）
+  const wsConnectionStatusRef = useRef('connecting'); // connecting | connected | failed
+  const wsConnectionTimeoutRef = useRef(null); // WebSocket连接超时定时器
+  const useHttpFallbackRef = useRef(false); // 是否使用HTTP降级
+  const pollingTimerRef = useRef(null); // HTTP轮询定时器
+  const wsUnsubscribeRefs = useRef({ kline: null }); // 存储取消订阅函数
 
-  // 初始化 WebSocket
-  const { isConnected, isAuthenticated, subscribe } = useMoziWebSocket({
-    autoConnect: true,
-    onConnected: () => {
-      console.log('[Detail] WebSocket 已连接，等待认证...');
-      // 不在这里订阅，等待 isAuthenticated 变为 true 后由 useEffect 触发
-    },
-    onDisconnected: () => {
-      console.log('[Detail] WebSocket 已断开，切换到 HTTP 数据源');
-      useWebSocketData.current = false;
-      // 清理订阅
-      cleanupWebSocketSubscriptions();
-      // 启动 HTTP 轮询
-      if (needLoop.current) {
+  // 启动HTTP降级模式
+  const startHttpFallback = () => {
+    console.log('[Detail] ========== 启动HTTP降级模式 ==========');
+    useHttpFallbackRef.current = true;
+    wsConnectionStatusRef.current = 'failed';
+    
+    // 立即获取一次数据
+    headRequest();
+    kLineRequest();
+    marketRequest();
+    
+    // 设置轮询
+    if (pollingTimerRef.current) {
+      clearInterval(pollingTimerRef.current);
+    }
+    pollingTimerRef.current = setInterval(() => {
+      if (needLoop.current && useHttpFallbackRef.current) {
+        console.log('[Detail] HTTP轮询中...');
         headRequest();
         kLineRequest();
         marketRequest();
       }
-    },
-    onError: (error) => {
-      console.error('[Detail] WebSocket 错误:', error);
-      useWebSocketData.current = false;
+    }, LOOPTIME);
+  };
+  
+  // 停止HTTP降级模式
+  const stopHttpFallback = () => {
+    console.log('[Detail] ========== 停止HTTP降级模式 ==========');
+    useHttpFallbackRef.current = false;
+    
+    // 清除轮询定时器
+    if (pollingTimerRef.current) {
+      clearInterval(pollingTimerRef.current);
+      pollingTimerRef.current = null;
     }
-  });
+  };
+
+  // 使用全局 WebSocket 连接（在 app.js 中已初始化）
+  const { isConnected, isAuthenticated, subscribe } = useWebSocket();
+  
+  // 监听 WebSocket 连接状态变化
+  useEffect(() => {
+    if (!isConnected && wsConnectionStatusRef.current === 'connected') {
+      // WebSocket 从已连接变为断开
+      wsConnectionStatusRef.current = 'failed';
+      
+      // 清理订阅
+      cleanupWebSocketSubscriptions();
+      
+      // 启动 HTTP 降级
+      startHttpFallback();
+    }
+  }, [isConnected]);
+  
+  // 组件卸载时清理订阅
+  useEffect(() => {
+    return () => {
+      cleanupWebSocketSubscriptions();
+    };
+  }, []);
 
 
   // 控制展开收起
@@ -149,9 +195,20 @@ export default function Detail() {
 
   // 监听 WebSocket 认证状态，认证成功后自动订阅
   useEffect(() => {
-    if (isAuthenticated && needLoop.current && symbol) {
-      console.log('[Detail] WebSocket 已认证，自动订阅币种数据:', symbol);
-      useWebSocketData.current = true;
+    // 只有在页面活跃、认证成功、且还没有连接成功时才处理
+    if (isAuthenticated && needLoop.current && symbol && wsConnectionStatusRef.current !== 'connected') {
+      wsConnectionStatusRef.current = 'connected'; // 标记连接成功
+      
+      // 清除WebSocket连接超时定时器
+      if (wsConnectionTimeoutRef.current) {
+        clearTimeout(wsConnectionTimeoutRef.current);
+        wsConnectionTimeoutRef.current = null;
+      }
+      
+      // 停止HTTP降级模式（如果已启动）
+      stopHttpFallback();
+      
+      // 订阅 WebSocket 数据
       subscribeWebSocketData();
     }
   }, [isAuthenticated, symbol]);
@@ -159,16 +216,22 @@ export default function Detail() {
   useDidShow(() => {
     needLoop.current = true;
     
-    // 如果 WebSocket 已连接且认证，使用 WebSocket
+    // 重置首次加载状态（重新进入时显示骨架屏）
+    setIsInitialLoad(true);
+    setKlineLoading(true);
+    
+    // 检查 WebSocket 连接状态
     if (isConnected && isAuthenticated) {
-      console.log('[Detail] 页面显示 - 使用 WebSocket 数据源');
+      // WebSocket 已就绪，立即订阅
+      wsConnectionStatusRef.current = 'connected';
       subscribeWebSocketData();
     } else {
-      // 否则使用 HTTP
-      console.log('[Detail] 页面显示 - 使用 HTTP 数据源（WebSocket 连接中...）');
-      headRequest();
-      kLineRequest();
-      marketRequest();
+      // WebSocket 未就绪，设置超时机制
+      wsConnectionTimeoutRef.current = setTimeout(() => {
+        if (wsConnectionStatusRef.current !== 'connected') {
+          startHttpFallback();
+        }
+      }, 10000); // 10秒
     }
     
     getROIData(symbol);
@@ -180,87 +243,99 @@ export default function Detail() {
 
   useDidHide(() => {
     needLoop.current = false;
-    // 清理 WebSocket 订阅
+    
+    // 清理 WebSocket 订阅（取消订阅，但不断开连接）
     cleanupWebSocketSubscriptions();
+    
+    // 清除HTTP轮询定时器
+    if (pollingTimerRef.current) {
+      clearInterval(pollingTimerRef.current);
+      pollingTimerRef.current = null;
+    }
+    
+    // 清除WebSocket连接超时定时器
+    if (wsConnectionTimeoutRef.current) {
+      clearTimeout(wsConnectionTimeoutRef.current);
+      wsConnectionTimeoutRef.current = null;
+    }
+    
+    // 重置连接状态（下次进入时重新检查）
+    wsConnectionStatusRef.current = 'connecting';
   });
 
   /**
    * 订阅 WebSocket 数据
+   * 只订阅当前周期的 kline（包含头部信息、图表数据、市场数据）
    */
   const subscribeWebSocketData = () => {
     if (!subscribe || !symbol) {
-      console.warn('[Detail] 无法订阅，subscribe 或 symbol 不存在');
       return;
     }
     
-    console.log('[Detail] ========== 开始订阅 WebSocket 数据 ==========');
-    console.log('[Detail] 币种:', symbol);
-    console.log('[Detail] 认证状态:', isAuthenticated);
-    console.log('[Detail] 连接状态:', isConnected);
-    
     // 清理旧的订阅
-    if (wsUnsubscribeRefs.current.length > 0) {
-      console.log('[Detail] 清理旧订阅...');
-      cleanupWebSocketSubscriptions();
+    if (wsUnsubscribeRefs.current.kline) {
+      wsUnsubscribeRefs.current.kline();
+      wsUnsubscribeRefs.current.kline = null;
     }
     
-    // 订阅 ticker 数据（实时价格）
-    // 格式：{"type":"ticker","symbols":["ALCX"],"params":{"interval":5000}}
-    console.log('[Detail] 订阅 ticker 频道...');
-    const unsubTicker = subscribe(
+    // 订阅当前周期的 kline 数据
+    // kline 事件包含：headerData（头部信息）、klineData（图表数据）、exchangesPriceData（市场数据）
+    subscribeCurrentPeriodKline();
+  };
+
+  /**
+   * 订阅当前周期的 Kline 数据
+   */
+  const subscribeCurrentPeriodKline = () => {
+    if (!subscribe || !symbol) return;
+    
+    // 周期映射：hour -> 1h, day -> 1d, week -> 1w, month -> 1M
+    const periodMap = {
+      hour: '1h',
+      day: '1d',
+      week: '1w',
+      month: '1M'
+    };
+    
+    const currentPeriod = chartData.current.active || 'hour';
+    const period = periodMap[currentPeriod];
+    
+    // 清理旧的 kline 订阅
+    if (wsUnsubscribeRefs.current.kline) {
+      wsUnsubscribeRefs.current.kline();
+    }
+    
+    // 订阅新周期
+    const unsubKline = subscribe(
       {
-        type: CHANNEL_TYPES.TICKER,
-        symbols: [symbol],  // 使用 symbols 数组
-        params: {
-          interval: 5000    // 5秒推送间隔
+        type: CHANNEL_TYPES.KLINE,
+        symbols: [symbol],
+        params: { 
+          period: period,
+          limit: 100
         }
       },
       (data) => {
-        console.log('[Detail] ✅ 收到 ticker 数据:', data);
-        handleTickerData(data);
+        // 传递 period（'1h', '1d' 等）而不是 currentPeriod（'hour', 'day' 等）
+        handleKlineData(data, period);
       }
     );
-    wsUnsubscribeRefs.current.push(unsubTicker);
-    console.log('[Detail] ✅ ticker 频道订阅成功');
-    
-    // 订阅 kline 数据（K线）
-    // 格式：{"type":"kline","symbols":["ALCX"],"params":{"period":"1h","limit":100}}
-    const periods = ['1h', '1d', '1w', '1M']; // 对应 hour, day, week, month
-    console.log('[Detail] 订阅 kline 频道...');
-    periods.forEach((period) => {
-      console.log(`[Detail] 订阅 kline (${period})...`);
-      const unsubKline = subscribe(
-        {
-          type: CHANNEL_TYPES.KLINE,
-          symbols: [symbol],  // 使用 symbols 数组
-          params: { 
-            period: period,
-            limit: 100        // 获取100条K线数据
-          }
-        },
-        (data) => {
-          console.log(`[Detail] ✅ 收到 kline 数据 (${period}):`, data);
-          handleKlineData(data, period);
-        }
-      );
-      wsUnsubscribeRefs.current.push(unsubKline);
-      console.log(`[Detail] ✅ kline (${period}) 频道订阅成功`);
-    });
-    
-    console.log('[Detail] ========== 所有频道订阅完成 ==========');
-    console.log('[Detail] 总共订阅了', wsUnsubscribeRefs.current.length, '个频道 (1个ticker + 4个kline)');
+    wsUnsubscribeRefs.current.kline = unsubKline;
   };
   
   /**
    * 清理 WebSocket 订阅
+   * 注意：只取消订阅，不断开 WebSocket 连接（连接由全局 Context 管理）
    */
   const cleanupWebSocketSubscriptions = () => {
-    wsUnsubscribeRefs.current.forEach(unsub => {
-      if (typeof unsub === 'function') {
-        unsub();
+    if (wsUnsubscribeRefs.current.kline) {
+      try {
+        wsUnsubscribeRefs.current.kline();
+        wsUnsubscribeRefs.current.kline = null;
+      } catch (error) {
+        // 忽略取消订阅时的错误
       }
-    });
-    wsUnsubscribeRefs.current = [];
+    }
   };
   
   /**
@@ -351,11 +426,202 @@ export default function Detail() {
   
   /**
    * 处理 kline 数据（来自 WebSocket）
+   * @param {Object} data - WebSocket 返回的完整数据对象
+   * @param {string} period - 周期（'1h', '1d', '1w', '1M'）
    */
   const handleKlineData = (data, period) => {
-    if (!data.data) return;
+    if (!data || !data.data) {
+      console.warn('[Detail] handleKlineData: 数据为空', data);
+      return;
+    }
     
-    const klineData = data.data;
+    console.log('[Detail] ========== 处理 kline 事件数据 ==========');
+    console.log('[Detail] 周期:', period);
+    
+    const wsData = data.data;
+    
+    // 1. 处理头部信息数据（headerData）
+    if (wsData.headerData) {
+      console.log('[Detail] 更新头部信息');
+      handleKlineHeaderData(wsData.headerData);
+    }
+    
+    // 2. 处理 K线图表数据（klineData）
+    if (wsData.klineData) {
+      console.log('[Detail] 更新图表数据');
+      handleKlineChartData(wsData.klineData, period);
+    }
+    
+    // 3. 处理市场行情数据（exchangesPriceData）
+    if (wsData.exchangesPriceData) {
+      console.log('[Detail] 更新市场行情数据');
+      handleKlineMarketData(wsData.exchangesPriceData);
+    }
+    
+    console.log('[Detail] ========== kline 事件数据处理完成 ==========');
+  };
+
+  /**
+   * 处理 kline 事件的头部数据
+   */
+  const handleKlineHeaderData = (headerData) => {
+    // 构建头部信息数据结构
+    // 确保所有字段都是字符串类型，便于渲染
+    const coin_info_data = {
+      symbol: String(headerData.symbol || ''),
+      name: String(headerData.name || ''),
+      url: String(headerData.url || ''),
+      currentPrice: String(headerData.currentPrice || '0'),
+      priceChange_24h: String(headerData.priceChange_24h || '0'),
+      priceChangePercentage_24h: String(headerData.priceChangePercentage_24h || '0%'),
+      marketCapRank: headerData.marketCapRank,
+      marketCap: String(headerData.marketCap || '0'),
+      high_24h: String(headerData.high_24h || '0'),
+      low_24h: String(headerData.low_24h || '0'),
+      fullyDilutedValuation: String(headerData.fullyDilutedValuation || '0'),
+      marketCapChange_24h: String(headerData.marketCapChange_24h || '0'),
+      marketCapChangePercentage_24h: String(headerData.marketCapChangePercentage_24h || '0%'),
+      athDate: String(headerData.athDate || ''),
+      atlDate: String(headerData.atlDate || ''),
+      totalVolume: String(headerData.totalVolume || headerData.volume || '0'),
+      totalSupply: String(headerData.totalSupply || '0'),
+      circulatingSupply: String(headerData.circulatingSupply || '0'),
+      ath: String(headerData.ath || '0'),
+      athChangePercentage: String(headerData.athChangePercentage || '0%'),
+      atl: String(headerData.atl || '0'),
+      atlChangePercentage: String(headerData.atlChangePercentage || '0%'),
+      isSelfSelected: headerData.isSelfSelected ?? coinInfo?.isSelfSelected
+    };
+    
+    // 构建左侧信息
+    const headerInfoLeft = [{
+      name: '24H最高价',
+      value: coin_info_data.high_24h
+    },{
+      name: '24H最低价',
+      value: coin_info_data.low_24h
+    },{
+      name: '稀释市值',
+      value: coin_info_data.fullyDilutedValuation
+    },{
+      name: '24H市值变化',
+      value: coin_info_data.marketCapChange_24h
+    },{
+      name: '24H市值变化百分比',
+      value: coin_info_data.marketCapChangePercentage_24h
+    },{
+      name: '历史最高价时间',
+      value: coin_info_data.athDate
+    },{
+      name: '历史最低价时间',
+      value: coin_info_data.atlDate
+    }];
+    
+    // 构建右侧信息
+    const headerInfoRight = [{
+      name: '24H成交额',
+      value: coin_info_data.totalVolume
+    },{
+      name: '总供应量',
+      value: coin_info_data.totalSupply
+    },{
+      name: '流通供应量',
+      value: coin_info_data.circulatingSupply
+    },{
+      name: '历史最高价',
+      value: coin_info_data.ath
+    },{
+      name: '历史最高价百分比',
+      value: coin_info_data.athChangePercentage
+    },{
+      name: '历史最低价',
+      value: coin_info_data.atl
+    },{
+      name: '历史最低价百分比',
+      value: coin_info_data.atlChangePercentage
+    }];
+    
+    // 更新状态
+    setCoinInfoLeft(headerInfoLeft);
+    setCoinInfoRight(headerInfoRight);
+    setCoinInfo(coin_info_data);
+    
+    console.log('[Detail] 头部信息已更新:', {
+      symbol: coin_info_data.symbol,
+      currentPrice: coin_info_data.currentPrice,
+      priceChangePercentage_24h: coin_info_data.priceChangePercentage_24h
+    });
+  };
+
+  /**
+   * 处理 kline 事件的图表数据
+   */
+  const handleKlineChartData = (klineData, period) => {
+    // 收到数据后，关闭 loading 状态
+    setKlineLoading(false);
+    // 首次加载完成
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+    }
+    // klineData 包含：
+    // - hisKlineData: 历史K线数据数组（从新到旧）
+    // - realKlineData: 实时K线数据（当前正在形成的K线）
+    
+    let chartDataArray = [];
+    
+    // 使用历史K线数据
+    // 注意：hisKlineData 是从新到旧排序的，需要反转为从旧到新
+    if (klineData.hisKlineData && Array.isArray(klineData.hisKlineData)) {
+      chartDataArray = [...klineData.hisKlineData].reverse();
+      console.log('[Detail] 历史K线数据已反转（从旧到新）:', {
+        原始第一条: klineData.hisKlineData[0]?.dt,
+        反转后第一条: chartDataArray[0]?.dt,
+        原始最后一条: klineData.hisKlineData[klineData.hisKlineData.length - 1]?.dt,
+        反转后最后一条: chartDataArray[chartDataArray.length - 1]?.dt
+      });
+    }
+    
+    // 如果有实时K线数据，添加到数组末尾
+    if (klineData.realKlineData) {
+      // 将实时数据格式转换为与历史数据一致
+      const realData = {
+        dt: new Date(klineData.realKlineData.timestamp).toISOString(),
+        open: klineData.realKlineData.open,
+        close: klineData.realKlineData.close,
+        high: klineData.realKlineData.high,
+        low: klineData.realKlineData.low,
+        volume: klineData.realKlineData.volume
+      };
+      chartDataArray.push(realData);
+    }
+    
+    // 转换为图表格式
+    const categoryData = [];
+    const values = [];
+    
+    chartDataArray.forEach((item) => {
+      categoryData.push(item.dt || item.time || item.timestamp);
+      values.push([
+        parseFloat(item.open || item.Open || 0),
+        parseFloat(item.close || item.Close || 0),
+        parseFloat(item.low || item.Low || 0),
+        parseFloat(item.high || item.High || 0)
+      ]);
+    });
+    
+    const formattedData = {
+      categoryData,
+      values
+    };
+    
+    console.log('[Detail] 转换图表数据:', {
+      历史数据: klineData.hisKlineData?.length || 0,
+      实时数据: klineData.realKlineData ? 1 : 0,
+      总数据量: chartDataArray.length,
+      period: period
+    });
+    
+    // 周期映射：'1h' -> 'hour', '1d' -> 'day' 等
     const periodMap = {
       '1h': 'hour',
       '1d': 'day',
@@ -364,25 +630,81 @@ export default function Detail() {
     };
     
     const key = periodMap[period];
-    if (!key) return;
+    if (!key) {
+      console.warn('[Detail] handleKlineChartData: 未知周期', period);
+      return;
+    }
     
+    // 保存到 chartData
     chartData.current[key] = {
-      data: klineData,
+      data: formattedData,
       type: 'kline'
     };
     
+    console.log(`[Detail] 已更新 ${key} 周期的图表数据`);
+    
     // 如果是当前激活的周期，立即渲染
     if (chartData.current.active === key) {
-      renderCurrentChart();
+      console.log('[Detail] 是当前激活周期，准备渲染图表');
+      // 使用 setTimeout 确保图表引用已经初始化
+      // 如果图表还没准备好，会在短暂延迟后重试
+      const tryRender = (retries = 3) => {
+        if (chartRef.current) {
+          console.log('[Detail] 图表引用已就绪，立即渲染');
+          renderCurrentChart();
+        } else if (retries > 0) {
+          console.log(`[Detail] 图表引用未就绪，等待后重试 (剩余重试次数: ${retries})`);
+          setTimeout(() => tryRender(retries - 1), 100);
+        } else {
+          console.warn('[Detail] 图表引用始终未就绪，渲染失败');
+        }
+      };
+      tryRender();
     }
+  };
+
+  /**
+   * 处理 kline 事件的市场数据
+   */
+  const handleKlineMarketData = (exchangesPriceData) => {
+    // exchangesPriceData 是各交易所的价格数据数组
+    if (!Array.isArray(exchangesPriceData)) {
+      console.warn('[Detail] exchangesPriceData 不是数组');
+      return;
+    }
+    
+    // 转换数据格式，与 HTTP 返回的格式保持一致
+    const tempData = exchangesPriceData.map((item) => {
+      return {
+        title: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.exchanges}</View>,
+        last: item.last,
+        price24h: <HighlightArea value={item.price24h} />,
+        vol: item.vol,
+        usd: item.usd
+      }
+    });
+    
+    // 更新市场行情数据
+    setCoinMarket({
+      length: tempData.length,
+      data: tempData
+    });
+    
+    console.log('[Detail] 市场行情已更新:', {
+      交易所数量: tempData.length,
+      数据: tempData
+    });
   };
 
   // 头部（HTTP 回退）
   const headRequest = async () => {
-    // 如果正在使用 WebSocket，跳过 HTTP 请求
-    if (useWebSocketData.current) {
+    // 只有在允许使用HTTP降级时才执行
+    if (!useHttpFallbackRef.current) {
+      console.log('[Detail] WebSocket正在使用中，不执行HTTP请求 - headRequest');
       return;
     }
+    
+    console.log('[Detail] 使用HTTP降级模式获取头部数据');
     
     // 头部信息
     const coin_info = await cardRequest(Interface.coin_info, {
@@ -449,17 +771,18 @@ export default function Detail() {
     setCoinInfoRight(headerInfoRight);
 
     setCoinInfo(coin_info.data);
-
-    setTimeout(() => {
-      if (needLoop.current && !useWebSocketData.current) headRequest();
-    }, LOOPTIME);
+    
+    // HTTP轮询由 startHttpFallback 统一管理，无需在此处单独设置
   };
   // K线（HTTP 回退）
   const kLineRequest = async () => {
-    // 如果正在使用 WebSocket，跳过 HTTP 请求
-    if (useWebSocketData.current) {
+    // 只有在允许使用HTTP降级时才执行
+    if (!useHttpFallbackRef.current) {
+      console.log('[Detail] WebSocket正在使用中，不执行HTTP请求 - kLineRequest');
       return;
     }
+    
+    console.log('[Detail] 使用HTTP降级模式获取K线数据');
     
     // k线图
     const coin_line1 = await cardRequest(Interface.coin_line, {
@@ -473,6 +796,8 @@ export default function Detail() {
     };
     if (chartData.current.active === 'hour') {
       renderCurrentChart();
+      setKlineLoading(false);
+      if (isInitialLoad) setIsInitialLoad(false);
     }
 
     const coin_line2 = await cardRequest(Interface.coin_line, {
@@ -485,6 +810,8 @@ export default function Detail() {
     };
     if (chartData.current.active === 'day') {
       renderCurrentChart();
+      setKlineLoading(false);
+      if (isInitialLoad) setIsInitialLoad(false);
     }
     const coin_line3 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -496,6 +823,8 @@ export default function Detail() {
     };
     if (chartData.current.active === 'week') {
       renderCurrentChart();
+      setKlineLoading(false);
+      if (isInitialLoad) setIsInitialLoad(false);
     }
     const coin_line4 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -507,19 +836,22 @@ export default function Detail() {
     };
     if (chartData.current.active === 'month') {
       renderCurrentChart();
+      setKlineLoading(false);
+      if (isInitialLoad) setIsInitialLoad(false);
     }
-
-    setTimeout(() => {
-      if (needLoop.current && !useWebSocketData.current) kLineRequest();
-    }, LOOPTIME);
+    
+    // HTTP轮询由 startHttpFallback 统一管理，无需在此处单独设置
   };
 
   // 市场（HTTP 回退）
   const marketRequest = async () => {
-    // 如果正在使用 WebSocket，跳过 HTTP 请求
-    if (useWebSocketData.current) {
+    // 只有在允许使用HTTP降级时才执行
+    if (!useHttpFallbackRef.current) {
+      console.log('[Detail] WebSocket正在使用中，不执行HTTP请求 - marketRequest');
       return;
     }
+    
+    console.log('[Detail] 使用HTTP降级模式获取市场数据');
     
     const marketRes = await request({
       url: Interface.COIN_MARKET,
@@ -544,10 +876,8 @@ export default function Detail() {
         data: tempData
       });
     }
-
-    setTimeout(() => {
-      if (needLoop.current && !useWebSocketData.current) marketRequest();
-    }, LOOPTIME);
+    
+    // HTTP轮询由 startHttpFallback 统一管理，无需在此处单独设置
   };
   useLoad(async () => {
     Taro.showShareMenu({
@@ -565,7 +895,35 @@ export default function Detail() {
   });
 
   useUnload(() => {
-    chartRef.current.dispose();
+    console.log('[Detail] ========== 页面卸载 (useUnload) ==========');
+    
+    // 清理 WebSocket 订阅
+    cleanupWebSocketSubscriptions();
+    
+    // 清除HTTP轮询定时器
+    if (pollingTimerRef.current) {
+      console.log('[Detail] 停止 HTTP 轮询');
+      clearInterval(pollingTimerRef.current);
+      pollingTimerRef.current = null;
+    }
+    
+    // 清除WebSocket连接超时定时器
+    if (wsConnectionTimeoutRef.current) {
+      console.log('[Detail] 清除 WebSocket 连接超时定时器');
+      clearTimeout(wsConnectionTimeoutRef.current);
+      wsConnectionTimeoutRef.current = null;
+    }
+    
+    // 销毁图表
+    if (chartRef.current) {
+      try {
+        chartRef.current.dispose();
+      } catch (error) {
+        console.warn('[Detail] 图表销毁失败:', error);
+      }
+    }
+    
+    console.log('[Detail] ========== 页面卸载完成 ==========');
   });
 
   // 保证路由切换或隐藏显示过程中，不丢失当前类型
@@ -610,9 +968,29 @@ export default function Detail() {
 
   const activeClick = async (value) => {
     if ( value ===  activeKey) return;
+    
+    // 设置 loading 状态
+    setKlineLoading(true);
+    
     chartData.current.active = value;
     setActiveKey(value);
-    renderCurrentChart();
+    
+    // 如果当前周期已有数据，立即渲染并关闭 loading
+    if (chartData.current[value]?.data) {
+      renderCurrentChart();
+      setKlineLoading(false);
+    }
+    
+    // 如果 WebSocket 已连接，切换周期时重新订阅 kline
+    if (wsConnectionStatusRef.current === 'connected' && isConnected && isAuthenticated) {
+      console.log('[Detail] 切换周期，重新订阅 kline:', value);
+      subscribeCurrentPeriodKline();
+    } else {
+      // 如果 WebSocket 未连接，使用 HTTP 获取数据
+      console.log('[Detail] WebSocket 未连接，使用 HTTP 获取数据');
+      kLineRequest();
+    }
+    
     // TODO-暂时下掉
     getAiData({activeKey: value});
   };
@@ -747,6 +1125,15 @@ export default function Detail() {
     //   url: `/pages/community/index?symbol=${coinInfo?.symbol}`,
     // });
   };
+
+  // 显示骨架屏（首次加载且数据未就绪时）
+  // 只有首次加载且数据未就绪时才显示骨架屏，切换周期时不显示
+  const currentPeriodData = chartData.current[chartData.current.active];
+  const isDataReady = coinInfo && currentPeriodData?.data;
+  
+  if (isInitialLoad && !isDataReady) {
+    return <SkeletonPage config={detailPageSkeletonConfig} />;
+  }
 
   return (
     <View className='indexBox'>
@@ -887,11 +1274,21 @@ export default function Detail() {
             <TabBar.Item key='week' title='1周' />
             <TabBar.Item key='month' title='1月' />
           </TabBar>
-          <View className='chartBox detail-kline-large'>
+          <View className='chartBox detail-kline-large' style={{position: 'relative'}}>
             <View className='chart-arrawsalt detail-landscape-btn' onClick={jump2Land}>
               <IconFont name='arrawsalt' size={30} color='#fff' />
             </View>
-            <ec-canvas canvas-id="mychart-kline" ec={ec}></ec-canvas>
+            {/* K线数据加载中显示 loading */}
+            {klineLoading && (
+              <View className='chart-loading-wrapper'>
+                <GardenLoading />
+              </View>
+            )}
+            <ec-canvas 
+              canvas-id="mychart-kline" 
+              ec={ec} 
+              style={{opacity: klineLoading ? 0.3 : 1}}
+            ></ec-canvas>
           </View>
           
         </div>

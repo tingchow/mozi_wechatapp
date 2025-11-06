@@ -119,10 +119,18 @@ export function useMoziWebSocket(options = {}) {
 
     // 监听对应的数据事件
     const eventType = channel.type;
+    console.log('[useMoziWebSocket] 注册事件监听:', eventType, '订阅配置:', channel);
+    
     wsRef.current.on(eventType, (data) => {
+      console.log('[useMoziWebSocket] 收到事件:', eventType, '数据:', data);
       // 检查数据是否匹配当前订阅
-      if (matchChannel(data, channel)) {
+      const matched = matchChannel(data, channel);
+      console.log('[useMoziWebSocket] 匹配结果:', matched, '订阅:', channel);
+      if (matched) {
+        console.log('[useMoziWebSocket] 匹配成功，调用回调');
         callback(data);
+      } else {
+        console.log('[useMoziWebSocket] 匹配失败');
       }
     });
 
@@ -241,37 +249,51 @@ export function useMoziWebSocket(options = {}) {
 function matchChannel(data, channel) {
   // 检查频道类型
   if (data.event !== channel.type) {
+    console.log('[matchChannel] 事件类型不匹配:', data.event, '!=', channel.type);
     return false;
   }
 
   // 检查 symbol 或 symbols（如果有）
-  // 支持两种格式：
-  // 1. symbol: "ALCX" (旧格式，单个币种)
-  // 2. symbols: ["ALCX"] (新格式，多个币种)
-  const dataSymbol = data.data?.symbol;
+  // 支持多种数据格式：
+  // 1. data.data.symbol (简单格式)
+  // 2. data.data.headerData.symbol (完整 kline 格式)
+  const dataSymbol = data.data?.symbol || data.data?.headerData?.symbol;
+  
+  console.log('[matchChannel] 数据币种:', dataSymbol, '订阅币种:', channel.symbols || channel.symbol);
   
   if (channel.symbol && dataSymbol !== channel.symbol) {
+    console.log('[matchChannel] 单币种不匹配');
     return false;
   }
   
   if (channel.symbols && channel.symbols.length > 0) {
     // 检查返回的数据币种是否在订阅的 symbols 列表中
     if (!dataSymbol || !channel.symbols.includes(dataSymbol)) {
+      console.log('[matchChannel] 多币种不匹配');
       return false;
     }
   }
 
   // 检查其他参数（如果需要）
-  // 注意：不要比较所有参数，因为订阅时的参数可能和返回数据的参数不完全一致
-  // 例如：订阅时有 limit 参数，但返回数据时可能没有
+  // 对于 kline 类型，需要匹配 period 参数
   if (channel.params && channel.params.period) {
-    // 对于 kline 类型，需要匹配 period 参数
-    const dataPeriod = data.data?.period || data.data?.params?.period;
+    // 支持多种数据格式：
+    // 1. data.data.period
+    // 2. data.data.params.period
+    // 3. data.data.klineData.realKlineData.period
+    const dataPeriod = data.data?.period || 
+                       data.data?.params?.period || 
+                       data.data?.klineData?.realKlineData?.period;
+    
+    console.log('[matchChannel] 数据周期:', dataPeriod, '订阅周期:', channel.params.period);
+    
     if (dataPeriod && dataPeriod !== channel.params.period) {
+      console.log('[matchChannel] 周期不匹配');
       return false;
     }
   }
 
+  console.log('[matchChannel] 匹配成功！');
   return true;
 }
 

@@ -2,6 +2,7 @@
 import Taro, { useLaunch } from '@tarojs/taro'
 import { request } from './utils/request';
 import { Interface } from './utils/constants';
+import { WebSocketProvider } from './context/WebSocketContext';
 import './app.less'
 
 function App({ children }) {
@@ -22,10 +23,16 @@ function App({ children }) {
       Taro.hideTabBar();
     }
     console.log('App launched.')
+    console.log('🚀 全局 WebSocket 连接将在应用启动时建立')
   })
 
+  // 使用 WebSocketProvider 包裹整个应用
   // children 是将要会渲染的页面
-  return children
+  return (
+    <WebSocketProvider>
+      {children}
+    </WebSocketProvider>
+  )
 }
 
 export default App

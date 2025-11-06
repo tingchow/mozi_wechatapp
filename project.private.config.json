@@ -3,7 +3,7 @@
   "projectname": "mozi_wechatapp",
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": false
+    "urlCheck": true
   },
   "libVersion": "latest",
   "condition": {
