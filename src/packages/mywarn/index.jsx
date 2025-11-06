@@ -229,6 +229,90 @@ export default function Mywarn() {
     }
   };
 
+  // 删除当前币种的所有告警
+  const deleteCoinAllWarns = async () => {
+    const symbol = Object.keys(warnData.data)[activeKey];
+    
+    // 显示确认对话框
+    const res = await Taro.showModal({
+      title: '确认删除',
+      content: `确定要删除 ${symbol} 的所有告警吗？`,
+      confirmText: '删除',
+      cancelText: '取消',
+      confirmColor: '#FA5F5F'
+    });
+
+    if (!res.confirm) {
+      return;
+    }
+
+    Taro.showLoading({ title: '删除中...' });
+    
+    try {
+      const { data } = await request({
+        url: Interface.DELETE_COIN_WARN,
+        method: 'POST',
+        data: {
+          symbol
+        }
+      });
+      
+      Taro.hideLoading();
+      
+      if (data) {
+        // 从数据中移除该币种
+        const newData = { ...warnData.data };
+        delete newData[symbol];
+        
+        // 切换到第一个币种（如果还有的话）
+        const symbols = Object.keys(newData);
+        let newActiveKey = '0';
+        let newSideData = null;
+        
+        if (symbols.length > 0) {
+          // 如果删除的不是第一个，且当前激活的索引大于0，则激活索引减1
+          if (parseInt(activeKey) > 0) {
+            newActiveKey = (parseInt(activeKey) - 1).toString();
+          }
+          // 确保激活索引不超出范围
+          if (parseInt(newActiveKey) >= symbols.length) {
+            newActiveKey = (symbols.length - 1).toString();
+          }
+          newSideData = newData[symbols[newActiveKey]];
+        }
+        
+        setWarnData({
+          ...warnData,
+          data: newData,
+          sideData: newSideData
+        });
+        setActiveKey(newActiveKey);
+        
+        Taro.showToast({
+          title: '删除成功',
+          icon: 'success',
+          duration: 2000,
+          mask: true
+        });
+      } else {
+        Taro.showToast({
+          title: '删除失败',
+          icon: 'error',
+          duration: 2000,
+          mask: true
+        });
+      }
+    } catch (error) {
+      Taro.hideLoading();
+      Taro.showToast({
+        title: '删除失败',
+        icon: 'error',
+        duration: 2000,
+        mask: true
+      });
+    }
+  };
+
   return (
     <View className='box'>
       <Layout isLoading={warnData?.loading} isError={warnData.error} needLogin={warnData.needLogin} loginCallback={() => init()}>
@@ -300,6 +384,12 @@ export default function Mywarn() {
                     )
                   })
                 }
+                {/* 删除整个币种的按钮 */}
+                {warnData.sideData?.warnContent?.length > 0 && (
+                  <View className='delete-coin-btn' onClick={deleteCoinAllWarns}>
+                    <Text className='delete-coin-text'>删除 {Object.keys(warnData.data)[activeKey]}</Text>
+                  </View>
+                )}
               </View>
             </View>
           )
