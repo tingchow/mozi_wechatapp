@@ -48,7 +48,7 @@ export default function Index() {
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/skin%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '皮肤中心',
     extra: <IconFont name='right' size={32} color='#ccc' />,
-    callback: () => {comingSoon()}
+    callback: () => {jump2NoTab('theme')}
   }, {
     key: 'contact',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,

@@ -1,0 +1,149 @@
+.theme-center {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding: 24rpx;
+
+  .theme-header {
+    text-align: left;
+    padding: 16rpx 0;
+    margin-bottom: 24rpx;
+
+    .header-title {
+      font-size: 32rpx;
+      font-weight: 600;
+      color: #333;
+      display: block;
+    }
+  }
+
+  .theme-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20rpx;
+    margin-bottom: 40rpx;
+  }
+
+  .theme-item {
+    background: #fff;
+    border-radius: 20rpx;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+
+    &.active {
+      box-shadow: 0 4px 20px rgba(17, 183, 135, 0.3);
+      border: 4rpx solid #11B787;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .theme-preview {
+    height: 240rpx;
+    padding: 16rpx;
+    position: relative;
+
+    .preview-top {
+      height: 60rpx;
+      border-radius: 10rpx;
+      margin-bottom: 12rpx;
+      display: flex;
+      align-items: center;
+      padding: 0 12rpx;
+
+      .preview-icon {
+        width: 32rpx;
+        height: 32rpx;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        margin-right: 8rpx;
+      }
+
+      .preview-text {
+        width: 80rpx;
+        height: 16rpx;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 4rpx;
+      }
+    }
+
+    .preview-card {
+      height: 50rpx;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10rpx;
+      margin-bottom: 8rpx;
+    }
+  }
+
+  .theme-info {
+    padding: 20rpx;
+    border-top: 1px solid #F0F0F0;
+
+    .theme-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8rpx;
+    }
+
+    .theme-name {
+      font-size: 30rpx;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .current-badge {
+      background: #11B787;
+      color: #fff;
+      font-size: 20rpx;
+      padding: 4rpx 12rpx;
+      border-radius: 20rpx;
+      font-weight: 500;
+    }
+
+    .theme-description {
+      font-size: 24rpx;
+      color: #999;
+      display: block;
+      margin-bottom: 12rpx;
+      line-height: 1.4;
+    }
+
+    .theme-colors {
+      display: flex;
+      align-items: center;
+      margin-top: 8rpx;
+
+      .color-dot {
+        width: 28rpx;
+        height: 28rpx;
+        border-radius: 50%;
+        margin-right: 8rpx;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .color-code {
+        font-size: 22rpx;
+        color: #666;
+        font-family: monospace;
+      }
+    }
+  }
+
+  .theme-tips {
+    background: #FFF7E6;
+    border: 2rpx solid #FFE7BA;
+    border-radius: 12rpx;
+    padding: 24rpx;
+    margin-top: 32rpx;
+
+    .tips-text {
+      font-size: 26rpx;
+      color: #D46B08;
+      line-height: 1.6;
+    }
+  }
+}
+

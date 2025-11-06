@@ -161,6 +161,13 @@ export default defineAppConfig({
       pages: [
         "index"
       ]
+    },
+    {
+      root: "packages/theme",
+      name: "theme",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {
