@@ -366,7 +366,7 @@
     
     .topic-card {
       width: 230px; // 固定宽度230px
-      height: 260px; // 增加卡片高度，给标题更多空间
+      height: 260px; // 固定卡片高度
       flex-shrink: 0; // 防止卡片被压缩
       background-color: #fff;
       border-radius: 12px;
@@ -376,10 +376,6 @@
       border: 1px solid #f0f0f0;
       display: flex;
       flex-direction: column;
-
-      &.no-desc {
-        height: 220px; // 无描述时卡片高度更小
-      }
               .topic-rank {
           margin-bottom: 4px;
           flex-shrink: 0;
@@ -423,10 +419,6 @@
           flex-shrink: 0;
           align-items: flex-start; // 统计信息左对齐
           margin-top: auto; // 自动向上推，确保在底部
-          
-          &.no-desc {
-            margin-top: 0; // 无描述时去掉向上的推距
-          }
           
           .topic-hot {
             color: #ff4d4f;

@@ -612,7 +612,7 @@ export default function Index() {
                       const hasDesc = Boolean(topic.desc || topic.description);
                       return (
                         <View 
-                          className={`topic-card ${hasDesc ? '' : 'no-desc'}`} 
+                          className='topic-card' 
                           key={topic.id || index}
                           onClick={() => {
                             try {
