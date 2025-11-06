@@ -19,6 +19,8 @@ import * as echarts from '../../components/MoziChart/ec-canvas/echarts';
 // 延迟加载 towxml，避免在非 AI 页面时增加主包体积
 let parseTowxml = null;
 import isEmpty from 'lodash/isEmpty';
+import { useMoziWebSocket } from '../../utils/useMoziWebSocket';
+import { CHANNEL_TYPES } from '../../utils/websocketProtocol';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
 const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
@@ -83,6 +85,33 @@ export default function Detail() {
   });
 
   const needLoop = useRef(true);
+  const useWebSocketData = useRef(true); // 标记是否使用 WebSocket 数据
+  const wsUnsubscribeRefs = useRef([]); // 存储取消订阅函数
+
+  // 初始化 WebSocket
+  const { isConnected, isAuthenticated, subscribe } = useMoziWebSocket({
+    autoConnect: true,
+    onConnected: () => {
+      console.log('[Detail] WebSocket 已连接，等待认证...');
+      // 不在这里订阅，等待 isAuthenticated 变为 true 后由 useEffect 触发
+    },
+    onDisconnected: () => {
+      console.log('[Detail] WebSocket 已断开，切换到 HTTP 数据源');
+      useWebSocketData.current = false;
+      // 清理订阅
+      cleanupWebSocketSubscriptions();
+      // 启动 HTTP 轮询
+      if (needLoop.current) {
+        headRequest();
+        kLineRequest();
+        marketRequest();
+      }
+    },
+    onError: (error) => {
+      console.error('[Detail] WebSocket 错误:', error);
+      useWebSocketData.current = false;
+    }
+  });
 
 
   // 控制展开收起
@@ -118,11 +147,30 @@ export default function Detail() {
   
   const symbol = useRouter().params.symbol;
 
+  // 监听 WebSocket 认证状态，认证成功后自动订阅
+  useEffect(() => {
+    if (isAuthenticated && needLoop.current && symbol) {
+      console.log('[Detail] WebSocket 已认证，自动订阅币种数据:', symbol);
+      useWebSocketData.current = true;
+      subscribeWebSocketData();
+    }
+  }, [isAuthenticated, symbol]);
+
   useDidShow(() => {
     needLoop.current = true;
-    headRequest();
-    kLineRequest();
-    marketRequest();
+    
+    // 如果 WebSocket 已连接且认证，使用 WebSocket
+    if (isConnected && isAuthenticated) {
+      console.log('[Detail] 页面显示 - 使用 WebSocket 数据源');
+      subscribeWebSocketData();
+    } else {
+      // 否则使用 HTTP
+      console.log('[Detail] 页面显示 - 使用 HTTP 数据源（WebSocket 连接中...）');
+      headRequest();
+      kLineRequest();
+      marketRequest();
+    }
+    
     getROIData(symbol);
     // 初次进入按默认类型渲染一次，避免先闪K再变线
     setTimeout(() => {
@@ -132,10 +180,210 @@ export default function Detail() {
 
   useDidHide(() => {
     needLoop.current = false;
+    // 清理 WebSocket 订阅
+    cleanupWebSocketSubscriptions();
   });
 
-  // 头部
+  /**
+   * 订阅 WebSocket 数据
+   */
+  const subscribeWebSocketData = () => {
+    if (!subscribe || !symbol) {
+      console.warn('[Detail] 无法订阅，subscribe 或 symbol 不存在');
+      return;
+    }
+    
+    console.log('[Detail] ========== 开始订阅 WebSocket 数据 ==========');
+    console.log('[Detail] 币种:', symbol);
+    console.log('[Detail] 认证状态:', isAuthenticated);
+    console.log('[Detail] 连接状态:', isConnected);
+    
+    // 清理旧的订阅
+    if (wsUnsubscribeRefs.current.length > 0) {
+      console.log('[Detail] 清理旧订阅...');
+      cleanupWebSocketSubscriptions();
+    }
+    
+    // 订阅 ticker 数据（实时价格）
+    // 格式：{"type":"ticker","symbols":["ALCX"],"params":{"interval":5000}}
+    console.log('[Detail] 订阅 ticker 频道...');
+    const unsubTicker = subscribe(
+      {
+        type: CHANNEL_TYPES.TICKER,
+        symbols: [symbol],  // 使用 symbols 数组
+        params: {
+          interval: 5000    // 5秒推送间隔
+        }
+      },
+      (data) => {
+        console.log('[Detail] ✅ 收到 ticker 数据:', data);
+        handleTickerData(data);
+      }
+    );
+    wsUnsubscribeRefs.current.push(unsubTicker);
+    console.log('[Detail] ✅ ticker 频道订阅成功');
+    
+    // 订阅 kline 数据（K线）
+    // 格式：{"type":"kline","symbols":["ALCX"],"params":{"period":"1h","limit":100}}
+    const periods = ['1h', '1d', '1w', '1M']; // 对应 hour, day, week, month
+    console.log('[Detail] 订阅 kline 频道...');
+    periods.forEach((period) => {
+      console.log(`[Detail] 订阅 kline (${period})...`);
+      const unsubKline = subscribe(
+        {
+          type: CHANNEL_TYPES.KLINE,
+          symbols: [symbol],  // 使用 symbols 数组
+          params: { 
+            period: period,
+            limit: 100        // 获取100条K线数据
+          }
+        },
+        (data) => {
+          console.log(`[Detail] ✅ 收到 kline 数据 (${period}):`, data);
+          handleKlineData(data, period);
+        }
+      );
+      wsUnsubscribeRefs.current.push(unsubKline);
+      console.log(`[Detail] ✅ kline (${period}) 频道订阅成功`);
+    });
+    
+    console.log('[Detail] ========== 所有频道订阅完成 ==========');
+    console.log('[Detail] 总共订阅了', wsUnsubscribeRefs.current.length, '个频道 (1个ticker + 4个kline)');
+  };
+  
+  /**
+   * 清理 WebSocket 订阅
+   */
+  const cleanupWebSocketSubscriptions = () => {
+    wsUnsubscribeRefs.current.forEach(unsub => {
+      if (typeof unsub === 'function') {
+        unsub();
+      }
+    });
+    wsUnsubscribeRefs.current = [];
+  };
+  
+  /**
+   * 处理 ticker 数据（来自 WebSocket）
+   */
+  const handleTickerData = (data) => {
+    if (!data.data) return;
+    
+    const tickerData = data.data;
+    
+    // 更新币种信息
+    const coin_info_data = {
+      symbol: tickerData.symbol,
+      name: tickerData.name || tickerData.symbol,
+      url: tickerData.url || coinInfo?.url,
+      currentPrice: tickerData.currentPrice || tickerData.last,
+      priceChange_24h: tickerData.priceChange_24h,
+      priceChangePercentage_24h: tickerData.priceChangePercentage_24h,
+      marketCapRank: tickerData.marketCapRank || coinInfo?.marketCapRank,
+      marketCap: tickerData.marketCap || coinInfo?.marketCap,
+      high_24h: tickerData.high_24h,
+      low_24h: tickerData.low_24h,
+      fullyDilutedValuation: tickerData.fullyDilutedValuation || coinInfo?.fullyDilutedValuation,
+      marketCapChange_24h: tickerData.marketCapChange_24h || coinInfo?.marketCapChange_24h,
+      marketCapChangePercentage_24h: tickerData.marketCapChangePercentage_24h || coinInfo?.marketCapChangePercentage_24h,
+      athDate: tickerData.athDate || coinInfo?.athDate,
+      atlDate: tickerData.atlDate || coinInfo?.atlDate,
+      totalVolume: tickerData.totalVolume || tickerData.volume_24h,
+      totalSupply: tickerData.totalSupply || coinInfo?.totalSupply,
+      circulatingSupply: tickerData.circulatingSupply || coinInfo?.circulatingSupply,
+      ath: tickerData.ath || coinInfo?.ath,
+      athChangePercentage: tickerData.athChangePercentage || coinInfo?.athChangePercentage,
+      atl: tickerData.atl || coinInfo?.atl,
+      atlChangePercentage: tickerData.atlChangePercentage || coinInfo?.atlChangePercentage,
+      isSelfSelected: tickerData.isSelfSelected ?? coinInfo?.isSelfSelected
+    };
+    
+    const headerInfoLeft = [{
+      name: '24H最高价',
+      value: coin_info_data.high_24h
+    },{
+      name: '24H最低价',
+      value: coin_info_data.low_24h
+    },{
+      name: '稀释市值',
+      value: coin_info_data.fullyDilutedValuation
+    },{
+      name: '24H市值变化',
+      value: coin_info_data.marketCapChange_24h
+    },{
+      name: '24H市值变化百分比',
+      value: coin_info_data.marketCapChangePercentage_24h
+    },{
+      name: '历史最高价时间',
+      value: coin_info_data.athDate
+    },{
+      name: '历史最低价时间',
+      value: coin_info_data.atlDate
+    }];
+
+    const headerInfoRight = [{
+      name: '24H成交额',
+      value: coin_info_data.totalVolume
+    },{
+      name: '总供应量',
+      value: coin_info_data.totalSupply
+    },{
+      name: '流通供应量',
+      value: coin_info_data.circulatingSupply
+    },{
+      name: '历史最高价',
+      value: coin_info_data.ath
+    },{
+      name: '历史最高价百分比',
+      value: coin_info_data.athChangePercentage
+    },{
+      name: '历史最低价',
+      value: coin_info_data.atl
+    },{
+      name: '历史最低价百分比',
+      value: coin_info_data.atlChangePercentage
+    }];
+    
+    setCoinInfoLeft(headerInfoLeft);
+    setCoinInfoRight(headerInfoRight);
+    setCoinInfo(coin_info_data);
+  };
+  
+  /**
+   * 处理 kline 数据（来自 WebSocket）
+   */
+  const handleKlineData = (data, period) => {
+    if (!data.data) return;
+    
+    const klineData = data.data;
+    const periodMap = {
+      '1h': 'hour',
+      '1d': 'day',
+      '1w': 'week',
+      '1M': 'month'
+    };
+    
+    const key = periodMap[period];
+    if (!key) return;
+    
+    chartData.current[key] = {
+      data: klineData,
+      type: 'kline'
+    };
+    
+    // 如果是当前激活的周期，立即渲染
+    if (chartData.current.active === key) {
+      renderCurrentChart();
+    }
+  };
+
+  // 头部（HTTP 回退）
   const headRequest = async () => {
+    // 如果正在使用 WebSocket，跳过 HTTP 请求
+    if (useWebSocketData.current) {
+      return;
+    }
+    
     // 头部信息
     const coin_info = await cardRequest(Interface.coin_info, {
       symbol
@@ -203,11 +451,16 @@ export default function Detail() {
     setCoinInfo(coin_info.data);
 
     setTimeout(() => {
-      if (needLoop.current) headRequest();
+      if (needLoop.current && !useWebSocketData.current) headRequest();
     }, LOOPTIME);
   };
-  // K线
+  // K线（HTTP 回退）
   const kLineRequest = async () => {
+    // 如果正在使用 WebSocket，跳过 HTTP 请求
+    if (useWebSocketData.current) {
+      return;
+    }
+    
     // k线图
     const coin_line1 = await cardRequest(Interface.coin_line, {
       symbol,
@@ -257,12 +510,17 @@ export default function Detail() {
     }
 
     setTimeout(() => {
-      if (needLoop.current) kLineRequest();
+      if (needLoop.current && !useWebSocketData.current) kLineRequest();
     }, LOOPTIME);
   };
 
-  // 市场
+  // 市场（HTTP 回退）
   const marketRequest = async () => {
+    // 如果正在使用 WebSocket，跳过 HTTP 请求
+    if (useWebSocketData.current) {
+      return;
+    }
+    
     const marketRes = await request({
       url: Interface.COIN_MARKET,
       data: {
@@ -288,7 +546,7 @@ export default function Detail() {
     }
 
     setTimeout(() => {
-      if (needLoop.current) marketRequest();
+      if (needLoop.current && !useWebSocketData.current) marketRequest();
     }, LOOPTIME);
   };
   useLoad(async () => {

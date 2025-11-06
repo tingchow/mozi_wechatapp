@@ -51,7 +51,7 @@ export class MoziWebSocket {
   /**
    * 连接 WebSocket
    */
-  connect() {
+  async connect() {
     if (this.socketTask && this.isConnected) {
       this._log('WebSocket 已连接');
       return;
@@ -61,13 +61,31 @@ export class MoziWebSocket {
     this._log(`正在连接: ${this.url}`);
     
     try {
+      // 获取 token
+      let token = '';
+      try {
+        token = await this._getToken();
+        this._log('已获取 token');
+      } catch (err) {
+        this._log('获取 token 失败，使用空 token 连接');
+      }
+      
       // 使用微信小程序原生 WebSocket API
-      this.socketTask = wx.connectSocket({
+      // 通过 protocols 子协议传递 token
+      const socketOptions = {
         url: this.url,
         tcpNoDelay: true,
         perMessageDeflate: true,
         timeout: 10000
-      });
+      };
+      
+      // 如果有 token，通过 Sec-WebSocket-Protocol 子协议传递
+      if (token) {
+        socketOptions.protocols = [token];
+        this._log('已设置 Sec-WebSocket-Protocol:', token.substring(0, 10) + '...');
+      }
+      
+      this.socketTask = wx.connectSocket(socketOptions);
       
       // 检查返回值
       if (!this.socketTask) {
@@ -84,6 +102,31 @@ export class MoziWebSocket {
       this._error('连接创建失败:', error);
       this._scheduleReconnect();
     }
+  }
+  
+  /**
+   * 获取 token（从本地存储）
+   */
+  _getToken() {
+    return new Promise((resolve, reject) => {
+      try {
+        wx.getStorage({
+          key: 'token',
+          success: (res) => {
+            if (res && res.data) {
+              resolve(res.data);
+            } else {
+              reject('token 为空');
+            }
+          },
+          fail: (err) => {
+            reject(err);
+          }
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
   
   /**
@@ -409,9 +452,9 @@ export class MoziWebSocket {
     
     this._log(`🔄 ${interval}ms 后尝试重连 (第 ${this.reconnectAttempt + 1} 次)`);
     
-    setTimeout(() => {
+    setTimeout(async () => {
       this.reconnectAttempt++;
-      this.connect();
+      await this.connect();
     }, interval);
   }
   
