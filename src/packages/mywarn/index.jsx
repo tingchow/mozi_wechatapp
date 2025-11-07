@@ -112,9 +112,42 @@ export default function Mywarn() {
     priceFallChange24HPercent: '币值跌超',
   };
 
+  // 固定的四个报警条件配置（按顺序显示）
+  const fixedWarningCodes = [
+    { code: 'priceRise', defaultContent: '--', unit: '$' },
+    { code: 'priceFall', defaultContent: '--', unit: '$' },
+    { code: 'priceRiseChange24HPercent', defaultContent: '10%', unit: '%' },
+    { code: 'priceFallChange24HPercent', defaultContent: '10%', unit: '%' }
+  ];
+
+  // 获取标准化的告警列表（始终返回四个条件）
+  const getStandardizedWarnContent = () => {
+    const backendContent = warnData.sideData?.warnContent || [];
+    
+    return fixedWarningCodes.map(fixed => {
+      // 从后端数据中查找对应的条目
+      const backendItem = backendContent.find(item => item.code === fixed.code);
+      
+      if (backendItem) {
+        // 如果后端有数据，使用后端的数据
+        return backendItem;
+      } else {
+        // 如果后端没有数据，返回默认配置
+        return {
+          code: fixed.code,
+          content: fixed.defaultContent,
+          active: false
+        };
+      }
+    });
+  };
+
   const startEdit = (item, index) => {
-    // 提取数字部分
-    const numericValue = item.content.replace('%', '');
+    // 提取数字部分，如果是默认值 '--' 则设为空
+    let numericValue = item.content.replace(/[%$]/g, '').trim();
+    if (numericValue === '--') {
+      numericValue = '';
+    }
     setEditValue(numericValue);
     setEditingIndex(index);
   };
@@ -149,15 +182,36 @@ export default function Mywarn() {
     Taro.hideLoading();
     if (addRes.data === true) {
       // 更新本地数据
-      const newWarnContent = warnData.sideData.warnContent.map((warnItem, warnIndex) => {
-        if (index === warnIndex) {
-          return {
-            ...warnItem,
-            content: formattedValue
-          };
-        }
-        return warnItem;
-      });
+      const standardizedContent = getStandardizedWarnContent();
+      const currentItem = standardizedContent[index];
+      
+      // 检查这个条目是否已存在于后端数据中
+      const backendContent = warnData.sideData.warnContent || [];
+      const existingIndex = backendContent.findIndex(item => item.code === currentItem.code);
+      
+      let newWarnContent;
+      if (existingIndex >= 0) {
+        // 如果存在，更新它
+        newWarnContent = backendContent.map((item, idx) => {
+          if (idx === existingIndex) {
+            return {
+              ...item,
+              content: formattedValue
+            };
+          }
+          return item;
+        });
+      } else {
+        // 如果不存在，添加新条目
+        newWarnContent = [
+          ...backendContent,
+          {
+            code: currentItem.code,
+            content: formattedValue,
+            active: currentItem.active
+          }
+        ];
+      }
       
       setWarnData({
         ...warnData,
@@ -187,6 +241,24 @@ export default function Mywarn() {
   };
 
   const switchChange = async (code, active, index) => {
+    const standardizedContent = getStandardizedWarnContent();
+    const currentItem = standardizedContent[index];
+    
+    // 检查这个条目是否是默认条目（后端没有数据）
+    const backendContent = warnData.sideData.warnContent || [];
+    const backendItem = backendContent.find(item => item.code === currentItem.code);
+    
+    // 如果是默认条目（显示 '--' 或默认值）且要开启，提示用户先设置值
+    if (!backendItem && !active) {
+      Taro.showToast({
+        title: '请先设置告警值',
+        icon: 'none',
+        duration: 2000,
+        mask: true
+      });
+      return;
+    }
+    
     let interfaceurl = Interface.CLOSE_WARN;
     if (!active) {
       interfaceurl = Interface.OPEN_WARN;
@@ -199,13 +271,17 @@ export default function Mywarn() {
       }
     });
     if (data) {
-      const newWarnContent = warnData.sideData.warnContent.map((warnItem, warnIndex) => {
-        const newWarnItem = {...warnItem};
-        if (index === warnIndex) {
-          newWarnItem.active = !active;
+      // 更新后端数据中对应的 active 状态
+      const newWarnContent = backendContent.map((warnItem) => {
+        if (warnItem.code === code) {
+          return {
+            ...warnItem,
+            active: !active
+          };
         }
-        return newWarnItem;
+        return warnItem;
       });
+      
       setWarnData({
         ...warnData,
         sideData: {
@@ -339,7 +415,7 @@ export default function Mywarn() {
                 </SideBar>
               </View>
               <View className='main'>
-                {warnData.sideData?.warnContent?.length > 0 && warnData.sideData?.warnContent.map((item, index) => {
+                {warnData.sideData && getStandardizedWarnContent().map((item, index) => {
                     return (
                       <View className='main-item' key={index}>
                         {editingIndex === index ? (
@@ -385,7 +461,7 @@ export default function Mywarn() {
                   })
                 }
                 {/* 删除整个币种的按钮 */}
-                {warnData.sideData?.warnContent?.length > 0 && (
+                {warnData.sideData && (
                   <View className='delete-coin-btn' onClick={deleteCoinAllWarns}>
                     <Text className='delete-coin-text'>删除 {Object.keys(warnData.data)[activeKey]}</Text>
                   </View>
