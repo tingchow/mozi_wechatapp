@@ -18,7 +18,7 @@ const CalendarIcon = `${CDN_PREFIX}/icon/find_slices/find-calendar%402x.png`;
 const MarketOverview = memo(({ data }) => {
   const [smartValue, setSmartValue] = useState('暂无配置');
   const [smartAction, setSmartAction] = useState('去配置');
-  const [smartOnClick, setSmartOnClick] = useState(() => () => jump2NoTab('addwarn'));
+  const [smartOnClick, setSmartOnClick] = useState(() => () => jump2NoTab('addwarn', { symbol: 'BTC' }));
 
   useEffect(() => {
     const init = async () => {
@@ -27,7 +27,7 @@ const MarketOverview = memo(({ data }) => {
         if (!token) {
           setSmartValue('暂无配置');
           setSmartAction('去配置');
-          setSmartOnClick(() => () => jump2NoTab('addwarn'));
+          setSmartOnClick(() => () => jump2NoTab('addwarn', { symbol: 'BTC' }));
           return;
         }
         const myWarnRes = await request({ url: Interface.MY_WARN });
@@ -55,7 +55,7 @@ const MarketOverview = memo(({ data }) => {
         if (!firstSymbol) {
           setSmartValue('暂无配置');
           setSmartAction('去配置');
-          setSmartOnClick(() => () => jump2NoTab('addwarn'));
+          setSmartOnClick(() => () => jump2NoTab('addwarn', { symbol: 'BTC' }));
           return;
         }
         // 拉取该币的最近涨跌数据
@@ -103,7 +103,7 @@ const MarketOverview = memo(({ data }) => {
       } catch (e) {
         setSmartValue('暂无配置');
         setSmartAction('去配置');
-        setSmartOnClick(() => () => jump2NoTab('addwarn'));
+        setSmartOnClick(() => () => jump2NoTab('addwarn', { symbol: 'BTC' }));
       }
     };
     init();
