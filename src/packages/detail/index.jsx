@@ -1128,12 +1128,13 @@ export default function Detail() {
 
   // 显示骨架屏（首次加载且数据未就绪时）
   // 只有首次加载且数据未就绪时才显示骨架屏，切换周期时不显示
-  const currentPeriodData = chartData.current[chartData.current.active];
-  const isDataReady = coinInfo && currentPeriodData?.data;
-  
-  if (isInitialLoad && !isDataReady) {
-    return <SkeletonPage config={detailPageSkeletonConfig} />;
-  }
+  // TODO: 暂时禁用骨架屏
+  // const currentPeriodData = chartData.current[chartData.current.active];
+  // const isDataReady = coinInfo && currentPeriodData?.data;
+  // 
+  // if (isInitialLoad && !isDataReady) {
+  //   return <SkeletonPage config={detailPageSkeletonConfig} />;
+  // }
 
   return (
     <View className='indexBox'>
