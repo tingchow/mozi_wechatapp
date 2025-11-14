@@ -84,6 +84,20 @@ export default function Index() {
   const [ investmentTab, setInvestmentTab ] = useState('opportunity');
   const needLoop = useRef(true);
   const topicsCacheTimer = useRef(null);
+  // 首页通知是否显示（支持持久化隐藏）
+  const [showNotice, setShowNotice] = useState(() => {
+    try {
+      const hidden = Taro.getStorageSync('homepageNoticeHidden');
+      return !hidden;
+    } catch (e) {
+      return true;
+    }
+  });
+
+  const handleCloseNotice = () => {
+    setShowNotice(false);
+    try { Taro.setStorageSync('homepageNoticeHidden', true); } catch (e) {}
+  };
 
   // 自选接口、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
   const footerIfList = [{
@@ -424,7 +438,7 @@ export default function Index() {
             ))}
           </Swiper>
           {/* 头部-搜索框（改为相对 bg-banner 定位） */}
-          <View className='header' onClick={jump2Search}>
+          <View className={`header ${showNotice ? '' : 'header-no-notice'}`} onClick={jump2Search}>
             <View className='searchBox'>
               <View className='searchInput'>请输入搜索的币种</View>
               <View className='searchCancel'>
@@ -434,15 +448,22 @@ export default function Index() {
             </View>
           </View>
           {/* 通知条：放入 bg-banner 内，相对其定位 */}
-          <View className='notice'>
-            <NoticeBar
-              className='notice-item'
-              content='告别手动盯盘，实时波动随时跟进！开启智能告警配置吧！'
-              color='alert'
-              wrap
-              icon={<Image src={HomeAlertIcon} className='notice-icon' />}
-            />
-          </View>
+          {showNotice && (
+            <View className='notice'>
+              <NoticeBar
+                className='notice-item'
+                content='告别盲目设价！先让AI分析走势，再设置精准报警！'
+                color='alert'
+                wrap
+                icon={<Image src={HomeAlertIcon} className='notice-icon' />}
+                extra={
+                  <View className='notice-close' onClick={handleCloseNotice}>
+                    <IconFont name='close' size={32} color='#999' />
+                  </View>
+                }
+              />
+            </View>
+          )}
         </View>
       </View>
 

@@ -105,6 +105,13 @@
       padding-bottom: 10px;
       line-height: 30px;
       align-items: center;
+      
+      .notice-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 8px;
+      }
       // height: auto;
       // padding-inline: 10rpx;
       // display: flex;
@@ -123,6 +130,11 @@
       //   transform: translateX(-500px);
       // }
     }
+  }
+
+  // 关闭公告后，搜索框靠下（56rpx）
+  .header-no-notice {
+    bottom: 56rpx;
   }
 
   .derivativeItem {

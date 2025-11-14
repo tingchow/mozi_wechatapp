@@ -596,9 +596,9 @@ export default function CommunityPage() {
   // 子导航配置
   const subTabs = [
     { key: 'all', title: '全部' },
-    { key: 'discovery', title: '发现好币' },
+    { key: 'currency', title: '币种' },
     { key: 'question', title: '不懂就问' },
-    { key: 'currency', title: '币种' }
+    { key: 'discovery', title: '发现好币' }
   ]
 
   // 币种标签配置
