@@ -97,8 +97,10 @@ export default function Index() {
         url: Interface.GET_UNREAD_COUNT
       });
       
-      if (res?.data?.unreadCount !== undefined) {
-        setUnreadCount(res.data.unreadCount);
+      // 兼容多种响应格式
+      const count = res?.data?.count ?? res?.data?.unreadCount ?? res?.data ?? 0;
+      if (typeof count === 'number') {
+        setUnreadCount(count);
       }
     } catch (error) {
       console.error('获取未读数量失败:', error);

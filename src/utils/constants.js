@@ -156,9 +156,9 @@ export const Interface = {
   // 获取我的消息通知
   GET_MY_NOTICES: '/easy/getMyMsgAndNotices',
   // 获取未读通知数量
-  GET_UNREAD_COUNT: '/easy/getUnreadCount',
+  GET_UNREAD_COUNT: '/easy/getUnreadNoticeCount',
   // 标记通知为已读
-  MARK_NOTICES_READ: '/easy/markNoticesRead',
+  MARK_NOTICES_READ: '/easy/markNoticeAsRead',
   // 获取我的交互数据（新币上线等）
   GET_MY_INTERFACE: '/easy/getMyInterface',
 
