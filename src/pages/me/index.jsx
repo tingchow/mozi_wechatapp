@@ -230,7 +230,7 @@ export default function Index() {
         url: Interface.GET_MY_INTERFACE,
         method: 'POST',
         data: {
-          platform: 'wx',
+          platform: 'miniapp',
           limit: 20,
           time: timeStr
         }
