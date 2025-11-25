@@ -73,7 +73,8 @@ export default function Fundingrate() {
               return originalFormat.replace(/\$/g, '');
             };
             options.yAxis[1].axisLabel.formatter = (value) => {
-              const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', value) ?? value;
+              const adjustedValue = (value / 10).toFixed(6).replace(/\.?0+$/, '');
+              const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', adjustedValue).replace('千', '万') ?? adjustedValue;
               return originalFormat.replace(/\$/g, '');
             };
           }
@@ -121,7 +122,8 @@ export default function Fundingrate() {
           return originalFormat.replace(/\$/g, '');
         };
         options.yAxis[1].axisLabel.formatter = (value) => {
-          const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', value) ?? value;
+          const adjustedValue = (value / 10).toFixed(6).replace(/\.?0+$/, '');
+          const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', adjustedValue).replace('千', '万') ?? adjustedValue;
           return originalFormat.replace(/\$/g, '');
         };
       }
@@ -269,7 +271,8 @@ export default function Fundingrate() {
       return originalFormat.replace(/\$/g, '');
     };
     options.yAxis[1].axisLabel.formatter = (value) => {
-      const originalFormat = frHisData.data.yAxisRightSlot?.replace('{}', value) ?? value;
+      const adjustedValue = (value / 10).toFixed(6).replace(/\.?0+$/, '');
+      const originalFormat = frHisData.data.yAxisRightSlot?.replace('{}', adjustedValue).replace('千', '万') ?? adjustedValue;
       return originalFormat.replace(/\$/g, '');
     };
     chartRef.current.setOption(options);
