@@ -16,6 +16,7 @@ import { MoziTreeMap } from '../../components/MoziChart/TreeMap';
 import { PageLogin } from '../../components/PageLogin';
 import { Popup } from '../../components/PopLogin'
 import { MarketDistribution } from '../../components/MarketDistribution';
+import { WelcomePopup } from '../../components/WelcomePopup';
 import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
@@ -93,6 +94,9 @@ export default function Index() {
       return true;
     }
   });
+  
+  // 欢迎弹窗状态（每次进入首页都显示）
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   const handleCloseNotice = () => {
     setShowNotice(false);
@@ -224,6 +228,11 @@ export default function Index() {
   useDidShow(() => {
     needLoop.current = true;
     allRequest();
+    
+    // 每次进入首页都显示欢迎弹窗
+    setTimeout(() => {
+      setShowWelcomePopup(true);
+    }, 500);
   });
 
   useDidHide(() => {
@@ -740,6 +749,13 @@ export default function Index() {
       <View className='float-robot-btn' onClick={() => jump2NoTab('robot')}>
         <Image className='robot-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/AI_Bot.png'} mode='aspectFit' />
       </View>
+
+      {/* 欢迎弹窗（每次进入首页显示） */}
+      <WelcomePopup
+        visible={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+        onConfirm={() => {}}
+      />
     </View>
   )
 }

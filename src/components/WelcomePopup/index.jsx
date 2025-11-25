@@ -3,6 +3,11 @@ import Taro from '@tarojs/taro';
 import { useState, useEffect } from 'react';
 import './index.less';
 
+// 导入本地图片资源
+import pointModalBg from '../../assets/point/point_modal_bg.png';
+import pointModalLogo from '../../assets/point/ponit_modal_logo.png';
+import pointModalRightText from '../../assets/point/ponit_modal_right_text.png';
+
 /**
  * 获取积分欢迎弹窗
  */
@@ -49,21 +54,21 @@ export const WelcomePopup = ({ visible, onClose, onConfirm }) => {
           {/* 背景图片 */}
           <Image 
             className='popup-bg'
-            src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/point_modal_bg.png'
+            src={pointModalBg}
             mode='aspectFill'
           />
           
           {/* Logo */}
           <Image 
             className='popup-logo'
-            src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/ponit_modal_logo.png'
+            src={pointModalLogo}
             mode='aspectFit'
           />
 
           {/* 右上角积分提示卡片 */}
           <Image 
             className='popup-points-card'
-            src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/ponit_modal_right_text.png'
+            src={pointModalRightText}
             mode='aspectFit'
           />
 
