@@ -41,6 +41,9 @@ export default function Index() {
   const [showThemeOption, setShowThemeOption] = useState(true); // 控制皮肤中心选项的显示/隐藏
   const [showSocialOption, setShowSocialOption] = useState(true); // 控制社交媒体选项的显示/隐藏
   const [showContactPop, setShowContactPop] = useState(false); // 控制“联系我们”弹层显示/隐藏（默认隐藏）
+  const [newCoinListings, setNewCoinListings] = useState([]); // 新币上线数据
+  const [newCoinLoading, setNewCoinLoading] = useState(false); // 新币上线加载状态
+  const [selectedDate, setSelectedDate] = useState(null); // 当前选中的日期
 
   const footerList = [
   {
@@ -201,16 +204,75 @@ export default function Index() {
     setDonateVisible(true);
   };
 
+  // 格式化日期为 YYYY-MM-DD
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // 获取新币上线数据
+  const fetchMyInterface = async (date) => {
+    try {
+      const token = Taro.getStorageSync('token');
+      if (!token) {
+        console.log('未登录，跳过接口调用');
+        setNewCoinListings([]);
+        return;
+      }
+
+      setNewCoinLoading(true);
+      const timeStr = formatDate(date);
+      console.log('调用新币上线接口，日期:', timeStr);
+
+      const res = await request({
+        url: Interface.GET_MY_INTERFACE,
+        method: 'POST',
+        data: {
+          platform: 'wx',
+          limit: 20,
+          time: timeStr
+        }
+      });
+
+      console.log('新币上线接口返回:', res);
+
+      if (res?.success === true && res?.data) {
+        // 转换数据格式
+        const rawData = Array.isArray(res.data) ? res.data : (res.data?.newCoinListings || res.data?.listings || []);
+        setNewCoinListings(rawData);
+        console.log('新币上线数据:', rawData);
+      } else {
+        console.log('接口调用失败:', res?.errorMsg || '未知错误');
+        setNewCoinListings([]);
+      }
+    } catch (error) {
+      console.error('获取新币上线数据失败:', error);
+      setNewCoinListings([]);
+    } finally {
+      setNewCoinLoading(false);
+    }
+  };
+
   // 日历组件事件处理
   const handleDateChange = (date) => {
     console.log('选中日期:', date);
-    // 这里可以添加日期选择后的逻辑
+    setSelectedDate(date);
+    fetchMyInterface(date);
   };
 
   const handleToggleChange = (checked) => {
     console.log('交易所公告开关状态:', checked);
     // 这里可以添加开关切换后的逻辑，比如保存用户偏好设置
   };
+
+  // 页面加载时获取当天的新币上线数据
+  useEffect(() => {
+    const today = new Date();
+    setSelectedDate(today);
+    fetchMyInterface(today);
+  }, []);
 
   const scoreReport = (score) => {
     setScore(score);
@@ -553,7 +615,7 @@ export default function Index() {
 
       {/* 新币上线组件（下） */}
       {showNewCoinListing && (
-        <NewCoinListing />
+        <NewCoinListing data={newCoinListings} loading={newCoinLoading} />
       )}
 
       {/* 当日历隐藏时，插入一个弹性占位将退出登录推到底部 */}
