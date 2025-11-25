@@ -44,7 +44,8 @@ const NewCoinListing = ({ showMore = false, data = [], loading = false, onMoreCl
               const exchangeName = coin.exchanges || coin.exchange || coin.name;
               const exchangeIcon = coin.logoUrl || coin.exchangeIcon || coin.icon || 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/biannce.png';
               const listingTime = coin.ctime || coin.listingTime || coin.time;
-              const title = coin.title;
+              // 过滤 title 中末尾的日期部分（如 " - 2025-11-26"）
+              const title = coin.title ? coin.title.replace(/\s*-\s*\d{4}-\d{2}-\d{2}$/, '') : '';
               const details = coin.deteil || coin.details || coin.description;
               const link = coin.link;
               
@@ -55,11 +56,10 @@ const NewCoinListing = ({ showMore = false, data = [], loading = false, onMoreCl
                     <Text className='exchange-name'>{exchangeName}</Text>
                     <Text className='listing-time'>{listingTime}</Text>
                   </View>
-                  {title && <Text className='coin-title'>{title}</Text>}
-                  {details && <Text className='coin-details'>{details}</Text>}
-                  {link && (
+                  {title && <View className='coin-title'>{title}</View>}
+                  {(details || link) && (
                     <View className='coin-link-container'>
-                      <Text className='coin-link'>详情:{link}</Text>
+                      <Text className='coin-link'>详情:{details || link}</Text>
                     </View>
                   )}
                 </View>

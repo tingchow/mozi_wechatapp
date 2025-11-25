@@ -325,17 +325,16 @@ export default function Mywarn() {
     Taro.showLoading({ title: '删除中...' });
     
     try {
-      const { data } = await request({
-        url: Interface.DELETE_COIN_WARN,
-        method: 'POST',
-        data: {
-          symbol
-        }
+      // 与原项目联调一致：使用 DELETE 方法，symbol 作为 Query String
+      const response = await request({
+        url: `${Interface.DELETE_ALARM}?symbol=${symbol}`,
+        method: 'DELETE',
       });
       
       Taro.hideLoading();
       
-      if (data) {
+      // 响应判断与原项目一致：code 为 0 或 200，且 data 为 true
+      if ((response.code === 0 || response.code === 200) && response.data === true) {
         // 从数据中移除该币种
         const newData = { ...warnData.data };
         delete newData[symbol];
@@ -372,13 +371,14 @@ export default function Mywarn() {
         });
       } else {
         Taro.showToast({
-          title: '删除失败',
+          title: response.message || '删除失败',
           icon: 'error',
           duration: 2000,
           mask: true
         });
       }
     } catch (error) {
+      console.error('删除币种告警失败:', error);
       Taro.hideLoading();
       Taro.showToast({
         title: '删除失败',
