@@ -1,0 +1,148 @@
+/* 欢迎弹窗遮罩层 */
+.welcome-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  &.show {
+    opacity: 1;
+  }
+}
+
+/* 弹窗容器 */
+.welcome-popup-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.3s ease;
+  
+  &.show {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 主卡片 */
+.welcome-popup-card {
+  position: relative;
+  width: 620px;
+  height: 500px;
+  border-radius: 32px;
+  overflow: visible;
+}
+
+/* 背景图片 */
+.popup-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+}
+
+/* Logo */
+.popup-logo {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 200px;
+  height: 56px;
+  z-index: 5;
+}
+
+/* 右上角积分提示卡片 */
+.popup-points-card {
+  position: absolute;
+  top: -50px;
+  right: -40px;
+  width: 260px;
+  height: 188px;
+  z-index: 10;
+}
+
+/* 立即加入按钮 */
+.popup-join-btn {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 540px;
+  height: 88px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border-radius: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  
+  &:active {
+    transform: translateX(-50%) scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.join-text {
+  font-size: 32px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 2px;
+}
+
+.join-arrow {
+  font-size: 32px;
+  color: #fff;
+  margin-left: 12px;
+}
+
+/* 关闭按钮 */
+.popup-close-btn {
+  width: 56px;
+  height: 56px;
+  margin-top: 24px;
+  background: rgba(189, 189, 189, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.close-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.close-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+}
+
+.close-line-1 {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-line-2 {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
