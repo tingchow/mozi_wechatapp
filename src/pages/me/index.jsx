@@ -262,9 +262,68 @@ export default function Index() {
     fetchMyInterface(date);
   };
 
-  const handleToggleChange = (checked) => {
-    console.log('交易所公告开关状态:', checked);
-    // 这里可以添加开关切换后的逻辑，比如保存用户偏好设置
+  // 处理公告订阅开关（与原项目联调一致）
+  const handleToggleChange = async (isOn) => {
+    try {
+      const token = Taro.getStorageSync('token');
+      if (!token) {
+        Taro.showToast({
+          title: '请先登录',
+          icon: 'none',
+          duration: 2000
+        });
+        return false; // 阻止切换
+      }
+
+      // 优先从单独保存的 userId 获取，其次从 userInfo 中获取
+      let userId = Taro.getStorageSync('userId');
+      if (!userId) {
+        const userInfo = Taro.getStorageSync('userInfo');
+        userId = userInfo?.userId || 'unknown';
+      }
+      
+      // 构建请求数据（小程序端 channel 为 miniapp）
+      const requestData = {
+        userId: userId,
+        status: isOn ? 1 : 0,  // 1-开启, 0-关闭
+        channel: 'miniapp'     // 小程序渠道
+      };
+
+      console.log('订阅公告请求:', requestData);
+
+      const res = await request({
+        url: Interface.SUBSCRIBE_ANNOUNCEMENT,
+        method: 'POST',
+        data: requestData
+      });
+
+      console.log('订阅接口返回:', res);
+
+      // 基于 success 字段判断接口是否成功
+      if (res?.success === true) {
+        Taro.showToast({
+          title: isOn ? '订阅成功' : '取消订阅',
+          icon: 'success',
+          duration: 2000
+        });
+        return true; // 允许切换
+      } else {
+        Taro.showToast({
+          title: res?.errorMsg || '操作失败',
+          icon: 'none',
+          duration: 2000
+        });
+        return false; // 阻止切换
+      }
+    } catch (error) {
+      console.error('订阅操作失败:', error);
+      Taro.showToast({
+        title: '网络错误',
+        icon: 'none',
+        duration: 2000
+      });
+      return false; // 阻止切换
+    }
   };
 
   // 页面加载时获取当天的新币上线数据
@@ -376,6 +435,11 @@ export default function Index() {
             console.log('userId', tokenInfo?.data?.userId);
             const userInfo = tokenInfo?.data?.userInfo;
             const userId = tokenInfo?.data?.userId;
+            
+            // 单独保存 userId 供订阅等功能使用
+            if (userId) {
+              Taro.setStorageSync('userId', userId);
+            }
             
             Taro.setStorageSync('needRefreshCommunity', true);
             if (!userInfo?.avatar || !userInfo?.nickName ) {
@@ -608,7 +672,7 @@ export default function Index() {
           <CalendarCard
             onDateChange={handleDateChange}
             onToggleChange={handleToggleChange}
-            defaultToggle={true}
+            defaultToggle={false}
           />
         </View>
       )}

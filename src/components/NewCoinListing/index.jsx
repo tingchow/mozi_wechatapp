@@ -59,7 +59,7 @@ const NewCoinListing = ({ showMore = false, data = [], loading = false, onMoreCl
                   {title && <View className='coin-title'>{title}</View>}
                   {(details || link) && (
                     <View className='coin-link-container'>
-                      <Text className='coin-link'>详情:{details || link}</Text>
+                      <View className='coin-link'>详情:{details || link}</View>
                     </View>
                   )}
                 </View>

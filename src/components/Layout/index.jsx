@@ -32,6 +32,10 @@ export const Layout = (props) => {
           console.log('tokenInfo', tokenInfo);
           if (tokenInfo?.data?.token) {
             Taro.setStorageSync('token', tokenInfo?.data?.token);
+            // 单独保存 userId 供订阅等功能使用
+            if (tokenInfo?.data?.userId) {
+              Taro.setStorageSync('userId', tokenInfo?.data?.userId);
+            }
             console.log('用户信息本地缓存成功');
             // 写入用户信息（若后端返回），供“我的”页展示
             try {

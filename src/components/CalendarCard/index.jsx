@@ -18,11 +18,17 @@ export const CalendarCard = (props) => {
   const [isToggleOn, setIsToggleOn] = useState(defaultToggle);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // 处理开关切换
-  const handleToggleChange = () => {
+  // 处理开关切换（支持异步回调，可阻止切换）
+  const handleToggleChange = async () => {
     const newState = !isToggleOn;
+    // 先调用回调，如果返回 false 则不切换状态
+    if (onToggleChange) {
+      const result = await onToggleChange(newState);
+      if (result === false) {
+        return; // 阻止切换
+      }
+    }
     setIsToggleOn(newState);
-    onToggleChange && onToggleChange(newState);
   };
 
   // 处理日期点击

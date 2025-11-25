@@ -115,6 +115,8 @@ export const Interface = {
   CLOSE_WARN: '/alarm/off',
   // 删除币种的所有告警
   DELETE_ALARM: '/alarm/delete',
+  // 订阅公告
+  SUBSCRIBE_ANNOUNCEMENT: '/announcement/subscribe',
 
   // 社区
   // 获取帖子列表

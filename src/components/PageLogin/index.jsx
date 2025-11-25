@@ -31,6 +31,10 @@ export const PageLogin = ({show = false, hideCb}) => {
           console.log('tokenInfo', tokenInfo);
           if (tokenInfo?.data?.token) {
             Taro.setStorageSync('token', tokenInfo?.data?.token);
+            // 单独保存 userId 供订阅等功能使用
+            if (tokenInfo?.data?.userId) {
+              Taro.setStorageSync('userId', tokenInfo?.data?.userId);
+            }
             // 设置登录成功标记，用于社区页面刷新
             Taro.setStorageSync('justLoggedIn', true);
             console.log('用户信息本地缓存成功');
