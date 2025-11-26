@@ -3,10 +3,10 @@ import Taro from '@tarojs/taro';
 import { useState, useEffect } from 'react';
 import './index.less';
 
-// 导入本地图片资源
-import pointModalBg from '../../assets/point/point_modal_bg.png';
-import pointModalLogo from '../../assets/point/ponit_modal_logo.png';
-import pointModalRightText from '../../assets/point/ponit_modal_right_text.png';
+// CDN图片资源
+const pointModalBg = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/point_modal_bg.png';
+const pointModalLogo = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/ponit_modal_logo.png';
+const pointModalRightText = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/ponit_modal_right_text.png';
 
 /**
  * 获取积分欢迎弹窗
