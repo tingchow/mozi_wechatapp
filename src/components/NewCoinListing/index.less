@@ -32,7 +32,8 @@
 }
 
 .coin-item {
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
   width: 80vw; // 占屏幕的三分之二
   margin-right: 12px; // 右侧间距，制造漏出感
   background: #fff;
@@ -100,9 +101,8 @@
   .coin-link-container {
     background-color: #F2F4F8;
     padding: 12px 16px;
-    border-radius: 8px;
-    margin-top: 12px;
     border-radius: 20px;
+    margin-top: auto; // 推到底部对齐
   }
 
   .coin-link {
