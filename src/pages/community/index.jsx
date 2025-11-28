@@ -24,10 +24,13 @@ const integralIcon = `${CDN_PREFIX}/icon/community/integral.png`;
 import './index.less'
 import BullBearVote from '../../components/BullBearVote'
 import QuestionButtons from '../../components/QuestionButtons'
-const recommendationImg = `${CDN_PREFIX}/image/community/community-recommend.png`;
-const hotListImg = `${CDN_PREFIX}/image/community/community-hot-list.png`;
-const hotListActivedImg = `${CDN_PREFIX}/image/community/hot-list-actived.png`;
-const recommendNoActivedImg = `${CDN_PREFIX}/image/community/recommend-no-actived.png`;
+// 三个图片Tab的CDN路径
+const recommendActiveImg = `${CDN_PREFIX}/image/community/recomand_active@2x.png`;
+const recommendInactiveImg = `${CDN_PREFIX}/image/community/recomand_no_active@2x.png`;
+const newsActiveImg = `${CDN_PREFIX}/image/community/news_active@2x.png`;
+const newsInactiveImg = `${CDN_PREFIX}/image/community/news_no_active@2x.png`;
+const hotActiveImg = `${CDN_PREFIX}/image/community/hot_range_active@2x.png`;
+const hotInactiveImg = `${CDN_PREFIX}/image/community/hot_range_no_active@2x.png`;
 const findBestCoinIcon = `${CDN_PREFIX}/icon/community/find-best-coin.png`;
 const nov1Icon = `${CDN_PREFIX}/icon/community/Nov1.png`;
 const nov2Icon = `${CDN_PREFIX}/icon/community/Nov2.png`;
@@ -97,10 +100,12 @@ export default function CommunityPage() {
 
   // 预加载后的 Tab 图片路径（默认使用 CDN，预加载成功后替换成本地/缓存路径）
   const [tabImageSrc, setTabImageSrc] = useState({
-    recommendActive: recommendationImg,
-    recommendInactive: recommendNoActivedImg,
-    hotActive: hotListActivedImg,
-    hotInactive: hotListImg
+    recommendActive: recommendActiveImg,
+    recommendInactive: recommendInactiveImg,
+    newsActive: newsActiveImg,
+    newsInactive: newsInactiveImg,
+    hotActive: hotActiveImg,
+    hotInactive: hotInactiveImg
   })
 
   // 跳转到话题搜索页
@@ -276,6 +281,7 @@ export default function CommunityPage() {
           }
         } else {
           // 设置请求参数
+          // 注意：快讯tab不设置category参数，获取全部帖子后在前端过滤
           if (subTab === 'discovery') {
             requestData.category = '发现好币';
           } else if (subTab === 'question') {
@@ -298,6 +304,7 @@ export default function CommunityPage() {
             avatar: item.avatar || 'https://placeholder.co/100',
             nickname: item.nickName || '匿名用户',
             tag: item.category || '普通',
+            category: item.category, // 保留原始category字段用于快讯tab过滤
             title: item.title,
             content: item.content,
             comments: item.commentCnt || 0,
@@ -358,7 +365,7 @@ export default function CommunityPage() {
   // 初始加载和刷新
   useEffect(() => {
     console.log('useEffect触发: mainTab, subTab, selectedCoin变化');
-    if (mainTab === 'recommend') {
+    if (mainTab === 'recommend' || mainTab === 'news') {
       // 重置页码，确保切换tab时从第一页开始加载
       setPage(1);
       setLoading(true); // 确保设置loading状态
@@ -373,7 +380,7 @@ export default function CommunityPage() {
   useEffect(() => {
     console.log('useEffect触发: page变化', page);
     // 只有当页码大于1时才加载更多，避免重复加载第一页
-    if (page > 1 && mainTab === 'recommend') {
+    if (page > 1 && (mainTab === 'recommend' || mainTab === 'news')) {
       fetchPosts();
     }
   }, [page]);
@@ -920,18 +927,22 @@ export default function CommunityPage() {
     }
   }
 
-  // 并行预加载主 Tab 使用到的四张图片
+  // 并行预加载主 Tab 使用到的六张图片
   const preloadTabImages = async () => {
     try {
-      const [recoActive, recoInactive, hotActive, hotInactive] = await Promise.all([
-        preloadImage(recommendationImg),
-        preloadImage(recommendNoActivedImg),
-        preloadImage(hotListActivedImg),
-        preloadImage(hotListImg)
+      const [recoActive, recoInactive, newsActive, newsInactive, hotActive, hotInactive] = await Promise.all([
+        preloadImage(recommendActiveImg),
+        preloadImage(recommendInactiveImg),
+        preloadImage(newsActiveImg),
+        preloadImage(newsInactiveImg),
+        preloadImage(hotActiveImg),
+        preloadImage(hotInactiveImg)
       ]);
       setTabImageSrc({
         recommendActive: recoActive,
         recommendInactive: recoInactive,
+        newsActive,
+        newsInactive,
         hotActive,
         hotInactive
       });
@@ -1137,7 +1148,7 @@ export default function CommunityPage() {
 
   return (
     <View className={`community-container ${mainTab === 'hot' ? 'hot-mode' : ''}`}>
-      {/* 主导航 */}
+      {/* 主导航 - 三个图片Tab */}
       <View className="main-tabs">
         <View className="tabs-left">
           <View
@@ -1145,6 +1156,12 @@ export default function CommunityPage() {
             onClick={() => setMainTab('recommend')}
           >
             <Image className="tab-image" src={mainTab === 'recommend' ? tabImageSrc.recommendActive : tabImageSrc.recommendInactive} mode="aspectFill" />
+          </View>
+          <View
+            className={`tab-card ${mainTab === 'news' ? 'active' : ''}`}
+            onClick={() => setMainTab('news')}
+          >
+            <Image className="tab-image" src={mainTab === 'news' ? tabImageSrc.newsActive : tabImageSrc.newsInactive} mode="aspectFill" />
           </View>
           <View
             className={`tab-card ${mainTab === 'hot' ? 'active' : ''}`}
@@ -1212,9 +1229,18 @@ export default function CommunityPage() {
         </View>
       )}
 
+      {/* 快讯子导航 */}
+      {mainTab === 'news' && (
+        <View className="tabs-wrapper news-tabs-wrapper">
+          <View className="sub-tabs">
+            <Text className="sub-tab active">全部</Text>
+          </View>
+        </View>
+      )}
+
       {/* 内容列表 */}
       <View 
-        className={`content-list ${mainTab === 'recommend' ? (subTab === 'currency' ? 'with-coin-tabs' : 'with-sub-tabs') : 'topic-sub-tabs'}`}
+        className={`content-list ${mainTab === 'recommend' ? (subTab === 'currency' ? 'with-coin-tabs' : 'with-sub-tabs') : (mainTab === 'news' ? 'with-sub-tabs' : 'topic-sub-tabs')}`}
       >
         {mainTab === 'hot' ? (
           <View className="hot-topics">
@@ -1286,7 +1312,8 @@ export default function CommunityPage() {
               )
             }
             <View className={subTab === 'discovery' ? 'discovery-grid' : ''}>
-              {posts.map(item => {
+              {/* 快讯tab只显示category为news的帖子（前端过滤） */}
+              {(mainTab === 'news' ? posts.filter(post => post.category === 'news') : posts).map(item => {
                   // 根据当前标签页决定使用哪种卡片样式
                   const isDiscoveryCard = subTab === 'discovery';
                   

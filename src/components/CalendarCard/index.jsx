@@ -10,8 +10,10 @@ export const CalendarCard = (props) => {
   const {
     onDateChange,
     onToggleChange,
+    onMonthChange,
     defaultToggle = true,
     enableDark = false,
+    eventDates = [], // 有事件的日期数组，如 [1, 5, 15, 20]
   } = props;
 
   const [selectedDate, setSelectedDate] = useState(null);
@@ -44,6 +46,8 @@ export const CalendarCard = (props) => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() + direction);
     setCurrentMonth(newMonth);
+    // 通知父组件月份变化
+    onMonthChange && onMonthChange(newMonth);
   };
 
   // 格式化月份年份
@@ -81,16 +85,9 @@ export const CalendarCard = (props) => {
       const isSelected = selectedDate && 
         currentDate.getTime() === selectedDate.getTime();
       
-      // 固定显示当前日期前三个日期有事件标记
-      const todayTime = today.getTime();
-      const currentTime = currentDate.getTime();
-      const oneDayMs = 24 * 60 * 60 * 1000; // 一天的毫秒数
-      
-      const hasEvents = isCurrentMonth && (
-        currentTime === todayTime - oneDayMs ||     // 昨天
-        currentTime === todayTime - 2 * oneDayMs || // 前天  
-        currentTime === todayTime - 3 * oneDayMs    // 大前天
-      );
+      // 检查当前日期是否在 eventDates 中
+      const currentDay = currentDate.getDate();
+      const hasEvents = isCurrentMonth && eventDates.includes(currentDay);
       days.push({
         date: currentDate,
         day: currentDate.getDate(),

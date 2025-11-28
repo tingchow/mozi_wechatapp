@@ -44,6 +44,7 @@ export default function Index() {
   const [newCoinListings, setNewCoinListings] = useState([]); // 新币上线数据
   const [newCoinLoading, setNewCoinLoading] = useState(false); // 新币上线加载状态
   const [selectedDate, setSelectedDate] = useState(null); // 当前选中的日期
+  const [calendarEventDates, setCalendarEventDates] = useState([]); // 日历上有事件的日期（日期数字数组）
 
   const footerList = [
   {
@@ -142,6 +143,8 @@ export default function Index() {
           setIsLogin(true);
           // 登录后开始轮询未读通知
           startPolling();
+          // 页面显示时加载当前月份的日历事件数据（只传年月）
+          fetchCalendarEvents(new Date());
         } else {
           setIsLogin(false);
           stopPolling();
@@ -214,6 +217,74 @@ export default function Index() {
     return `${year}-${month}-${day}`;
   };
 
+  // 格式化月份为 YYYY-MM（只传年月，不传具体日期）
+  const formatMonth = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  };
+
+  // 获取指定月份的日历事件数据（用于显示小点点）
+  const fetchCalendarEvents = async (monthDate) => {
+    try {
+      const token = Taro.getStorageSync('token');
+      if (!token) {
+        console.log('未登录，跳过日历事件接口调用');
+        setCalendarEventDates([]);
+        return;
+      }
+
+      const timeStr = formatMonth(monthDate);
+      console.log('调用日历事件接口，月份:', timeStr);
+
+      const res = await request({
+        url: Interface.GET_MY_INTERFACE,
+        method: 'POST',
+        data: {
+          platform: 'miniapp',
+          limit: 20,
+          time: timeStr
+        }
+      });
+
+      console.log('日历事件接口返回:', res);
+
+      if (res?.success === true && res?.data) {
+        const rawData = Array.isArray(res.data) ? res.data : (res.data?.newCoinListings || res.data?.listings || []);
+        
+        // 从 ctime 提取日期，更新日历小点点
+        if (rawData && rawData.length > 0) {
+          const targetMonth = monthDate.getMonth() + 1; // 目标月份
+          const eventDays = rawData
+            .map(item => {
+              if (!item.ctime) return null;
+              // ctime 格式: "2025-11-18 12:03:45"
+              const match = item.ctime.match(/^\d{4}-(\d{2})-(\d{2})/);
+              if (match) {
+                const itemMonth = parseInt(match[1], 10);
+                const itemDay = parseInt(match[2], 10);
+                // 只取目标月份的日期
+                if (itemMonth === targetMonth) {
+                  return itemDay;
+                }
+              }
+              return null;
+            })
+            .filter(day => day !== null);
+          setCalendarEventDates([...new Set(eventDays)]); // 去重
+          console.log('日历事件日期:', [...new Set(eventDays)]);
+        } else {
+          setCalendarEventDates([]);
+        }
+      } else {
+        setCalendarEventDates([]);
+      }
+    } catch (error) {
+      console.error('获取日历事件失败:', error);
+      setCalendarEventDates([]);
+    }
+  };
+
   // 获取新币上线数据
   const fetchMyInterface = async (date) => {
     try {
@@ -262,6 +333,13 @@ export default function Index() {
     console.log('选中日期:', date);
     setSelectedDate(date);
     fetchMyInterface(date);
+  };
+
+  // 处理月份切换，重新获取该月份的事件数据
+  const handleMonthChange = (newMonth) => {
+    console.log('月份切换:', newMonth);
+    // 获取新月份的日历事件数据
+    fetchCalendarEvents(newMonth);
   };
 
   // 处理公告订阅开关（与原项目联调一致）
@@ -674,7 +752,9 @@ export default function Index() {
           <CalendarCard
             onDateChange={handleDateChange}
             onToggleChange={handleToggleChange}
+            onMonthChange={handleMonthChange}
             defaultToggle={false}
+            eventDates={calendarEventDates}
           />
         </View>
       )}
