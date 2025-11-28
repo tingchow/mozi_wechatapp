@@ -1313,6 +1313,11 @@ export default function CommunityPage() {
             }
             <View className={subTab === 'discovery' ? 'discovery-grid' : ''}>
               {/* 快讯tab只显示category为news的帖子（前端过滤） */}
+              {mainTab === 'news' && posts.filter(post => post.category === 'news').length === 0 && !loading && (
+                <View className="empty-state">
+                  <Text className="empty-text">暂无帖子</Text>
+                </View>
+              )}
               {(mainTab === 'news' ? posts.filter(post => post.category === 'news') : posts).map(item => {
                   // 根据当前标签页决定使用哪种卡片样式
                   const isDiscoveryCard = subTab === 'discovery';
@@ -1520,17 +1525,17 @@ export default function CommunityPage() {
                 <GardenLoading />
               </View>
             )}
-            {!loading && posts.length === 0 && (
+            {!loading && posts.length === 0 && mainTab !== 'news' && (
               <View className="empty-content">
                 <Text>暂无更多内容</Text>
               </View>
             )}
-            {!loading && hasMore && posts.length > 0 && (
+            {!loading && hasMore && posts.length > 0 && !(mainTab === 'news' && posts.filter(post => post.category === 'news').length === 0) && (
               <View className="loading-more">
                 <Text>上拉加载更多</Text>
               </View>
             )}
-            {!loading && !hasMore && posts.length > 0 && (
+            {!loading && !hasMore && posts.length > 0 && !(mainTab === 'news' && posts.filter(post => post.category === 'news').length === 0) && (
               <View className="list-footer">
                 <Text>已经到底了</Text>
               </View>
