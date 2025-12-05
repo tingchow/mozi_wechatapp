@@ -155,11 +155,11 @@ function PointsPage() {
             inviteCode: inviteCode || prev.inviteCode,
             inviteLink: data.inviteLink || prev.inviteLink,
             totalInvites: data.totalInvites ?? invitations.length ?? prev.totalInvites,
-            earnedPoints: data.earnedPoints ?? prev.earnedPoints
+            earnedPoints: data.totalInvitePoints ?? prev.earnedPoints
           }
           // 更新本地存储
           Taro.setStorageSync('pointsData', updated)
-          console.log('✅ [邀请列表] 数据已更新，邀请码:', updated.inviteCode)
+          console.log('✅ [邀请列表] 数据已更新，邀请码:', updated.inviteCode, '邀请积分:', updated.earnedPoints)
           return updated
         })
       }
@@ -1146,7 +1146,7 @@ function PointsPage() {
               openType='share'
               onClick={handleWechatShare}
             >
-              <Text className='invite-share-text'>点击分享到微信</Text>
+              <Text className='invite-share-text'>分享赢积分</Text>
             </Button>
           </View>
 
