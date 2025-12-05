@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, Button } from '@tarojs/components'
+import { View, Text, Image, ScrollView, Button, PageContainer } from '@tarojs/components'
 import Taro, { useLoad, useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
 import { Layout } from '../../../components/Layout';
@@ -13,6 +13,8 @@ export default function PointsRank() {
   const [currentUserData, setCurrentUserData] = useState({});
   const [userInfo, setUserInfo] = useState({ avatar: null, nickname: null });
   const [inviteCode, setInviteCode] = useState('');
+  const [popVisible, setPopVisible] = useState(false);
+  const [popType, setPopType] = useState('');
 
   // 默认头像
   const defaultAvatar = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png';
@@ -115,8 +117,188 @@ export default function PointsRank() {
     }
   }, []);
 
+  // 手机号登录（与积分中心保持一致）
+  const phoneLogin = (e) => {
+    const phoneCode = e.detail.code || ''
+    Taro.login({
+      complete: async (res) => {
+        if (res.code) {
+          Taro.showLoading({ mask: true })
+          const openIdCode = res.code
+          console.log('openIdCode', openIdCode)
+          
+          // 获取待处理的邀请码
+          const pendingInviteCode = Taro.getStorageSync('pendingInviteCode')
+          
+          const loginData = {
+            chanel: 1,
+            type: 'login',
+            phoneCode,
+            loginCode: openIdCode
+          }
+          
+          // 如果有邀请码，添加到登录参数中
+          if (pendingInviteCode) {
+            loginData.invitedCode = pendingInviteCode
+            console.log('🎫 [积分榜单-登录] 携带邀请码:', pendingInviteCode)
+          }
+          
+          const tokenInfo = await request({
+            url: Interface.MOZI_LOGIN,
+            data: loginData,
+            method: 'POST'
+          })
+          
+          console.log('tokenInfo', tokenInfo)
+          Taro.hideLoading()
+          
+          if (tokenInfo?.data?.token) {
+            Taro.setStorageSync('token', tokenInfo?.data?.token)
+            console.log('用户信息本地缓存成功')
+            
+            const userInfo = tokenInfo?.data?.userInfo
+            const userId = tokenInfo?.data?.userId
+            
+            if (userId) {
+              Taro.setStorageSync('userId', userId)
+            }
+            
+            if (userInfo?.avatar && userInfo?.nickName) {
+              Taro.setStorageSync('userInfo', {
+                avatar: userInfo?.avatar,
+                nickName: userInfo?.nickName,
+                userId: userId
+              })
+            }
+            
+            // 关闭登录弹窗
+            setPopVisible(false)
+            
+            // 获取并保存用户详细数据（包括邀请码）
+            const { fetchAndSaveUserData } = require('../../../utils/userHelper')
+            await fetchAndSaveUserData()
+            
+            // 检查是否有待处理的邀请码
+            const pendingInviteCode = Taro.getStorageSync('pendingInviteCode')
+            if (pendingInviteCode) {
+              console.log('🔗 [积分榜单-登录成功] 检测到待处理的邀请码:', pendingInviteCode)
+              // 绑定邀请码
+              bindInviteCode(pendingInviteCode)
+            }
+            
+            // 登录成功后，自动调用每日登录任务完成接口
+            const { reportDailyLogin } = require('../../../utils/taskHelper')
+            reportDailyLogin()
+            
+            Taro.showToast({
+              title: '登录成功',
+              icon: 'success',
+              duration: 2000
+            })
+            
+            // 刷新排行榜数据和用户信息
+            loadRankData()
+            fetchUserInfo()
+          } else {
+            console.log('登录失败')
+            Taro.showToast({
+              title: '登录失败',
+              icon: 'error',
+              duration: 2000
+            })
+          }
+        } else {
+          console.log('登录失败！' + res.errMsg)
+        }
+      }
+    })
+  }
+
+  // 绑定邀请码（与积分中心保持一致）
+  const bindInviteCode = async (inviteCode) => {
+    try {
+      console.log('🔗 [积分榜单-邀请码] 开始绑定邀请关系:', inviteCode)
+      
+      // TODO: 调用后端接口绑定邀请关系
+      // const res = await request({
+      //   url: Interface.BIND_INVITE_CODE,
+      //   method: 'POST',
+      //   data: { inviteCode }
+      // })
+      
+      // if (res?.code === 0) {
+      //   console.log('✅ [积分榜单-邀请码] 邀请关系绑定成功')
+      //   Taro.removeStorageSync('pendingInviteCode')
+      //   Taro.showToast({
+      //     title: '邀请绑定成功，已获得积分',
+      //     icon: 'success'
+      //   })
+      // }
+      
+      // 暂时只清除待处理的邀请码
+      Taro.removeStorageSync('pendingInviteCode')
+      console.log('✅ [积分榜单-邀请码] 邀请码已保存，等待后端接口对接')
+      
+      Taro.showToast({
+        title: '邀请绑定成功',
+        icon: 'success',
+        duration: 2000
+      })
+    } catch (error) {
+      console.error('❌ [积分榜单-邀请码] 绑定邀请关系失败:', error)
+    }
+  }
+
   useLoad(() => {
     console.log('🎯 [积分榜单] 页面加载');
+    
+    // 检查是否携带邀请码（与积分中心保持一致）
+    try {
+      const instance = Taro.getCurrentInstance()
+      const router = instance.router
+      let inviteCodeParam = router?.params?.inviteCode
+      
+      // 如果从 router.params 获取不到，尝试从 URL 解析
+      if (!inviteCodeParam) {
+        const url = router?.path || ''
+        const match = url.match(/inviteCode=([^&]+)/)
+        if (match) {
+          inviteCodeParam = match[1]
+        }
+      }
+      
+      console.log('🔍 [积分榜单-邀请码] 完整路由信息:', router)
+      console.log('🔍 [积分榜单-邀请码] 页面参数:', router?.params)
+      console.log('🔍 [积分榜单-邀请码] 邀请码:', inviteCodeParam)
+      
+      if (inviteCodeParam) {
+        console.log('✅ [积分榜单-邀请码] 检测到邀请码:', inviteCodeParam)
+        
+        // 保存邀请码到本地存储
+        Taro.setStorageSync('pendingInviteCode', inviteCodeParam)
+        
+        // 检查用户是否已登录
+        const token = Taro.getStorageSync('token')
+        
+        if (!token) {
+          console.log('⚠️ [积分榜单-邀请码] 用户未登录，弹出登录弹窗')
+          
+          // 延迟一下，等待页面渲染完成
+          setTimeout(() => {
+            // 直接显示登录弹窗
+            setPopType('login')
+            setPopVisible(true)
+          }, 500)
+        } else {
+          console.log('✅ [积分榜单-邀请码] 用户已登录，可以绑定邀请关系')
+          // TODO: 调用后端接口绑定邀请关系
+          // 这里可以复用积分中心的 bindInviteCode 逻辑
+        }
+      }
+    } catch (error) {
+      console.error('❌ [积分榜单-邀请码] 检查邀请码失败:', error)
+    }
+    
     Taro.showShareMenu({
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
@@ -137,20 +319,51 @@ export default function PointsRank() {
     const currentUserInfo = currentUserData[activeTab] || {};
     const myRank = currentUserInfo.rank || list.find(item => item.isMe)?.rank;
     const tabText = activeTab === 'daily' ? '日榜' : activeTab === 'monthly' ? '月榜' : '总榜';
-    const nickName = userInfo.nickname || '好友';
-    const title = myRank ? `${nickName}邀请你来挑战！我在${tabText}排第${myRank}` : `${nickName}邀请你来挑战${tabText}`;
     
-    // 如果有邀请码，添加到分享路径
-    const sharePath = inviteCode 
-      ? `/packages/points/index?inviteCode=${inviteCode}`
-      : `/packages/more/pointsrank/index?tab=${activeTab}`;
+    // 获取用户昵称（与积分中心保持一致）
+    const storedUserInfo = Taro.getStorageSync('userInfo') || {}
+    const nickName = storedUserInfo.nickName || userInfo.nickname || '好友'
     
-    console.log('🎁 [积分榜单] 分享配置:', { title, path: sharePath });
+    // 从多个来源获取邀请码（与积分中心保持一致）
+    const userData = Taro.getStorageSync('userData') || {}
+    let finalInviteCode = userData.inviteCode || userData.invitationCode
     
-    return {
+    // 如果 userData 中没有，尝试从 pointsData 获取
+    if (!finalInviteCode) {
+      const savedPointsData = Taro.getStorageSync('pointsData') || {}
+      finalInviteCode = savedPointsData.inviteCode || inviteCode
+    }
+    
+    console.log('🔍 [积分榜单-分享回调] userData:', userData)
+    console.log('🔍 [积分榜单-分享回调] userData中的邀请码:', userData.inviteCode || userData.invitationCode)
+    console.log('🔍 [积分榜单-分享回调] state中的邀请码:', inviteCode)
+    console.log('🔍 [积分榜单-分享回调] 最终使用的邀请码:', finalInviteCode)
+    
+    // 生成分享标题
+    const title = myRank 
+      ? `${nickName}邀请你来挑战！我在${tabText}排第${myRank}` 
+      : `${nickName}邀请你来挑战${tabText}`;
+    
+    // 分享路径：分享积分榜单页面，同时携带邀请码和当前榜单类型
+    const shareConfig = {
       title,
-      path: sharePath
-    };
+      path: finalInviteCode 
+        ? `/packages/more/pointsrank/index?tab=${activeTab}&inviteCode=${finalInviteCode}`
+        : `/packages/more/pointsrank/index?tab=${activeTab}`,
+    }
+    
+    console.log('========================================')
+    console.log('🎁 [积分榜单-分享] 分享给好友')
+    console.log('📝 标题:', shareConfig.title)
+    console.log('🔗 路径:', shareConfig.path)
+    console.log('👤 分享人:', nickName)
+    console.log('🎫 邀请码:', finalInviteCode)
+    console.log('📊 当前榜单:', tabText)
+    console.log('🏆 我的排名:', myRank || '未上榜')
+    console.log('⚠️  注意：开发版不显示自定义标题，正式版才会显示')
+    console.log('========================================')
+    
+    return shareConfig
   });
 
   const handleTabChange = (key) => {
@@ -298,6 +511,30 @@ export default function PointsRank() {
         </View>
         <Text className='invite-text'>邀请朋友来挑战吧</Text>
       </Button>
+
+      {/* 登录弹窗 */}
+      <PageContainer
+        show={popVisible}
+        onAfterLeave={() => setPopVisible(false)}
+        closeOnSlideDown
+        round
+        forceRender
+        position='bottom'
+      >
+        {popType === 'login' && (
+          <View className='loginPopContainer'>
+            <Text className='loginTitle'>邀请登录</Text>
+            <Text className='loginDesc'>您收到了好友的邀请，请先登录以完成邀请绑定并获得积分奖励</Text>
+            <Button 
+              className='loginButton' 
+              openType='getPhoneNumber' 
+              onGetPhoneNumber={phoneLogin}
+            >
+              <Text className='loginButtonText'>微信手机号登录</Text>
+            </Button>
+          </View>
+        )}
+      </PageContainer>
     </View>
   )
 }

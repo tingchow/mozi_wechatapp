@@ -621,6 +621,10 @@ export default function Index() {
     }
     Taro.removeStorageSync('token');
     Taro.removeStorageSync('userInfo');
+    Taro.removeStorageSync('userId');
+    Taro.removeStorageSync('userData');
+    Taro.removeStorageSync('pointsData');
+    Taro.removeStorageSync('pendingInviteCode'); // 清除待处理的邀请码
     setIsLogin(false);
     setUserInfo({})
     Taro.setStorageSync('needRefreshCommunity', true);
@@ -628,6 +632,7 @@ export default function Index() {
       title: '退出成功',
       icon: 'success',
     })
+    console.log('✅ [退出登录] 已清除所有用户相关缓存，包括 pendingInviteCode');
   };
 
 
