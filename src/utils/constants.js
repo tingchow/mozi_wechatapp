@@ -75,6 +75,8 @@ export const Interface = {
   TASK_POINTS: '/task/points',
   // 获取积分历史记录
   TASK_POINTS_HISTORY: '/task/v1/pointsHistory',
+  // 获取积分榜单
+  TASK_RANKING: '/task/ranking',
   // 首次登录积分奖励
   POINTS_FIRST_LOGIN: '/points/tasks/first-login',
   // 早鸟活动积分奖励

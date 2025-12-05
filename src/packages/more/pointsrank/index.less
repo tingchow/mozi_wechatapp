@@ -54,7 +54,7 @@
       .main-title {
         margin-top: 40px;
         color: #ffffff;
-        font-size: 80px;
+        font-size: 65px;
         font-weight: 700;
       }
 
@@ -148,6 +148,11 @@
         .ov-name {
           font-size: 26px;
           color: #333;
+          // 文本溢出显示省略号
+          max-width: 180px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .ov-points {
           margin-top: 6px;
@@ -215,12 +220,17 @@
       
       .user-info {
         flex: 1;
+        min-width: 0; // 允许flex子元素收缩
         
         .name {
           font-size: 28px;
           font-weight: 600;
           color: #333;
           margin-bottom: 5px;
+          // 文本溢出显示省略号
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         
         // 移除 special 标签相关样式
@@ -283,11 +293,16 @@
 
     .user-info {
       flex: 1;
+      min-width: 0; // 允许flex子元素收缩
       .name {
         font-size: 28px;
         font-weight: 600;
         color: #333;
         margin-bottom: 5px;
+        // 文本溢出显示省略号
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 

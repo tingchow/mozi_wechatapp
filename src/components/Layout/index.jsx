@@ -37,6 +37,10 @@ export const Layout = (props) => {
               Taro.setStorageSync('userId', tokenInfo?.data?.userId);
             }
             console.log('用户信息本地缓存成功');
+            
+            // 获取并保存用户详细数据（包括邀请码）
+            const { fetchAndSaveUserData } = require('../../utils/userHelper');
+            await fetchAndSaveUserData();
             // 写入用户信息（若后端返回），供“我的”页展示
             try {
               const userInfo = tokenInfo?.data?.userInfo;

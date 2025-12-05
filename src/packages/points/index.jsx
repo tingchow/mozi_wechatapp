@@ -103,36 +103,30 @@ function PointsPage() {
     }
   }
   
-  // 获取用户数据（含邀请码）
-  const fetchUserDataInfo = async () => {
+  // 从本地存储加载用户数据（含邀请码）
+  const loadUserDataFromStorage = () => {
     try {
-      const res = await request({
-        url: Interface.USER_DATA_INFO,
-        method: 'GET'
-      })
+      const { getUserData, getInviteCode } = require('../../utils/userHelper')
       
-      console.log('🔍 [用户数据] 接口返回:', res)
-      console.log('🔍 [用户数据] 返回的完整数据:', JSON.stringify(res?.data, null, 2))
+      // 获取用户数据
+      const userData = getUserData()
+      const inviteCode = getInviteCode()
       
-      if (res?.code === 0 && res?.data) {
-        const data = res.data
-        const inviteCode = data.inviteCode || data.invitationCode || ''
-        
-        console.log('🔍 [用户数据] 提取的邀请码:', inviteCode)
-        
-        setPointsData(prev => {
-          const updated = {
-            ...prev,
-            inviteCode
-          }
-          // 更新本地存储
-          Taro.setStorageSync('pointsData', updated)
-          console.log('✅ [用户数据] 邀请码已更新:', inviteCode)
-          return updated
-        })
+      console.log('🔍 [积分页面] 从本地存储加载用户数据')
+      console.log('🔍 [积分页面] 用户数据:', userData)
+      console.log('🔍 [积分页面] 邀请码:', inviteCode)
+      
+      if (inviteCode) {
+        setPointsData(prev => ({
+          ...prev,
+          inviteCode
+        }))
+        console.log('✅ [积分页面] 邀请码已加载:', inviteCode)
+      } else {
+        console.log('⚠️ [积分页面] 本地存储中没有邀请码')
       }
     } catch (error) {
-      console.error('获取用户数据失败:', error)
+      console.error('❌ [积分页面] 加载用户数据失败:', error)
     }
   }
   
@@ -312,8 +306,10 @@ function PointsPage() {
     fetchPointsData()
     console.log('🎯 [积分页面] fetchPointsData() 已调用')
     
-    // 获取用户数据和邀请列表
-    fetchUserDataInfo()
+    // 从本地存储加载用户数据（包括邀请码）
+    loadUserDataFromStorage()
+    
+    // 获取邀请列表
     fetchInvitationList()
     
     // 从本地存储恢复任务状态（按用户ID）
@@ -481,6 +477,10 @@ function PointsPage() {
             
             // 关闭登录弹窗
             setPopVisible(false)
+            
+            // 获取并保存用户详细数据（包括邀请码）
+            const { fetchAndSaveUserData } = require('../../utils/userHelper')
+            await fetchAndSaveUserData()
             
             // 检查是否有待处理的邀请码
             const pendingInviteCode = Taro.getStorageSync('pendingInviteCode')
@@ -885,32 +885,33 @@ function PointsPage() {
   
   // 微信分享邀请（准备分享数据）
   const handleWechatShare = () => {
-    // 如果没有邀请码，使用测试邀请码
-    const inviteCode = pointsData.inviteCode || 'MOZI2024TEST'
-    
-    console.log('🔍 [分享] 准备分享，邀请码:', inviteCode)
-    
-    // 更新 pointsData 中的邀请码
-    if (!pointsData.inviteCode) {
-      setPointsData(prev => ({
-        ...prev,
-        inviteCode: 'MOZI2024TEST'
-      }))
-    }
+    console.log('🔍 [分享] 准备分享，邀请码:', pointsData.inviteCode)
     
     // 保存邀请码到本地存储，供分享回调使用
-    const dataToSave = {
-      ...pointsData,
-      inviteCode
-    }
-    Taro.setStorageSync('pointsData', dataToSave)
+    Taro.setStorageSync('pointsData', pointsData)
   }
   
   // 配置分享功能 - 使用 useShareAppMessage
   Taro.useShareAppMessage(() => {
     const userInfo = Taro.getStorageSync('userInfo') || {}
-    const inviteCode = pointsData.inviteCode || 'MOZI2024TEST'
     const nickName = userInfo.nickName || '好友'
+    
+    // 从本地存储获取最新的邀请码（因为 pointsData 可能还没更新）
+    const savedPointsData = Taro.getStorageSync('pointsData') || {}
+    const inviteCode = savedPointsData.inviteCode || pointsData.inviteCode
+    
+    console.log('🔍 [分享回调] 本地存储的邀请码:', savedPointsData.inviteCode)
+    console.log('🔍 [分享回调] state中的邀请码:', pointsData.inviteCode)
+    console.log('🔍 [分享回调] 最终使用的邀请码:', inviteCode)
+    
+    // 如果没有邀请码，返回默认分享配置（不带邀请码参数）
+    if (!inviteCode) {
+      console.log('⚠️ [分享] 没有邀请码，使用默认分享配置')
+      return {
+        title: `${nickName}邀请你加入MOZI`,
+        path: `/packages/points/index`
+      }
+    }
     
     const shareConfig = {
       title: `${nickName}邀请你加入`,
@@ -1040,8 +1041,8 @@ function PointsPage() {
             </Button>
           </View>
 
-          {/* 邀请码 */}
-          <View className='invite-input-box'>
+          {/* 邀请码 - 微信小程序隐藏 */}
+          {/* <View className='invite-input-box'>
             <Text className='invite-input-label'>邀请码</Text>
             <View className='invite-input-content'>
               <Text className='invite-input-text'>{pointsData.inviteCode || '暂无邀请码'}</Text>
@@ -1049,7 +1050,7 @@ function PointsPage() {
                 <Image src={imgCopy} className='copy-icon' mode='aspectFit' />
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* 统计数据网格 */}
           <View className='stats-grid'>

@@ -548,6 +548,10 @@ export default function Index() {
               console.log(`📝 用户[${userId}]之前已登录过`);
             }
 
+            // 获取并保存用户详细数据（包括邀请码）
+            const { fetchAndSaveUserData } = require('../../utils/userHelper');
+            await fetchAndSaveUserData();
+            
             // 检查是否有待处理的邀请码
             const pendingInviteCode = Taro.getStorageSync('pendingInviteCode');
             if (pendingInviteCode) {

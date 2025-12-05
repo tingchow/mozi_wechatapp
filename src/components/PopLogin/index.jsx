@@ -45,6 +45,11 @@ export const PopLogin = ({ show = false, hideCb }) => {
                 // 设置登录成功标记，用于社区页面刷新
                 Taro.setStorageSync('needRefreshCommunity', true);
                 console.log('用户信息本地缓存成功');
+                
+                // 获取并保存用户详细数据（包括邀请码）
+                const { fetchAndSaveUserData } = require('../../utils/userHelper');
+                await fetchAndSaveUserData();
+                
                 const title = tokenInfo.data.type === 'login'? '登录成功': '注册成功';
                 hidePop();
                 Taro.showToast({

@@ -2,62 +2,127 @@ import { View, Text, Image, ScrollView, Button } from '@tarojs/components'
 import Taro, { useLoad, useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
 import { Layout } from '../../../components/Layout';
-import IconFont from '../../../components/iconfont';
+import { request } from '../../../utils/request';
+import { Interface } from '../../../utils/constants';
 import './index.less';
 
 export default function PointsRank() {
   const [activeTab, setActiveTab] = useState('daily');
   const [loading, setLoading] = useState(false);
   const [rankData, setRankData] = useState({});
+  const [currentUserData, setCurrentUserData] = useState({});
+  const [userInfo, setUserInfo] = useState({ avatar: null, nickname: null });
+  const [inviteCode, setInviteCode] = useState('');
 
-  // 模拟数据生成器（为日/月/总榜生成列表）
-  const makeList = (basePoints, customNames = []) => {
-    const avatars = [
-      'https://images.unsplash.com/photo-1494790108755-2616c5e91d5f?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face'
-    ];
-    return Array.from({ length: 25 }).map((_, idx) => {
-      const rank = idx + 1;
-      return {
-        id: rank,
-        name: rank === 25 ? '牛爷爷' : (customNames[idx] || (idx === 2 ? 'GGBond' : idx === 3 ? '超人强' : '张三')),
-        avatar: avatars[idx % avatars.length],
-        points: basePoints - (rank - 1) * 10,
-        rank,
-        isMe: rank === 25
-      };
-    });
-  };
+  // 默认头像
+  const defaultAvatar = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png';
 
-  const mockData = {
-    daily: makeList(2000),
-    monthly: makeList(5200),
-    total: makeList(10000)
-  };
+  // 获取排行榜数据（与原项目保持一致）
+  const fetchRankData = useCallback(async (type) => {
+    try {
+      const res = await request({
+        url: Interface.TASK_RANKING,
+        method: 'GET',
+        data: {
+          type: type,
+          limit: 50
+        }
+      });
+      
+      console.log(`🔍 [积分榜单] ${type}榜接口返回:`, res);
+      
+      if (res?.code === 0 && res?.data) {
+        const rankings = res.data.rankings || res.data || [];
+        // 映射接口数据到组件格式
+        const list = rankings.map((item, index) => ({
+          id: item.userId || index + 1,
+          name: item.nickName || item.nickname || item.userName || '匿名用户',
+          avatar: item.avatar || defaultAvatar,
+          points: item.points || item.totalPoints || item.dailyPoints || item.monthlyPoints || 0,
+          rank: item.rank || index + 1,
+          isMe: item.isCurrentUser || false
+        }));
+        
+        console.log(`✅ [积分榜单] ${type}榜数据加载成功，共${list.length}条`);
+        
+        // 返回排行榜列表和当前用户数据
+        return {
+          list,
+          currentUserRank: res.data.currentUserRank,
+          currentUserPoints: res.data.currentUserPoints
+        };
+      }
+      return { list: [], currentUserRank: null, currentUserPoints: null };
+    } catch (error) {
+      console.error(`获取${type}排行榜失败:`, error);
+      return { list: [], currentUserRank: null, currentUserPoints: null };
+    }
+  }, []);
 
-  useShareAppMessage(() => {
-    const list = (rankData[activeTab] || []);
-    const me = list.find(item => item.isMe);
-    const tabText = activeTab === 'daily' ? '日榜' : activeTab === 'monthly' ? '月榜' : '总榜';
-    const title = me ? `邀请你来挑战！我在${tabText}排第${me.rank}` : `邀请你来挑战${tabText}`;
-    return {
-      title,
-      path: `/packages/more/pointsrank/index?inviteFrom=share&tab=${activeTab}`
-    };
-  });
+  // 加载所有类型的排行榜数据
+  const loadRankData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [dailyData, monthlyData, totalData] = await Promise.all([
+        fetchRankData('daily'),
+        fetchRankData('monthly'),
+        fetchRankData('total')
+      ]);
+      
+      setRankData({
+        daily: dailyData.list,
+        monthly: monthlyData.list,
+        total: totalData.list
+      });
+      
+      // 保存当前用户的排名数据
+      setCurrentUserData({
+        daily: { rank: dailyData.currentUserRank, points: dailyData.currentUserPoints },
+        monthly: { rank: monthlyData.currentUserRank, points: monthlyData.currentUserPoints },
+        total: { rank: totalData.currentUserRank, points: totalData.currentUserPoints }
+      });
+      
+      console.log('✅ [积分榜单] 所有榜单数据加载完成');
+    } catch (error) {
+      console.error('加载排行榜数据失败:', error);
+      Taro.showToast({
+        title: '加载失败',
+        icon: 'none'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchRankData]);
+
+  // 获取用户信息（包括邀请码、头像、昵称）
+  const fetchUserInfo = useCallback(async () => {
+    try {
+      const res = await request({
+        url: Interface.USER_DATA_INFO,
+        method: 'GET'
+      });
+      if (res?.code === 0 && res?.data) {
+        if (res.data.inviteCode) {
+          setInviteCode(res.data.inviteCode);
+        }
+        setUserInfo({
+          avatar: res.data.avatar || null,
+          nickname: res.data.nickName || res.data.nickname || null
+        });
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+    }
+  }, []);
 
   useLoad(() => {
+    console.log('🎯 [积分榜单] 页面加载');
     Taro.showShareMenu({
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
     });
     loadRankData();
+    fetchUserInfo();
   });
 
   // 下拉刷新
@@ -67,44 +132,47 @@ export default function PointsRank() {
     });
   });
 
-  // 加载排行榜数据
-  const loadRankData = useCallback(async () => {
-    setLoading(true);
-    try {
-      // 这里应该调用实际的API
-      // const response = await request({ url: Interface.POINTS_RANK, data: { type: activeTab } });
-      
-      // 模拟API调用延迟
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 设置模拟数据
-      setRankData(mockData);
-    } catch (error) {
-      console.error('加载排行榜数据失败:', error);
-      Taro.showToast({
-        title: '加载失败',
-        icon: 'error'
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab]);
+  useShareAppMessage(() => {
+    const list = (rankData[activeTab] || []);
+    const currentUserInfo = currentUserData[activeTab] || {};
+    const myRank = currentUserInfo.rank || list.find(item => item.isMe)?.rank;
+    const tabText = activeTab === 'daily' ? '日榜' : activeTab === 'monthly' ? '月榜' : '总榜';
+    const nickName = userInfo.nickname || '好友';
+    const title = myRank ? `${nickName}邀请你来挑战！我在${tabText}排第${myRank}` : `${nickName}邀请你来挑战${tabText}`;
+    
+    // 如果有邀请码，添加到分享路径
+    const sharePath = inviteCode 
+      ? `/packages/points/index?inviteCode=${inviteCode}`
+      : `/packages/more/pointsrank/index?tab=${activeTab}`;
+    
+    console.log('🎁 [积分榜单] 分享配置:', { title, path: sharePath });
+    
+    return {
+      title,
+      path: sharePath
+    };
+  });
 
   const handleTabChange = (key) => {
     setActiveTab(key);
-    // 切换tab时重新加载数据
-    setTimeout(() => loadRankData(), 100);
   };
-
-  // 悬浮按钮采用 openType=share 直接调起微信分享
 
   const listData = rankData[activeTab] || [];
   // 前三名用于叠加到背景的三个槽位
-  const top1 = (rankData[activeTab] || []).find((i) => i.rank === 1);
-  const top2 = (rankData[activeTab] || []).find((i) => i.rank === 2);
-  const top3 = (rankData[activeTab] || []).find((i) => i.rank === 3);
-  const myRank = (rankData[activeTab] || []).find((i) => i.isMe);
-  const restList = (rankData[activeTab] || []).filter((i) => i.rank > 3);
+  const top1 = listData.find((i) => i.rank === 1);
+  const top2 = listData.find((i) => i.rank === 2);
+  const top3 = listData.find((i) => i.rank === 3);
+  
+  // 优先使用 API 返回的 currentUserRank 和 currentUserPoints
+  const currentUserInfo = currentUserData[activeTab] || {};
+  const myRank = currentUserInfo.rank ? {
+    rank: currentUserInfo.rank,
+    points: currentUserInfo.points ?? 0,
+    name: userInfo.nickname || '我',
+    avatar: userInfo.avatar || defaultAvatar
+  } : listData.find((i) => i.isMe);
+  
+  const restList = listData.filter((i) => i.rank > 3);
 
   return (
     <View className='points-rank-container'>
