@@ -1005,11 +1005,18 @@ function PointsPage() {
     const userInfo = Taro.getStorageSync('userInfo') || {}
     const nickName = userInfo.nickName || '好友'
     
-    // 从本地存储获取最新的邀请码（因为 pointsData 可能还没更新）
-    const savedPointsData = Taro.getStorageSync('pointsData') || {}
-    const inviteCode = savedPointsData.inviteCode || pointsData.inviteCode
+    // 从本地存储的 userData 中获取邀请码
+    const userData = Taro.getStorageSync('userData') || {}
+    let inviteCode = userData.inviteCode || userData.invitationCode
     
-    console.log('🔍 [分享回调] 本地存储的邀请码:', savedPointsData.inviteCode)
+    // 如果 userData 中没有，尝试从 pointsData 获取
+    if (!inviteCode) {
+      const savedPointsData = Taro.getStorageSync('pointsData') || {}
+      inviteCode = savedPointsData.inviteCode || pointsData.inviteCode
+    }
+    
+    console.log('🔍 [分享回调] userData:', userData)
+    console.log('🔍 [分享回调] userData中的邀请码:', userData.inviteCode || userData.invitationCode)
     console.log('🔍 [分享回调] state中的邀请码:', pointsData.inviteCode)
     console.log('🔍 [分享回调] 最终使用的邀请码:', inviteCode)
     
