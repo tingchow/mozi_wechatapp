@@ -71,12 +71,20 @@ export const Interface = {
   SHARE_REPORT: '/share/report',
   
   // 积分系统
+  // 获取用户积分数据
+  TASK_POINTS: '/task/points',
+  // 获取积分历史记录
+  TASK_POINTS_HISTORY: '/task/v1/pointsHistory',
   // 首次登录积分奖励
   POINTS_FIRST_LOGIN: '/points/tasks/first-login',
   // 早鸟活动积分奖励
   POINTS_EARLY_BIRD: '/points/tasks/early-bird',
   // 设置报警积分奖励
   POINTS_SET_WARN: '/points/tasks/set-warn',
+  // 获取用户详细数据（含邀请码）
+  USER_DATA_INFO: '/user/datainfo',
+  // 获取邀请列表
+  TASK_INVITATION_LIST: '/task/invitation/list',
 
   // 添加自选
   ADD_OWN: '/selfselect/add',

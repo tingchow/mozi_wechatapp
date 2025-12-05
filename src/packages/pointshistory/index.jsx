@@ -2,7 +2,8 @@ import { View, Text, Image, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useLoad } from '@tarojs/taro'
 import { useState } from 'react'
-import request from '../../utils/request'
+import { request } from '../../utils/request'
+import { Interface } from '../../utils/constants'
 import './index.less'
 
 export default function PointsHistoryPage() {
@@ -98,34 +99,35 @@ export default function PointsHistoryPage() {
 
   // 加载历史数据
   const loadHistoryData = async () => {
-    try {
-      setLoading(true)
+    console.log('🔍 [积分历史] 开始加载数据...')
+    setLoading(true)
+    
+    const res = await request({
+      url: Interface.TASK_POINTS_HISTORY,
+      method: 'GET',
+      data: {
+        page: page,
+        limit: 20
+      }
+    })
+    
+    console.log('🔍 [积分历史] 接口返回:', res)
+    
+    if (res?.code === 0 && res?.data) {
+      const newList = res.data.list || res.data || []
+      setHistoryList(newList)
       
-      // TODO: 调用真实接口
-      // const { data } = await request({
-      //   url: '/api/points/history',
-      //   method: 'GET',
-      //   data: {
-      //     page: page,
-      //     pageSize: 20
-      //   }
-      // })
+      // 判断是否还有更多数据
+      const total = res.data.total || 0
+      setHasMore(newList.length < total)
       
-      // 模拟数据 - 显示所有类型
-      setTimeout(() => {
-        setHistoryList(mockHistory)
-        setLoading(false)
-      }, 500)
-      
-    } catch (error) {
-      console.error('加载积分历史失败:', error)
-      setLoading(false)
-      Taro.showToast({
-        title: '加载失败',
-        icon: 'none',
-        duration: 2000
-      })
+      console.log('✅ [积分历史] 加载成功，共', newList.length, '条记录')
+    } else {
+      console.log('⚠️ [积分历史] 接口返回非成功状态:', res)
+      setHistoryList([])
     }
+    
+    setLoading(false)
   }
 
 
@@ -147,14 +149,28 @@ export default function PointsHistoryPage() {
     return timeStr.split(' ')[0]
   }
 
-  // 获取类型图标
-  const getTypeIcon = (type) => {
+  // 根据 taskCode 获取类型图标（与原项目保持一致）
+  const getTypeIcon = (taskCode) => {
     const icons = {
-      task: `${CDN_BASE}/set_alert@2x.png`,
-      daily: `${CDN_BASE}/glove_praise@2x.png`,
-      invite: `${CDN_BASE}/invite@2x.png`
+      // 每日任务图标
+      'DAILY_LIKE': `${CDN_BASE}/glove_praise@2x.png`,
+      'POST': `${CDN_BASE}/paper_airplane@2x.png`,
+      'RECEIVE_LIKE': `${CDN_BASE}/%20no_glove_praise@2x.png`,
+      'REPLY': `${CDN_BASE}/notification_1@2x.png`,
+      'POST_RECEIVE_REPLY': `${CDN_BASE}/notification_2@2x.png`,
+      'DAILY_LOGIN': `${CDN_BASE}/contact_person@2x.png`,
+      // 活动任务图标
+      'INVITE_USER': `${CDN_BASE}/invite@2x.png`,
+      'REGISTER': `${CDN_BASE}/contact_person@2x.png`,
+      'FOLLOW_TWITTER': `${CDN_BASE}/like@2x.png`,
+      'JOIN_COMMUNITY': `${CDN_BASE}/social_group@2x.png`,
+      'COMMUNITY': `${CDN_BASE}/social_group@2x.png`,
+      'SET_ALARM': `${CDN_BASE}/set_alert@2x.png`,
+      'ALARM': `${CDN_BASE}/set_alert@2x.png`,
+      'VIDEO_LEARN': `${CDN_BASE}/video@2x.png`,
+      'VIDEO': `${CDN_BASE}/video@2x.png`,
     }
-    return icons[type] || icons.task
+    return icons[taskCode] || `${CDN_BASE}/glove_praise@2x.png`
   }
 
   return (

@@ -2,16 +2,29 @@ import { View, Text, Button, Image, PageContainer } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useLoad, useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
-import request from '../../utils/request'
-import { Interface } from '../../utils/constants'
+import { request } from '../../utils/request'
+import { Interface, INTERFACE_URL } from '../../utils/constants'
 import './index.less'
 
-export default function PointsPage() {
+function PointsPage() {
   const [activeTab, setActiveTab] = useState('myPoints')
   const [tasksList, setTasksList] = useState([])
   const [verifyingTaskId, setVerifyingTaskId] = useState(null) // 正在验证的任务ID
   const [popVisible, setPopVisible] = useState(false)
   const [popType, setPopType] = useState('')
+  // 添加积分数据状态
+  const [pointsData, setPointsData] = useState({
+    totalPoints: 0,
+    season: 'S5赛季',
+    seasonStart: '2025-09-25',
+    seasonEnd: '2025-10-25',
+    inviteLink: '',
+    inviteCode: '',
+    totalInvites: 0,
+    earnedPoints: 0,
+    activeInvites: 0,
+    pendingRewards: 0
+  })
   
   // 获取当前用户ID（用于任务状态与用户绑定）
   const getUserId = () => {
@@ -46,17 +59,119 @@ export default function PointsPage() {
   const imgPointAlert = `${CDN_BASE}/point_alert@2x.png`
   const imgCertification = `${CDN_BASE}/Certification@2x.png`
   
-  const pointsData = {
-    totalPoints: 45123,
-    season: 'S5赛季',
-    seasonStart: '2025-09-25',
-    seasonEnd: '2025-10-25',
-    inviteLink: 'y79lll/e]suow\'eloos\'s//:sd14',
-    inviteCode: '30L234',
-    totalInvites: 50,
-    earnedPoints: 21323,
-    activeInvites: 50,
-    pendingRewards: 0
+  // 获取积分数据的函数
+  const fetchPointsData = async () => {
+    console.log('🔍 [积分接口] 开始获取积分数据...')
+    console.log('🔍 [积分接口] 接口地址:', Interface.TASK_POINTS)
+    
+    const res = await request({
+      url: Interface.TASK_POINTS,
+      method: 'GET'
+    })
+    
+    console.log('🔍 [积分接口] 接口返回:', res)
+    
+    if (res?.code === 0 && res?.data) {
+      const data = res.data
+      console.log('🔍 [积分接口] 返回的完整数据:', JSON.stringify(data, null, 2))
+      console.log('🔍 [积分接口] inviteCode:', data.inviteCode)
+      console.log('🔍 [积分接口] invitationCode:', data.invitationCode)
+      
+      const newPointsData = {
+        totalPoints: data.totalPoints ?? 0,
+        inviteLink: data.inviteLink ?? '',
+        inviteCode: data.inviteCode || data.invitationCode || '',
+        totalInvites: data.totalInvites ?? 0,
+        earnedPoints: data.earnedPoints ?? 0,
+        seasonStart: data.seasonStart ?? '2025-09-25',
+        seasonEnd: data.seasonEnd ?? '2025-10-25'
+      }
+      
+      console.log('🔍 [积分接口] 处理后的邀请码:', newPointsData.inviteCode)
+      
+      setPointsData(prev => ({
+        ...prev,
+        ...newPointsData
+      }))
+      
+      // 保存到本地存储，供分享功能使用
+      Taro.setStorageSync('pointsData', newPointsData)
+      
+      console.log('✅ 积分数据更新成功，totalPoints:', data.totalPoints, 'inviteCode:', newPointsData.inviteCode)
+    } else {
+      console.log('⚠️ 接口返回非成功状态:', res)
+    }
+  }
+  
+  // 获取用户数据（含邀请码）
+  const fetchUserDataInfo = async () => {
+    try {
+      const res = await request({
+        url: Interface.USER_DATA_INFO,
+        method: 'GET'
+      })
+      
+      console.log('🔍 [用户数据] 接口返回:', res)
+      console.log('🔍 [用户数据] 返回的完整数据:', JSON.stringify(res?.data, null, 2))
+      
+      if (res?.code === 0 && res?.data) {
+        const data = res.data
+        const inviteCode = data.inviteCode || data.invitationCode || ''
+        
+        console.log('🔍 [用户数据] 提取的邀请码:', inviteCode)
+        
+        setPointsData(prev => {
+          const updated = {
+            ...prev,
+            inviteCode
+          }
+          // 更新本地存储
+          Taro.setStorageSync('pointsData', updated)
+          console.log('✅ [用户数据] 邀请码已更新:', inviteCode)
+          return updated
+        })
+      }
+    } catch (error) {
+      console.error('获取用户数据失败:', error)
+    }
+  }
+  
+  // 获取邀请列表数据
+  const fetchInvitationList = async () => {
+    try {
+      const res = await request({
+        url: Interface.TASK_INVITATION_LIST,
+        method: 'GET'
+      })
+      
+      console.log('🔍 [邀请列表] 接口返回:', res)
+      console.log('🔍 [邀请列表] 返回的完整数据:', JSON.stringify(res?.data, null, 2))
+      
+      if (res?.code === 0 && res?.data) {
+        const data = res.data
+        const invitations = data.invitations || data || []
+        const inviteCode = data.invitationCode || data.inviteCode || ''
+        
+        console.log('🔍 [邀请列表] 提取的邀请码:', inviteCode)
+        console.log('🔍 [邀请列表] 总邀请数:', data.totalInvites)
+        
+        setPointsData(prev => {
+          const updated = {
+            ...prev,
+            inviteCode: inviteCode || prev.inviteCode,
+            inviteLink: data.inviteLink || prev.inviteLink,
+            totalInvites: data.totalInvites ?? invitations.length ?? prev.totalInvites,
+            earnedPoints: data.earnedPoints ?? prev.earnedPoints
+          }
+          // 更新本地存储
+          Taro.setStorageSync('pointsData', updated)
+          console.log('✅ [邀请列表] 数据已更新，邀请码:', updated.inviteCode)
+          return updated
+        })
+      }
+    } catch (error) {
+      console.error('获取邀请列表失败:', error)
+    }
   }
 
   // 任务和每日任务图标
@@ -185,7 +300,18 @@ export default function PointsPage() {
   }
 
   useLoad(() => {
-    console.log('积分页面加载')
+    console.log('========================================')
+    console.log('🎯 [积分页面] 页面加载开始')
+    console.log('========================================')
+    
+    // 获取积分数据
+    console.log('🎯 [积分页面] 准备调用 fetchPointsData()')
+    fetchPointsData()
+    console.log('🎯 [积分页面] fetchPointsData() 已调用')
+    
+    // 获取用户数据和邀请列表
+    fetchUserDataInfo()
+    fetchInvitationList()
     
     // 从本地存储恢复任务状态（按用户ID）
     const tasksKey = getTasksStorageKey()
@@ -547,6 +673,15 @@ export default function PointsPage() {
   }
 
   const copyToClipboard = (text, label) => {
+    if (!text) {
+      Taro.showToast({
+        title: '暂无数据',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    
     Taro.setClipboardData({
       data: text,
       success: () => {
@@ -564,6 +699,37 @@ export default function PointsPage() {
         })
       }
     })
+  }
+  
+  // 微信分享邀请
+  const handleWechatShare = () => {
+    if (!pointsData.inviteCode) {
+      Taro.showToast({
+        title: '邀请码加载中，请稍后',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    
+    // 微信小程序分享
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+    
+    Taro.showToast({
+      title: '请点击右上角分享',
+      icon: 'none',
+      duration: 2000
+    })
+  }
+  
+  // 生成微信小程序邀请链接（用于复制）
+  const getWechatInviteLink = () => {
+    if (!pointsData.inviteCode) return ''
+    // 微信小程序的邀请链接格式（可以根据实际情况调整）
+    return `邀请您加入MOZI，使用邀请码：${pointsData.inviteCode}`
   }
 
   const handleTabChange = (tab) => {
@@ -656,14 +822,11 @@ export default function PointsPage() {
             </View>
           </View>
 
-          {/* 邀请链接 */}
+          {/* 微信分享按钮 */}
           <View className='invite-input-box'>
-            <Text className='invite-input-label'>邀请链接</Text>
-            <View className='invite-input-content'>
-              <Text className='invite-input-text'>{pointsData.inviteLink}</Text>
-              <View className='copy-icon-btn' onClick={() => copyToClipboard(pointsData.inviteLink, '邀请链接')}>
-                <Image src={imgCopy} className='copy-icon' mode='aspectFit' />
-              </View>
+            <Text className='invite-input-label'>分享给好友</Text>
+            <View className='invite-share-btn' onClick={handleWechatShare}>
+              <Text className='invite-share-text'>点击分享到微信</Text>
             </View>
           </View>
 
@@ -671,7 +834,7 @@ export default function PointsPage() {
           <View className='invite-input-box'>
             <Text className='invite-input-label'>邀请码</Text>
             <View className='invite-input-content'>
-              <Text className='invite-input-text'>{pointsData.inviteCode}</Text>
+              <Text className='invite-input-text'>{pointsData.inviteCode || '暂无邀请码'}</Text>
               <View className='copy-icon-btn' onClick={() => copyToClipboard(pointsData.inviteCode, '邀请码')}>
                 <Image src={imgCopy} className='copy-icon' mode='aspectFit' />
               </View>
@@ -688,11 +851,13 @@ export default function PointsPage() {
               <Text className='stat-value'>{pointsData.earnedPoints}</Text>
               <Text className='stat-label'>积分</Text>
             </View>
-            <View className='stat-card'>
+            {/* 隐藏申请ETH */}
+            {/* <View className='stat-card'>
               <Text className='stat-value'>{pointsData.activeInvites}</Text>
               <Text className='stat-label'>申请ETH</Text>
-            </View>
-            <View className='stat-card'>
+            </View> */}
+            {/* 隐藏OwO之后可领取 */}
+            {/* <View className='stat-card'>
               <View className='stat-value'>
                 {pointsData.pendingRewards === 0 ? (
                   <Image src={imgInfo} className='info-icon' mode='aspectFit' />
@@ -701,7 +866,7 @@ export default function PointsPage() {
                 )}
               </View>
               <Text className='stat-label'>OwO 之后可领取</Text>
-            </View>
+            </View> */}
           </View>
 
           {/* 说明文字 */}
@@ -875,3 +1040,29 @@ export default function PointsPage() {
     </View>
   )
 }
+
+// 配置分享功能
+PointsPage.onShareAppMessage = function() {
+  const pointsData = Taro.getStorageSync('pointsData') || {}
+  const inviteCode = pointsData.inviteCode || ''
+  
+  return {
+    title: `邀请您加入MOZI，使用邀请码：${inviteCode}，即可获得500积分奖励！`,
+    path: `/pages/index/index?inviteCode=${inviteCode}`,
+    imageUrl: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/moz_logo@2x.png'
+  }
+}
+
+// 配置分享到朋友圈
+PointsPage.onShareTimeline = function() {
+  const pointsData = Taro.getStorageSync('pointsData') || {}
+  const inviteCode = pointsData.inviteCode || ''
+  
+  return {
+    title: `邀请您加入MOZI，使用邀请码：${inviteCode}，即可获得500积分奖励！`,
+    query: `inviteCode=${inviteCode}`,
+    imageUrl: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/point/moz_logo@2x.png'
+  }
+}
+
+export default PointsPage
