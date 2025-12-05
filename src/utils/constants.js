@@ -77,12 +77,10 @@ export const Interface = {
   TASK_POINTS_HISTORY: '/task/v1/pointsHistory',
   // 获取积分榜单
   TASK_RANKING: '/task/ranking',
-  // 首次登录积分奖励
-  POINTS_FIRST_LOGIN: '/points/tasks/first-login',
-  // 早鸟活动积分奖励
-  POINTS_EARLY_BIRD: '/points/tasks/early-bird',
-  // 设置报警积分奖励
-  POINTS_SET_WARN: '/points/tasks/set-warn',
+  // 获取任务列表
+  TASK_LIST: '/task/list',
+  // 完成任务（统一接口）
+  TASK_COMPLETE: '/task/complete',
   // 获取用户详细数据（含邀请码）
   USER_DATA_INFO: '/user/datainfo',
   // 获取邀请列表

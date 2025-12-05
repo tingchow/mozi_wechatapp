@@ -43,6 +43,16 @@ export const PageLogin = ({show = false, hideCb}) => {
             const { fetchAndSaveUserData } = require('../../utils/userHelper');
             await fetchAndSaveUserData();
             
+            // 登录成功后，自动上报每日登录任务
+            console.log('🔍 [PageLogin] 准备上报每日登录任务');
+            try {
+              const { reportDailyLogin } = require('../../utils/taskHelper');
+              await reportDailyLogin();
+              console.log('✅ [PageLogin] 每日登录任务上报完成');
+            } catch (error) {
+              console.error('❌ [PageLogin] 每日登录任务上报失败:', error);
+            }
+            
             const title = tokenInfo.data.type === 'login'? '登录成功': '注册成功';
             Taro.showToast({
               title,

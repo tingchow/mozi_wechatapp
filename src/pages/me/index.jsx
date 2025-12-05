@@ -552,6 +552,16 @@ export default function Index() {
             const { fetchAndSaveUserData } = require('../../utils/userHelper');
             await fetchAndSaveUserData();
             
+            // 登录成功后，自动上报每日登录任务
+            console.log('🔍 [Me页面] 准备上报每日登录任务');
+            try {
+              const { reportDailyLogin } = require('../../utils/taskHelper');
+              await reportDailyLogin();
+              console.log('✅ [Me页面] 每日登录任务上报完成');
+            } catch (error) {
+              console.error('❌ [Me页面] 每日登录任务上报失败:', error);
+            }
+            
             // 检查是否有待处理的邀请码
             const pendingInviteCode = Taro.getStorageSync('pendingInviteCode');
             if (pendingInviteCode) {

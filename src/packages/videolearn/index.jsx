@@ -73,11 +73,26 @@ export default function VideoLearnPage() {
       console.error('保存视频完成记录失败:', e)
     }
     
-    Taro.showToast({
-      title: `恭喜获得 ${videos[currentVideo].points} 积分！`,
-      icon: 'success',
-      duration: 2000
-    })
+    // 检查是否所有视频都已完成
+    const allCompleted = Object.keys(newCompleted).length === videos.length
+    
+    if (allCompleted) {
+      // 所有视频已看完，自动调用视频学习任务完成接口（与原项目对齐）
+      const { reportVideo } = require('../../utils/taskHelper')
+      reportVideo()
+      
+      Taro.showToast({
+        title: '恭喜！已完成所有视频学习',
+        icon: 'success',
+        duration: 2000
+      })
+    } else {
+      Taro.showToast({
+        title: `恭喜获得 ${videos[currentVideo].points} 积分！`,
+        icon: 'success',
+        duration: 2000
+      })
+    }
   }
 
   // 视频错误回调

@@ -309,6 +309,14 @@ export default function PostPage() {
       if (response?.code === 0) {
         // 设置刷新标记
         Taro.setStorageSync('needRefreshCommunity', true)
+        
+        // 发帖成功后，自动调用发帖任务完成接口（与原项目对齐）
+        // 只在新发帖时调用，更新帖子不调用
+        if (!isUpdate) {
+          const { reportPost } = require('../../../utils/taskHelper')
+          reportPost()
+        }
+        
         Taro.showToast({
           title: isUpdate ? '更新成功' : '发布成功',
           icon: 'success',

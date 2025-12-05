@@ -548,6 +548,11 @@ export default function CommentInfo() {
           icon: 'success',
           duration: 2000
         });
+        
+        // 回复/评论成功后，自动调用回复任务完成接口（与原项目对齐）
+        const { reportReply } = require('../../../utils/taskHelper')
+        reportReply()
+        
         // 清空评论内容和回复对象
         setCommentContent('');
         setReplyTo(null);

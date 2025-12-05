@@ -50,6 +50,16 @@ export const PopLogin = ({ show = false, hideCb }) => {
                 const { fetchAndSaveUserData } = require('../../utils/userHelper');
                 await fetchAndSaveUserData();
                 
+                // 登录成功后，自动上报每日登录任务
+                console.log('🔍 [PopLogin] 准备上报每日登录任务');
+                try {
+                  const { reportDailyLogin } = require('../../utils/taskHelper');
+                  await reportDailyLogin();
+                  console.log('✅ [PopLogin] 每日登录任务上报完成');
+                } catch (error) {
+                  console.error('❌ [PopLogin] 每日登录任务上报失败:', error);
+                }
+                
                 const title = tokenInfo.data.type === 'login'? '登录成功': '注册成功';
                 hidePop();
                 Taro.showToast({

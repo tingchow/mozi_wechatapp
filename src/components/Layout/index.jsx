@@ -41,6 +41,16 @@ export const Layout = (props) => {
             // 获取并保存用户详细数据（包括邀请码）
             const { fetchAndSaveUserData } = require('../../utils/userHelper');
             await fetchAndSaveUserData();
+            
+            // 登录成功后，自动上报每日登录任务
+            console.log('🔍 [Layout] 准备上报每日登录任务');
+            try {
+              const { reportDailyLogin } = require('../../utils/taskHelper');
+              await reportDailyLogin();
+              console.log('✅ [Layout] 每日登录任务上报完成');
+            } catch (error) {
+              console.error('❌ [Layout] 每日登录任务上报失败:', error);
+            }
             // 写入用户信息（若后端返回），供“我的”页展示
             try {
               const userInfo = tokenInfo?.data?.userInfo;

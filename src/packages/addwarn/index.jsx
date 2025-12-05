@@ -172,6 +172,11 @@ export default function Addwarn() {
         duration: 2000,
         mask: true
       });
+      
+      // 添加报警成功后，自动调用设置报警任务完成接口（与原项目对齐）
+      const { reportAlarm } = require('../../utils/taskHelper')
+      reportAlarm()
+      
       setShowPop(true);
       return;
     }

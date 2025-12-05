@@ -701,6 +701,12 @@ export default function CommunityPage() {
           }
           return post
         }))
+        
+        // 点赞成功后，自动调用每日点赞任务完成接口（与原项目对齐）
+        if (!isLiked) {
+          const { reportDailyLike } = require('../../utils/taskHelper')
+          reportDailyLike()
+        }
       }
     } catch (error) {
       console.error('点赞操作失败:', error)
