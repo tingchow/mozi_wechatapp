@@ -548,6 +548,26 @@ export default function Index() {
               console.log(`📝 用户[${userId}]之前已登录过`);
             }
 
+            // 检查是否有待处理的邀请码
+            const pendingInviteCode = Taro.getStorageSync('pendingInviteCode');
+            if (pendingInviteCode) {
+              console.log('🔗 [邀请码] 检测到待处理的邀请码:', pendingInviteCode);
+              // TODO: 调用后端接口绑定邀请关系
+              // await request({
+              //   url: Interface.BIND_INVITE_CODE,
+              //   method: 'POST',
+              //   data: { inviteCode: pendingInviteCode }
+              // });
+              
+              // 清除待处理的邀请码
+              Taro.removeStorageSync('pendingInviteCode');
+              
+              Taro.showToast({
+                title: '邀请绑定成功',
+                icon: 'success',
+                duration: 2000
+              });
+            }
             
           } else {
             console.log('数据失败');
