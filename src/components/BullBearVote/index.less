@@ -1,72 +1,125 @@
 .bbv-container {
+  width: 100%;
+  margin: 0;
   background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  padding: 24rpx;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+}
+
+.bbv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.bbv-title {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  flex: 1;
+}
+
+.bbv-participants-count {
+  font-size: 22rpx;
+  color: #999;
+  white-space: nowrap;
+  margin-left: 16rpx;
+}
+
+.bbv-indicator {
+  display: flex;
+  width: 100%;
+  height: 64rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  background: transparent;
 
   &.is-disabled {
-    opacity: 0.7;
-  }
-
-  .bbv-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-
-    .bbv-title {
-      font-size: 28px;
-      color: #333;
-    }
-
-    .bbv-count {
-      font-size: 22px;
-      color: #999;
-    }
-  }
-
-  .bbv-body {
-    display: flex;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff; /* 组件内部背景与卡片一致 */
-    align-items: stretch;
-
-    .bbv-btn {
-      flex: 1;
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: #fff;
-
-      &.bull {
-        background: url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/community/community-up.png') no-repeat center;
-        background-size: 100% 100%;
-        border-radius: 12px 0 0 12px;
-      }
-
-      &.bear {
-        background: url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/image/community/community-down.png') no-repeat center;
-        background-size: 100% 100%;
-        border-radius: 0 12px 12px 0;
-      }
-
-      &.active {
-        filter: brightness(1.05);
-        font-weight: 600;
-      }
-    }
-
-    // /* 中间斜向虚线分隔条 */
-    // .bbv-divider {
-    //   width: 16px; /* 间隔宽度 */
-    //   background: #fff; /* 与卡片背景一致，形成空隙 */
-    //   position: relative;
-    //   overflow: hidden; /* 移除虚线，仅保留留白 */
-    // }
+    opacity: 0.6;
   }
 }
 
+.bbv-bull-side {
+  background: #11B787;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  min-width: 120rpx;
+  border-radius: 16rpx 0 0 16rpx;
+  // 反梯形：左宽右窄（上边比下边短）- 偏移量12rpx
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12rpx) 100%, 0 100%);
 
+  &.is-clickable {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &.is-selected {
+    opacity: 0.9;
+  }
+
+  .bbv-label {
+    color: white;
+    font-size: 28rpx;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-right: 6rpx;
+  }
+}
+
+.bbv-divider {
+  display: none;
+}
+
+.bbv-bear-side {
+  background: #E84545;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  min-width: 120rpx;
+  border-radius: 0 16rpx 16rpx 0;
+  // 反向梯形：上窄下宽（上边左侧收窄，下边完整）- 偏移量12rpx
+  clip-path: polygon(12rpx 0, 100% 0, 100% 100%, 0 100%);
+
+  &.is-clickable {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &.is-selected {
+    opacity: 0.9;
+  }
+
+  .bbv-label {
+    color: white;
+    font-size: 28rpx;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 6rpx;
+  }
+}
+
+.bbv-percentages {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  padding: 0 4rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.bbv-bull-percent {
+  color: #11B787;
+  font-weight: 600;
+}
+
+.bbv-bear-percent {
+  color: #FA5F5F;
+  font-weight: 600;
+}

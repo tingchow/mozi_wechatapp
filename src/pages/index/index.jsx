@@ -229,9 +229,23 @@ export default function Index() {
     needLoop.current = true;
     allRequest();
     
-    // 每次进入首页都显示欢迎弹窗
+    // 检查是否需要显示欢迎弹窗（每天只显示一次）
     setTimeout(() => {
-      setShowWelcomePopup(true);
+      try {
+        const today = new Date().toDateString(); // 获取今天的日期字符串
+        const lastShownDate = Taro.getStorageSync('welcomePopupLastShown');
+        
+        // 如果今天还没有显示过，则显示弹窗
+        if (lastShownDate !== today) {
+          setShowWelcomePopup(true);
+          // 记录今天已经显示过
+          Taro.setStorageSync('welcomePopupLastShown', today);
+        }
+      } catch (error) {
+        console.error('检查欢迎弹窗显示状态失败:', error);
+        // 出错时也显示弹窗
+        setShowWelcomePopup(true);
+      }
     }, 500);
   });
 

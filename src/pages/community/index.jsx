@@ -93,6 +93,7 @@ export default function CommunityPage() {
   const [selectedPost, setSelectedPost] = useState(null)
   const [pullRefresh, setPullRefresh] = useState(false)
   const [voteChoice, setVoteChoice] = useState(null)
+  const [coinVoteData, setCoinVoteData] = useState({ upCount: 0, downCount: 0, participants: 0, userVote: null }) // 币种投票数据
   const [showQuestionButtons, setShowQuestionButtons] = useState(false) // 新增状态来控制按钮的显示/隐藏
   const [showBullBearVote, setShowBullBearVote] = useState(true) // 默认显示看涨看跌投票组件（币种子标签下）
   // const [showActionSheet, setShowActionSheet] = useState(false)
@@ -370,6 +371,11 @@ export default function CommunityPage() {
       setPage(1);
       setLoading(true); // 确保设置loading状态
       fetchPosts();
+      
+      // 如果是币种tab，获取投票数据
+      if (subTab === 'currency' && selectedCoin) {
+        fetchCoinVoteData(selectedCoin);
+      }
     } else if (mainTab === 'hot') {
       setHotTopicsLoading(true); // 确保设置loading状态
       fetchHotTopics();
@@ -971,12 +977,112 @@ export default function CommunityPage() {
       setDynamicCoin(null)
     }
     
+    // 投票数据会在 useEffect 中自动获取，这里不需要重复调用
+    
     // 检查是否有缓存的帖子列表
     const cachedPosts = Taro.getStorageSync('cachedCoinPosts');
     if (cachedPosts && cachedPosts[coin]) {
       // 如果有缓存，直接使用缓存数据
       setPosts(cachedPosts[coin]);
       setLoading(false);
+    }
+  }
+
+  // 获取币种投票数据
+  const fetchCoinVoteData = async (coin) => {
+    try {
+      const response = await request({
+        url: Interface.GET_COIN_VOTE,
+        data: {
+          coinType: coin
+        }
+      })
+      
+      console.log('查询投票数量:', response)
+      
+      if (response?.code === 0 && response?.data) {
+        const { upCount = 0, downCount = 0, userChoice = null } = response.data
+        const participants = upCount + downCount
+        // userChoice 可能是 'up' 或 'down'，需要转换为 'bull' 或 'bear'
+        const userVote = userChoice === 'up' ? 'bull' : userChoice === 'down' ? 'bear' : null
+        setCoinVoteData({ upCount, downCount, participants, userVote })
+        setVoteChoice(userVote)
+      } else {
+        // 如果没有数据，使用默认值
+        setCoinVoteData({ upCount: 0, downCount: 0, participants: 0, userVote: null })
+        setVoteChoice(null)
+      }
+    } catch (error) {
+      console.error('获取投票数据失败:', error)
+      // 出错时使用默认值
+      setCoinVoteData({ upCount: 0, downCount: 0, participants: 0, userVote: null })
+      setVoteChoice(null)
+    }
+  }
+
+  // 提交币种投票
+  const handleCoinVote = async (type) => {
+    // 检查用户是否登录
+    const token = Taro.getStorageSync('token')
+    if (!token) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    // 如果用户已经投过票，不允许重复投票
+    if (coinVoteData.userVote) {
+      Taro.showToast({
+        title: '您已经投过票了',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    try {
+      // 将 'bull' 转换为 'up'，'bear' 转换为 'down'
+      const voteType = type === 'bull' ? 'up' : 'down'
+      
+      const response = await request({
+        url: Interface.SUBMIT_COIN_VOTE,
+        method: 'POST',
+        data: {
+          coinType: selectedCoin,
+          type: voteType
+        }
+      })
+
+      console.log('投票提交返回:', response)
+
+      if (response?.code === 0) {
+        Taro.showToast({
+          title: '投票成功',
+          icon: 'success',
+          duration: 1500
+        })
+        
+        // 更新投票数据
+        setVoteChoice(type)
+        // 重新获取最新投票数据
+        fetchCoinVoteData(selectedCoin)
+      } else {
+        Taro.showToast({
+          title: response?.errorMsg || response?.message || '投票失败',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    } catch (error) {
+      console.error('投票失败:', error)
+      Taro.showToast({
+        title: '投票失败',
+        icon: 'none',
+        duration: 2000
+      })
     }
   }
 
@@ -1304,9 +1410,11 @@ export default function CommunityPage() {
               <View className="vote-wrapper">
                 <BullBearVote
                   title={`您对今天的${selectedCoin}有何看法?`}
-                  participants={5445}
+                  upCount={coinVoteData.upCount}
+                  downCount={coinVoteData.downCount}
+                  participants={coinVoteData.participants}
                   selected={voteChoice}
-                  onSelect={(type) => setVoteChoice(type)}
+                  onSelect={handleCoinVote}
                 />
               </View>
             )}

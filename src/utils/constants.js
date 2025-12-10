@@ -155,6 +155,10 @@ export const Interface = {
   TOPIC_POSTS: '/posts/topic',
   // 创建投票
   CREATE_VOTE: '/api/vote/create',
+  // 获取币种看涨看跌投票数据
+  GET_COIN_VOTE: '/likeCoin/downOrUpCount',
+  // 提交币种看涨看跌投票
+  SUBMIT_COIN_VOTE: '/likeCoin/downOrUp',
   // 上传文件
   UPLOAD_FILE: '/easy/uploadFile',
   // 获取我的评论
