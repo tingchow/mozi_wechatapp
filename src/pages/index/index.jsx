@@ -17,6 +17,7 @@ import { PageLogin } from '../../components/PageLogin';
 import { Popup } from '../../components/PopLogin'
 import { MarketDistribution } from '../../components/MarketDistribution';
 import { WelcomePopup } from '../../components/WelcomePopup';
+import FloatingRobot from '../../components/FloatingRobot';
 import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
@@ -759,12 +760,16 @@ export default function Index() {
         </Layout>
       </MoziCard> */}
       
-      {/* 首页悬浮机器人图标 */}
-      <View className='float-robot-btn' onClick={() => jump2NoTab('robot')}>
-        <Image className='robot-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/AI_Bot.png'} mode='aspectFit' />
-      </View>
+      {/* AI 机器人浮动按钮（带动画） */}
+      <FloatingRobot
+        message='欢迎来到Mozi,需要什么帮助？'
+        targetPath='/packages/robot/index'
+        startDelay={500}
+        showDuration={5000}
+        autoPlay={true}
+      />
 
-      {/* 欢迎弹窗（每次进入首页显示） */}
+      {/* 欢迎弹窗（每天只显示一次） */}
       <WelcomePopup
         visible={showWelcomePopup}
         onClose={() => setShowWelcomePopup(false)}
