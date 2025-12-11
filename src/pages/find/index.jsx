@@ -16,6 +16,7 @@ import { request } from '../../utils/request';
 import { AddCollect } from '../../components/AddCollect';
 import { AddMonitor } from '../../components/AddMonitor';
 import { MarketOverview } from '../../components/MarketOverview';
+import FloatingRobot from '../../components/FloatingRobot';
 import isEmpty from 'lodash/isEmpty';
 
 
@@ -1450,6 +1451,15 @@ export default function Find() {
         </View>
         )
       }
+      
+      {/* 悬浮机器人按钮 */}
+      <FloatingRobot 
+        message="想听听我对行情的分析吗？"
+        targetPath="/packages/robot/index"
+        startDelay={500}
+        showDuration={5000}
+        autoPlay={true}
+      />
     </View>
   )
 }

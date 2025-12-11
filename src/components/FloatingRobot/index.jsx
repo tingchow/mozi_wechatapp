@@ -1,5 +1,5 @@
 import { View, Image } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { usePageScroll } from '@tarojs/taro'
 import { useState, useEffect, useRef } from 'react'
 import './index.less'
 
@@ -10,19 +10,73 @@ import './index.less'
  * @param {number} startDelay - 动画开始延迟（毫秒）
  * @param {number} showDuration - 消息显示时长（毫秒）
  * @param {boolean} autoPlay - 是否自动播放动画
+ * @param {string} showOnSelector - 只在滚动到指定选择器区域时显示（如 '.marketBox'）
  */
 export default function FloatingRobot({
   message = '有问题？问我吧！',
   targetPath = '/packages/robot/index',
   startDelay = 500,
   showDuration = 5000,
-  autoPlay = true
+  autoPlay = true,
+  showOnSelector = null
 }) {
   // 动画状态：hidden -> rolling-in -> showing -> rolling-out -> resting
   const [animState, setAnimState] = useState(autoPlay ? 'hidden' : 'resting')
   const [showBubble, setShowBubble] = useState(false)
   const [containerWidth, setContainerWidth] = useState(100) // rpx
   const animationRef = useRef(null)
+  const [isInTargetArea, setIsInTargetArea] = useState(false) // 是否在目标区域内
+  const scrollCheckTimer = useRef(null)
+
+  // 检测目标区域是否在可视区域内
+  const checkScrollPosition = () => {
+    if (!showOnSelector) {
+      setIsInTargetArea(true)
+      return
+    }
+
+    Taro.createSelectorQuery()
+      .select(showOnSelector)
+      .boundingClientRect((rect) => {
+        if (rect) {
+          // 获取窗口高度
+          const systemInfo = Taro.getSystemInfoSync()
+          const windowHeight = systemInfo.windowHeight
+          
+          // 判断目标区域是否在可视区域内
+          // 当目标区域的顶部进入屏幕底部时显示
+          const isVisible = rect.top < windowHeight && rect.bottom > 0
+          setIsInTargetArea(isVisible)
+        }
+      })
+      .exec()
+  }
+
+  // 初始化检查
+  useEffect(() => {
+    if (!showOnSelector) {
+      setIsInTargetArea(true)
+      return
+    }
+    
+    // 延迟检查，确保 DOM 已渲染
+    setTimeout(() => {
+      checkScrollPosition()
+    }, 300)
+  }, [showOnSelector])
+
+  // 使用 usePageScroll 监听页面滚动
+  usePageScroll(() => {
+    if (!showOnSelector) return
+    
+    // 使用节流，避免频繁检查
+    if (scrollCheckTimer.current) {
+      clearTimeout(scrollCheckTimer.current)
+    }
+    scrollCheckTimer.current = setTimeout(() => {
+      checkScrollPosition()
+    }, 100)
+  })
 
   // 计算容器宽度
   useEffect(() => {
@@ -39,6 +93,8 @@ export default function FloatingRobot({
   // 自动播放动画序列
   useEffect(() => {
     if (!autoPlay) return
+    // 如果设置了区域限制且不在目标区域内，不播放动画
+    if (showOnSelector && !isInTargetArea) return
 
     const timers = []
 
@@ -59,21 +115,31 @@ export default function FloatingRobot({
       setAnimState('rolling-out')
     }, startDelay + 1800 + showDuration))
 
-    // 4. 滚出完成，进入静止状态（延迟 1.5s = 1.1s 动画 + 0.4s 过渡）
+    // 4. 滚出完成，进入隐藏状态（延迟 1.5s = 1.1s 动画 + 0.4s 过渡）
+    timers.push(setTimeout(() => {
+      setAnimState('hidden-right')
+    }, startDelay + 1800 + showDuration + 1500))
+
+    // 5. 从隐藏状态过渡回静止状态
     timers.push(setTimeout(() => {
       setAnimState('resting')
-    }, startDelay + 1800 + showDuration + 1500))
+    }, startDelay + 1800 + showDuration + 1550))
 
     return () => {
       timers.forEach(timer => clearTimeout(timer))
     }
-  }, [autoPlay, startDelay, showDuration])
+  }, [autoPlay, startDelay, showDuration, isInTargetArea])
 
   // 点击处理
   const handleClick = () => {
     Taro.navigateTo({
       url: targetPath
     })
+  }
+
+  // 如果设置了区域限制且不在目标区域内，不渲染组件
+  if (showOnSelector && !isInTargetArea) {
+    return null
   }
 
   return (

@@ -24,6 +24,7 @@ import { CHANNEL_TYPES } from '../../utils/websocketProtocol';
 import { SkeletonPage } from '../../components/Skeleton';
 import { detailPageSkeletonConfig } from '../../components/Skeleton/configs';
 import { GardenLoading } from '../../components/Loading';
+import FloatingRobot from '../../components/FloatingRobot';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
 const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
@@ -584,8 +585,25 @@ export default function Detail() {
     // 如果有实时K线数据，添加到数组末尾
     if (klineData.realKlineData) {
       // 将实时数据格式转换为与历史数据一致
+      const timestamp = klineData.realKlineData.timestamp;
+      let dtValue;
+      
+      // 验证并转换时间戳
+      if (timestamp) {
+        const date = new Date(timestamp);
+        // 检查日期是否有效
+        if (!isNaN(date.getTime())) {
+          dtValue = date.toISOString();
+        } else {
+          console.warn('[Detail] 实时数据时间戳无效:', timestamp);
+          dtValue = new Date().toISOString(); // 使用当前时间作为后备
+        }
+      } else {
+        dtValue = new Date().toISOString(); // 使用当前时间作为后备
+      }
+      
       const realData = {
-        dt: new Date(klineData.realKlineData.timestamp).toISOString(),
+        dt: dtValue,
         open: klineData.realKlineData.open,
         close: klineData.realKlineData.close,
         high: klineData.realKlineData.high,
@@ -1405,9 +1423,14 @@ export default function Detail() {
       {/* <Canvas canvasId="screenshotCanvas"/> */}
       {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
       {/* 悬浮机器人按钮 */}
-      <View className='float-robot-btn' onClick={() => jump2NoTab('robot')}>
-        <Image className='robot-icon' src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/AI_Bot.png'} mode='aspectFit' />
-      </View>
+      <FloatingRobot 
+        message={`想听听我对${symbol}的看法吗？`}
+        targetPath="/packages/robot/index"
+        startDelay={500}
+        showDuration={5000}
+        autoPlay={true}
+        showOnSelector=".marketBox"
+      />
     </View>
   )
 }

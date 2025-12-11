@@ -30,10 +30,17 @@
     animation: rollOut 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
   
-  /* 静止状态 */
+  /* 隐藏在右侧 - 作为过渡的起点 */
+  &.hidden-right {
+    transform: translateX(750rpx);
+    opacity: 1;
+  }
+  
+  /* 静止状态 - 从右侧平滑过渡回来 */
   &.resting {
     transform: translateX(0);
     opacity: 1;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -197,6 +204,22 @@
   }
 }
 
+/* 滚回动画 - 从右侧丝滑滚回 */
+@keyframes rollBack {
+  0% {
+    transform: translateX(750rpx);
+    opacity: 1;
+  }
+  85% {
+    transform: translateX(-15rpx);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* 旋转进入 */
 @keyframes rotateIn {
   0% {
@@ -214,6 +237,16 @@
   }
   100% {
     transform: rotate(0deg);
+  }
+}
+
+/* 旋转回来 */
+@keyframes rotateBack {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-540deg);
   }
 }
 
