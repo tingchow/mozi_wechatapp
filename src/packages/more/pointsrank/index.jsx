@@ -41,7 +41,8 @@ export default function PointsRank() {
           name: item.nickName || item.nickname || item.userName || '匿名用户',
           avatar: item.avatar || defaultAvatar,
           points: item.points || item.totalPoints || item.dailyPoints || item.monthlyPoints || 0,
-          rank: item.rank || index + 1,
+          // 直接使用接口 rankings 的顺序，rank 用序号兜底
+          rank: index + 1,
           isMe: item.isCurrentUser || false
         }));
         
@@ -134,7 +135,8 @@ export default function PointsRank() {
             chanel: 1,
             type: 'login',
             phoneCode,
-            loginCode: openIdCode
+            loginCode: openIdCode,
+            channel:'miniapp'
           }
           
           // 如果有邀请码，添加到登录参数中
@@ -146,7 +148,7 @@ export default function PointsRank() {
           const tokenInfo = await request({
             url: Interface.MOZI_LOGIN,
             data: loginData,
-            method: 'POST'
+            method: 'POST',
           })
           
           console.log('tokenInfo', tokenInfo)

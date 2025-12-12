@@ -31,6 +31,7 @@ export const PopLogin = ({ show = false, hideCb }) => {
                   type:'login',
                   phoneCode,
                   loginCode: openIdCode,
+                  channel:'miniapp'
                 },
                 method: 'POST'
               });
@@ -41,6 +42,10 @@ export const PopLogin = ({ show = false, hideCb }) => {
                 // 单独保存 userId 供订阅等功能使用
                 if (tokenInfo?.data?.userId) {
                   Taro.setStorageSync('userId', tokenInfo?.data?.userId);
+                }
+                // 新增：保存登录返回的 subscribeAnnouncement 字段到本地
+                if (typeof tokenInfo?.data?.subscribeAnnouncement !== 'undefined') {
+                  Taro.setStorageSync('subscribeAnnouncement', tokenInfo.data.subscribeAnnouncement);
                 }
                 // 设置登录成功标记，用于社区页面刷新
                 Taro.setStorageSync('needRefreshCommunity', true);

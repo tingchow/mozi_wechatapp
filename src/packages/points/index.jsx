@@ -616,7 +616,8 @@ function PointsPage() {
             chanel: 1,
             type: 'login',
             phoneCode,
-            loginCode: openIdCode
+            loginCode: openIdCode,
+            channel:'miniapp'
           }
           
           // 如果有邀请码，添加到登录参数中
@@ -640,9 +641,13 @@ function PointsPage() {
             
             const userInfo = tokenInfo?.data?.userInfo
             const userId = tokenInfo?.data?.userId
-            
+
             if (userId) {
               Taro.setStorageSync('userId', userId)
+            }
+            // 新增：保存登录返回的 subscribeAnnouncement 字段到本地
+            if (typeof tokenInfo?.data?.subscribeAnnouncement !== 'undefined') {
+              Taro.setStorageSync('subscribeAnnouncement', tokenInfo.data.subscribeAnnouncement)
             }
             
             if (userInfo?.avatar && userInfo?.nickName) {

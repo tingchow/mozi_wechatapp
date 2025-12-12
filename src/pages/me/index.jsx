@@ -45,6 +45,7 @@ export default function Index() {
   const [newCoinLoading, setNewCoinLoading] = useState(false); // 新币上线加载状态
   const [selectedDate, setSelectedDate] = useState(null); // 当前选中的日期
   const [calendarEventDates, setCalendarEventDates] = useState([]); // 日历上有事件的日期（日期数字数组）
+  const [subscribeAnnouncement, setSubscribeAnnouncement] = useState(false);
 
   const footerList = [
   {
@@ -166,8 +167,18 @@ export default function Index() {
       }
     })
     
-
-    
+    // 页面载入显示时，同步读取公告开关状态
+    Taro.getStorage({
+      key: 'subscribeAnnouncement',
+      success: function (res) {
+        if (typeof res.data !== 'undefined') {
+          setSubscribeAnnouncement(!!res.data);
+        }
+      },
+      fail: function () {
+        setSubscribeAnnouncement(false);
+      }
+    });
   })
   
   // 页面卸载时清除定时器
@@ -386,6 +397,8 @@ export default function Index() {
           icon: 'success',
           duration: 2000
         });
+        // 更新本地存储的订阅状态
+        Taro.setStorageSync('subscribeAnnouncement', isOn);
         return true; // 允许切换
       } else {
         Taro.showToast({
@@ -500,6 +513,7 @@ export default function Index() {
               type:'login',
               phoneCode,
               loginCode: openIdCode,
+              channel:'miniapp'
             },
             method: 'POST'
           });
@@ -792,7 +806,7 @@ export default function Index() {
             onDateChange={handleDateChange}
             onToggleChange={handleToggleChange}
             onMonthChange={handleMonthChange}
-            defaultToggle={false}
+            defaultToggle={subscribeAnnouncement}
             eventDates={calendarEventDates}
           />
         </View>
