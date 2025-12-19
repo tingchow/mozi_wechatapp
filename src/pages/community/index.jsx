@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, Button, Input, Textarea } from '@tarojs/components'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Taro, { useLoad, useReachBottom, useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { SearchInput } from '../../components/SearchInput';
 import { Interface } from '../../utils/constants';
@@ -99,6 +99,10 @@ export default function CommunityPage() {
   // const [showActionSheet, setShowActionSheet] = useState(false)
   // const [selectedPost, setSelectedPost] = useState(null)
 
+  // 请求标识ref，用于防止竞态条件（与原项目对齐）
+  const fetchPostsRequestIdRef = useRef(0);
+  const fetchHotTopicsRequestIdRef = useRef(0);
+
   // 预加载后的 Tab 图片路径（默认使用 CDN，预加载成功后替换成本地/缓存路径）
   const [tabImageSrc, setTabImageSrc] = useState({
     recommendActive: recommendActiveImg,
@@ -158,19 +162,32 @@ export default function CommunityPage() {
   const [hotTopicsLoading, setHotTopicsLoading] = useState(false);
   const [hotTopicsAllLoaded, setHotTopicsAllLoaded] = useState(false);
   // 获取热榜话题
-  const fetchHotTopics = async () => {
+  const fetchHotTopics = async (reset = false) => {
     // 返回Promise以便在useDidShow中使用then和catch
     return new Promise(async (resolve, reject) => {
-      if (hotTopicsLoading || hotTopicsAllLoaded) return;
+      if (hotTopicsLoading && !reset) return;
+      
+      // 生成新的请求ID（与原项目对齐）
+      const requestId = ++fetchHotTopicsRequestIdRef.current;
+      
       setHotTopicsLoading(true);
+      
+      const currentPage = reset ? 1 : hotTopicsPage;
+      
       try {
         const response = await request({
           url: Interface.HOT_TOPICS_API,
           data: {
-            page: hotTopicsPage,
+            page: currentPage,
             size
           }
         });
+        
+        // 检查是否是最新的请求，如果不是则忽略结果（与原项目对齐）
+        if (requestId !== fetchHotTopicsRequestIdRef.current) {
+          console.log('忽略过期的热榜请求');
+          return;
+        }
         
         if (response?.data) {
 
@@ -186,22 +203,35 @@ export default function CommunityPage() {
             return;
           }
 
-          const { data, totalPages, page: currentPage } = response.data;
-          setHotTopics(prev => currentPage === 1 ? data : [...prev, ...data]);
+          const { data, totalPages } = response.data;
+          if (reset || currentPage === 1) {
+            setHotTopics(data);
+          } else {
+            setHotTopics(prev => [...prev, ...data]);
+          }
           setHotTopicsAllLoaded(currentPage >= totalPages);
           setHotTopicsPage(currentPage + 1);
+          
+          // 接口成功返回后才关闭loading
+          setHotTopicsLoading(false);
           resolve(); // 成功解析Promise
         }
       } catch (error) {
+        // 检查是否是最新的请求
+        if (requestId !== fetchHotTopicsRequestIdRef.current) {
+          return;
+        }
+        
         console.error('获取热榜话题失败:', error);
         Taro.showToast({
           title: '获取数据失败',
           icon: 'error',
           duration: 2000
         });
-        reject(error); // 失败时拒绝Promise
-      } finally {
+        
+        // 只有在接口报错时才关闭loading
         setHotTopicsLoading(false);
+        reject(error); // 失败时拒绝Promise
       }
     });
   };
@@ -210,20 +240,34 @@ export default function CommunityPage() {
   const fetchPosts = async (forceRefresh = false) => {
     // 返回Promise以便在useDidShow中使用then和catch
     return new Promise(async (resolve, reject) => {
-      // if (loading || !hasMore) return;
+      // 如果正在加载且不是强制刷新，则不重复加载
+      if (loading && !forceRefresh) {
+        console.log('🔍 [DEBUG] 正在加载中，跳过本次请求');
+        resolve(); // 重要：需要 resolve Promise
+        return;
+      }
+      
+      // 生成新的请求ID，用于识别最新请求（与原项目对齐）
+      const requestId = ++fetchPostsRequestIdRef.current;
+      
       setLoading(true);
+      
       try {
         // 根据当前subTab确定请求参数
+        // 如果是强制刷新，使用第1页，否则使用当前页码
+        const currentPage = forceRefresh ? 1 : page;
         let requestData = {
-          page,
+          page: currentPage,
           size
         };
         
         // 根据subTab设置不同的参数并检查缓存
         // 只有在不强制刷新的情况下才使用缓存
-        if (!forceRefresh && page === 1) {
+        if (!forceRefresh && currentPage === 1) {
           if (subTab === 'all') {
             // 全部标签
+            requestData.userType = 'real'; // 精选推荐：真实用户
+            
             // 检查是否有缓存的帖子列表
             const cachedAllPosts = Taro.getStorageSync('cachedAllPosts');
             if (cachedAllPosts && cachedAllPosts.length > 0) {
@@ -236,6 +280,7 @@ export default function CommunityPage() {
             }
           } else if (subTab === 'discovery') {
             // 发现好币标签
+            requestData.userType = 'real'; // 精选推荐：真实用户
             requestData.category = '发现好币';
             
             // 检查是否有缓存的帖子列表
@@ -251,6 +296,7 @@ export default function CommunityPage() {
             }
           } else if (subTab === 'question') {
             // 不懂就问标签
+            requestData.userType = 'real'; // 精选推荐：真实用户
             requestData.category = '不懂就问';
             
             // 检查是否有缓存的帖子列表
@@ -266,6 +312,7 @@ export default function CommunityPage() {
             }
           } else if (subTab === 'currency' && selectedCoin) {
             // 币种标签
+            requestData.userType = 'real'; // 精选推荐：真实用户
             requestData.symbol = selectedCoin;
             
             // 检查是否有缓存的帖子列表
@@ -282,13 +329,21 @@ export default function CommunityPage() {
           }
         } else {
           // 设置请求参数
-          // 注意：快讯tab不设置category参数，获取全部帖子后在前端过滤
-          if (subTab === 'discovery') {
-            requestData.category = '发现好币';
-          } else if (subTab === 'question') {
-            requestData.category = '不懂就问';
-          } else if (subTab === 'currency' && selectedCoin) {
-            requestData.symbol = selectedCoin;
+          // 根据mainTab设置userType参数（与原项目对齐）
+          if (mainTab === 'recommend') {
+            requestData.userType = 'real'; // 精选推荐：真实用户
+            
+            // 根据subTab设置不同的参数
+            if (subTab === 'discovery') {
+              requestData.category = '发现好币';
+            } else if (subTab === 'question') {
+              requestData.category = '不懂就问';
+            } else if (subTab === 'currency' && selectedCoin) {
+              requestData.symbol = selectedCoin;
+            }
+            // 'all' 标签不需要额外参数
+          } else if (mainTab === 'news') {
+            requestData.userType = 'virtual'; // 快讯：虚拟用户
           }
         }
         
@@ -298,6 +353,12 @@ export default function CommunityPage() {
           data: requestData
         });
         
+        // 检查是否是最新的请求，如果不是则忽略结果（防止竞态条件，与原项目对齐）
+        if (requestId !== fetchPostsRequestIdRef.current) {
+          console.log('忽略过期的帖子请求，requestId:', requestId, '当前最新:', fetchPostsRequestIdRef.current);
+          return;
+        }
+        
         if (response?.data?.data) {
           const { data, total, totalPages } = response.data;
           const formattedData = data.map(item => ({
@@ -305,7 +366,7 @@ export default function CommunityPage() {
             avatar: item.avatar || 'https://placeholder.co/100',
             nickname: item.nickName || '匿名用户',
             tag: item.category || '普通',
-            category: item.category, // 保留原始category字段用于快讯tab过滤
+            category: item.category, // 保留原始category字段
             title: item.title,
             content: item.content,
             comments: item.commentCnt || 0,
@@ -315,29 +376,80 @@ export default function CommunityPage() {
             topics: item.topics || [],
             isLikedByCurrentUser: item.isLikedByCurrentUser || false,
             updatedAt: item.updatedAt,
+            createdAt: item.createdAt,
+            userType: item.userType, // 添加 userType 字段
+            images: item.images || [],
+            sector: item.sector // 所属板块字段
           }));
           
-          setPosts(prevPosts => page === 1 ? formattedData : [...prevPosts, ...formattedData]);
-          setHasMore(page < totalPages);
+          // 前端兜底过滤：根据标签过滤不同的 userType（与原项目对齐）
+          // 精选推荐：显示非 'virtual' 的帖子（包括 'real'、'jinancn' 等真实用户）
+          // 快讯：只显示 userType === 'virtual' 的帖子
+          const filteredData = formattedData.filter(item => {
+            if (mainTab === 'recommend') {
+              return item.userType !== 'virtual';
+            } else if (mainTab === 'news') {
+              return item.userType === 'virtual';
+            }
+            return true; // 其他情况显示所有
+          });
+          
+          // 按 createdAt 倒序排序，最新的在前面
+          const sortedData = filteredData.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateB - dateA;
+          });
+          
+          if (currentPage === 1) {
+            setPosts(sortedData);
+          } else {
+            // 追加数据时，使用Set去重，避免重复显示
+            setPosts(prevPosts => {
+              const existingIds = new Set(prevPosts.map(p => p.id));
+              const newPosts = sortedData.filter(p => !existingIds.has(p.id));
+              return [...prevPosts, ...newPosts];
+            });
+          }
+          
+          // 更新 hasMore 状态：
+          // 1. 如果当前页小于总页数，说明还有更多数据
+          // 2. 如果返回的数据为空，说明没有更多数据了
+          // 3. 如果返回的数据少于请求的size，说明这是最后一页
+          const hasMoreData = currentPage < totalPages && data.length > 0 && data.length >= size;
+          setHasMore(hasMoreData);
+          
+          // 接口成功返回后才关闭loading
+          setLoading(false);
           resolve(); // 成功解析Promise
         } else {
           // 如果没有数据，设置空数组
-          if (page === 1) {
+          if (currentPage === 1) {
             setPosts([]);
           }
           setHasMore(false);
+          
+          // 接口成功返回后才关闭loading
+          setLoading(false);
           resolve(); // 成功解析Promise，即使没有数据
         }
       } catch (error) {
+        // 检查是否是最新的请求
+        if (requestId !== fetchPostsRequestIdRef.current) {
+          console.log('忽略过期请求的错误');
+          return;
+        }
+        
         console.error('获取帖子列表失败:', error);
         Taro.showToast({
           title: '获取数据失败',
           icon: 'error',
           duration: 2000
         });
-        reject(error); // 失败时拒绝Promise
-      } finally {
+        
+        // 只有在接口报错时才关闭loading
         setLoading(false);
+        reject(error); // 失败时拒绝Promise
       }
     });
   };
@@ -367,18 +479,30 @@ export default function CommunityPage() {
   useEffect(() => {
     console.log('useEffect触发: mainTab, subTab, selectedCoin变化');
     if (mainTab === 'recommend' || mainTab === 'news') {
-      // 重置页码，确保切换tab时从第一页开始加载
+      // 重置页码和帖子列表，确保切换tab时从第一页开始加载
       setPage(1);
+      setPosts([]); // 清空帖子列表
+      setHasMore(true);
       setLoading(true); // 确保设置loading状态
-      fetchPosts();
+      
+      // 使用 setTimeout 确保状态更新后再调用接口
+      setTimeout(() => {
+        fetchPosts(true); // 传入 true 表示强制刷新
+      }, 0);
       
       // 如果是币种tab，获取投票数据
       if (subTab === 'currency' && selectedCoin) {
         fetchCoinVoteData(selectedCoin);
       }
     } else if (mainTab === 'hot') {
+      setHotTopics([]);
+      setHotTopicsPage(1);
+      setHotTopicsAllLoaded(false);
       setHotTopicsLoading(true); // 确保设置loading状态
-      fetchHotTopics();
+      
+      setTimeout(() => {
+        fetchHotTopics(true); // 传入 true 表示重置
+      }, 0);
     }
   }, [mainTab, subTab, selectedCoin]);
   
@@ -583,20 +707,34 @@ export default function CommunityPage() {
 
   // 上拉加载更多
   const onReachBottom = () => {
-    console.log('onReachBottom called, loading:', loading, 'hotTopicsLoading:', hotTopicsLoading);
-    if (loading || hotTopicsLoading) return;
+    console.log('🔍 [DEBUG] onReachBottom called');
+    console.log('🔍 [DEBUG] mainTab:', mainTab);
+    console.log('🔍 [DEBUG] loading:', loading);
+    console.log('🔍 [DEBUG] hasMore:', hasMore);
+    console.log('🔍 [DEBUG] page:', page);
+    console.log('🔍 [DEBUG] hotTopicsLoading:', hotTopicsLoading);
+    
+    if (loading || hotTopicsLoading) {
+      console.log('🔍 [DEBUG] 正在加载中，跳过');
+      return;
+    }
     
     if (mainTab === 'hot') {
       if (!hotTopicsAllLoaded) {
-        console.log('加载热门话题');
-        setHotTopicsLoading(true); // 设置加载状态
+        console.log('🔍 [DEBUG] 加载热门话题');
+        setHotTopicsLoading(true);
         fetchHotTopics();
       }
-    } else {
+    } else if (mainTab === 'recommend' || mainTab === 'news') {
       if (hasMore) {
-        console.log('加载更多帖子');
-        setLoading(true); // 设置加载状态
-        setPage(prev => prev + 1);
+        console.log('🔍 [DEBUG] 加载更多帖子，当前page:', page);
+        // 不要在这里设置 setLoading(true)，fetchPosts 内部会设置
+        setPage(prev => {
+          console.log('🔍 [DEBUG] 设置page从', prev, '到', prev + 1);
+          return prev + 1;
+        });
+      } else {
+        console.log('🔍 [DEBUG] 没有更多数据了');
       }
     }
   };
@@ -768,7 +906,8 @@ export default function CommunityPage() {
         url: Interface.POSTS_API,
         data: {
           page: 1,
-          size
+          size,
+          userType: 'real' // 精选推荐：真实用户
         }
       });
       
@@ -779,6 +918,7 @@ export default function CommunityPage() {
           avatar: item.avatar || 'https://placeholder.co/100',
           nickname: item.nickName || '匿名用户',
           tag: item.category || '普通',
+          category: item.category,
           title: item.title,
           content: item.content,
           comments: item.commentCnt || 0,
@@ -788,6 +928,10 @@ export default function CommunityPage() {
           topics: item.topics || [],
           isLikedByCurrentUser: item.isLikedByCurrentUser || false,
           updatedAt: item.updatedAt,
+          createdAt: item.createdAt,
+          userType: item.userType,
+          images: item.images || [],
+          sector: item.sector,
           hasMore: 1 < totalPages
         }));
         
@@ -809,6 +953,7 @@ export default function CommunityPage() {
           data: {
             page: 1,
             size,
+            userType: 'real', // 精选推荐：真实用户
             category: '发现好币'
           }
         }),
@@ -817,6 +962,7 @@ export default function CommunityPage() {
           data: {
             page: 1,
             size,
+            userType: 'real', // 精选推荐：真实用户
             category: '不懂就问'
           }
         })
@@ -830,6 +976,7 @@ export default function CommunityPage() {
           data: {
             page: 1,
             size,
+            userType: 'real', // 精选推荐：真实用户
             symbol: coin
           }
         });
@@ -846,6 +993,7 @@ export default function CommunityPage() {
             avatar: item.avatar || 'https://placeholder.co/100',
             nickname: item.nickName || '匿名用户',
             tag: item.category || '普通',
+            category: item.category,
             title: item.title,
             content: item.content,
             comments: item.commentCnt || 0,
@@ -855,6 +1003,10 @@ export default function CommunityPage() {
             topics: item.topics || [],
             isLikedByCurrentUser: item.isLikedByCurrentUser || false,
             updatedAt: item.updatedAt,
+            createdAt: item.createdAt,
+            userType: item.userType,
+            images: item.images || [],
+            sector: item.sector,
             hasMore: 1 < totalPages
           }));
           
@@ -881,6 +1033,7 @@ export default function CommunityPage() {
             avatar: item.avatar || 'https://placeholder.co/100',
             nickname: item.nickName || '匿名用户',
             tag: item.category || '普通',
+            category: item.category,
             title: item.title,
             content: item.content,
             comments: item.commentCnt || 0,
@@ -890,6 +1043,10 @@ export default function CommunityPage() {
             topics: item.topics || [],
             isLikedByCurrentUser: item.isLikedByCurrentUser || false,
             updatedAt: item.updatedAt,
+            createdAt: item.createdAt,
+            userType: item.userType,
+            images: item.images || [],
+            sector: item.sector,
             hasMore: 1 < totalPages
           }));
           
@@ -1425,21 +1582,23 @@ export default function CommunityPage() {
                     </View>
               )
             }
-            <View className={subTab === 'discovery' ? 'discovery-grid' : ''}>
-              {/* 快讯tab只显示category为news的帖子（前端过滤） */}
-              {mainTab === 'news' && posts.filter(post => post.category === 'news').length === 0 && !loading && (
+            <View className={mainTab === 'recommend' && subTab === 'discovery' ? 'discovery-grid' : ''}>
+              {/* 快讯tab只显示userType为virtual的帖子（前端二次过滤） */}
+              {mainTab === 'news' && posts.filter(post => post.userType === 'virtual').length === 0 && !loading && (
                 <View className="empty-state">
                   <Text className="empty-text">暂无帖子</Text>
                 </View>
               )}
-              {(mainTab === 'news' ? posts.filter(post => post.category === 'news') : posts).map(item => {
-                  // 根据当前标签页决定使用哪种卡片样式
-                  const isDiscoveryCard = subTab === 'discovery';
+              {(mainTab === 'news' ? posts.filter(post => post.userType === 'virtual') : posts).map(item => {
+                  // 根据当前标签页决定使用哪种卡片样式（只在推荐tab下的发现好币子标签生效）
+                  const isDiscoveryCard = mainTab === 'recommend' && subTab === 'discovery';
                   
                   return (
                     <View key={item.id} className={`comment-card ${isDiscoveryCard ? 'discovery-only' : ''}`} onClick={() => navigateToCommentInfo(item.id)}>
-                    {/* 发现好币背景图片 */}
-                    <Image src={findBestCoinIcon} className="find-best-coin-bg" />
+                    {/* 发现好币背景图片（只在发现好币tab显示） */}
+                    {isDiscoveryCard && (
+                      <Image src={findBestCoinIcon} className="find-best-coin-bg" />
+                    )}
                     
                     {/* 用户自己的帖子显示编辑按钮 */}
                     {item.userId === currentUserId && (
@@ -1644,12 +1803,12 @@ export default function CommunityPage() {
                 <Text>暂无更多内容</Text>
               </View>
             )}
-            {!loading && hasMore && posts.length > 0 && !(mainTab === 'news' && posts.filter(post => post.category === 'news').length === 0) && (
+            {!loading && hasMore && posts.length > 0 && !(mainTab === 'news' && posts.filter(post => post.userType === 'virtual').length === 0) && (
               <View className="loading-more">
                 <Text>上拉加载更多</Text>
               </View>
             )}
-            {!loading && !hasMore && posts.length > 0 && !(mainTab === 'news' && posts.filter(post => post.category === 'news').length === 0) && (
+            {!loading && !hasMore && posts.length > 0 && !(mainTab === 'news' && posts.filter(post => post.userType === 'virtual').length === 0) && (
               <View className="list-footer">
                 <Text>已经到底了</Text>
               </View>
