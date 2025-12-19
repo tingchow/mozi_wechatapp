@@ -309,6 +309,8 @@ export default function Index() {
     }];
     const selectArr = ['今日', '1天', '3天', '7天', '15天', '1月'];
     const selectbiaoshengArr = ['1天', '3天', '7天', '15天', '1月'];
+    // 榜单类型映射：自选、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
+    const rankTypeArr = ['selfselect', 'pricechange', 'pricechangeasc', 'pricewave', 'trade', 'newsymbol', 'trademovers'];
     // const  = footerArr[activeArr.indexOf(rankActiveKey)];
     jump2List({
       interFace: footerIfList[arrIndex].interface,
@@ -342,7 +344,8 @@ export default function Index() {
       rankTitle: activeArrValue[arrIndex],
       rankName: 'Top100',
       rankDesc: '实时更新',
-      selectArr: arrIndex === 5? undefined : arrIndex === 6? selectbiaoshengArr: selectArr
+      selectArr: arrIndex === 5? undefined : arrIndex === 6? selectbiaoshengArr: selectArr,
+      rankType: rankTypeArr[arrIndex]
     });
   };
   const cardRequest = async (url, data) => {

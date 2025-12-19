@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 import { SimpleList } from '../../components/ListCom/SimpleList';
@@ -7,10 +7,12 @@ import { LogoLoading } from '../../components/LogoLoading';
 import { PageLogin } from '../../components/PageLogin';
 import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
+import { useShareCount } from '../../hooks/useShareCount';
 
 export default function List() {
 
   const [listParam, setListParam] = useState({});
+  const [rankType, setRankType] = useState(undefined); // 单独管理 rankType 状态
   const [data, setData] = useState([]);
   const [readyData, setReadyData] = useState([]);
   const [readyIndex, setReadyIndex] = useState(0);
@@ -23,9 +25,18 @@ export default function List() {
   const pageFinish = useRef(false);
   const [ popVis, setPopVis ] = useState(false);
   const [ selectedPick, setSelected ] = useState('');
+  
+  // 使用分享计数 Hook
+  const { shareCount, incrementShareCount } = useShareCount(rankType);
 
-  useShareAppMessage((res) => {
+  // 使用 useCallback 避免重复注册分享回调
+  const handleShare = useCallback((res) => {
     try {
+      const timestamp = Date.now();
+      console.log(`[List] 分享回调触发 [${timestamp}]，from:`, res?.from, 'rankType:', rankType);
+      // 增加分享次数
+      incrementShareCount();
+      
       // 分享触发上报（菜单或按钮触发都会进入这里）
       request({
         url: Interface.SHARE_REPORT,
@@ -36,11 +47,15 @@ export default function List() {
           rankTitle: listParam && listParam.rankTitle ? listParam.rankTitle : ''
         }
       });
-    } catch (e) {}
+    } catch (e) {
+      console.error('[List] 分享回调错误:', e);
+    }
     return {
-      title: '你能用微信盯盘啦！'
+      title: listParam && listParam.rankTitle ? `${listParam.rankTitle} - Mozi` : '你能用微信盯盘啦！'
     };
-  });
+  }, [incrementShareCount, listParam, rankType]);
+
+  useShareAppMessage(handleShare);
 
 
   useLoad(() => {
@@ -52,12 +67,17 @@ export default function List() {
 
     const app = Taro.getApp();
     init(app.listParam);
-    console.log('app', app);
+    console.log('[List] app.listParam:', app.listParam);
+    console.log('[List] rankType:', app.listParam?.rankType);
     if (app.listParam) {
       // 进入页面时基于 rankTitle 判断是否为热门币种
       const isHotCoinsJudge = app.listParam.rankTitle === '热门币种';
       console.log('[List/useLoad] rankTitle:', app.listParam.rankTitle, 'isHotCoinsJudge:', isHotCoinsJudge, 'listParam:', app.listParam);
       setListParam(app.listParam);
+      // 设置 rankType 以触发 useShareCount
+      if (app.listParam.rankType) {
+        setRankType(app.listParam.rankType);
+      }
       // 如果是从可交易平台入口，且没有头图，则使用搜索币种的 logo
       if (app.listParam.fromPlatform && !app.listParam.headerImg) {
         (async () => {
@@ -247,6 +267,7 @@ export default function List() {
         headerImg={headerImg || listParam.headerImg}
         extraClass='rank-large'
         showRanking={listParam.showRanking}
+        shareCount={shareCount}
         // loginCb={() => {setPopVis(true)}}
       />
        }

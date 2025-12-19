@@ -187,6 +187,9 @@ export const Interface = {
   
   // 投资回报率
   RETURN_INVESTMENT: '/easy/getReturnInvestment',
+
+  // 榜单分享次数
+  GET_SHARE_COUNT: '/discovery/getShareCount',
 };
 
 // 邮箱

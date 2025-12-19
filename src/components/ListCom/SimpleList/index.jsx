@@ -37,6 +37,7 @@ export const SimpleList = ({
   extraClass = '',
   commentCount = 0,
   shareCount = 0,
+  onShare,
   showRanking = false
 }) => {
   const isHotSpecial =
@@ -240,15 +241,6 @@ export const SimpleList = ({
             <Button
               className='capsule share-capsule'
               openType='share'
-              onClick={() => {
-                try {
-                  request({
-                    url: Interface.SHARE_REPORT,
-                    method: 'POST',
-                    data: { from: 'button', page: 'list' }
-                  });
-                } catch (e) {}
-              }}
             >
               <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png' />
               <Text className='capsule-text'>{shareCount || 0}</Text>
