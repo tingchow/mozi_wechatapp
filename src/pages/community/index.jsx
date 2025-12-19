@@ -563,11 +563,6 @@ export default function CommunityPage() {
     
     if (needRefresh) {
       console.log('检测到需要刷新社区页面', needRefresh ? '发帖后返回' : '登录后返回');
-      // 显示加载提示，让用户感知到正在刷新
-      Taro.showLoading({
-        title: '刷新中...',
-        mask: true
-      });
       
       // 重置页码并刷新数据
       setPage(1);
@@ -582,14 +577,6 @@ export default function CommunityPage() {
         fetchPosts(true)
           .then(() => {
             console.log('刷新帖子列表成功');
-            // 数据加载完成后隐藏加载提示
-            Taro.hideLoading();
-            // 显示刷新成功提示
-            Taro.showToast({
-              title: '刷新成功',
-              icon: 'success',
-              duration: 1500
-            });
           })
           .catch(err => {
             console.error('刷新帖子列表失败:', err);
@@ -600,8 +587,7 @@ export default function CommunityPage() {
             });
           })
           .finally(() => {
-            // 无论成功失败，都隐藏加载提示并清除刷新标记
-            Taro.hideLoading();
+            // 清除刷新标记
             Taro.removeStorageSync('needRefreshCommunity');
           });
       } else if (mainTab === 'hot') {
@@ -611,12 +597,12 @@ export default function CommunityPage() {
         fetchHotTopics()
           .then(() => {
             console.log('刷新热门话题成功');
-            // 数据加载完成后隐藏加载提示
-            Taro.hideLoading();
-            // 显示刷新成功提示
+          })
+          .catch(err => {
+            console.error('刷新热门话题失败:', err);
             Taro.showToast({
-              title: '刷新成功',
-              icon: 'success',
+              title: '刷新失败',
+              icon: 'error',
               duration: 1500
             });
           })
@@ -629,14 +615,12 @@ export default function CommunityPage() {
             });
           })
           .finally(() => {
-            // 无论成功失败，都隐藏加载提示并清除刷新标记
-            Taro.hideLoading();
+            // 清除刷新标记
             Taro.removeStorageSync('needRefreshCommunity');
           });
       } else {
-        // 如果不在上述两种情况中，也要清除刷新标记和隐藏加载提示
+        // 如果不在上述两种情况中，也要清除刷新标记
         console.log('当前标签页不需要刷新');
-        Taro.hideLoading();
         Taro.removeStorageSync('needRefreshCommunity');
       }
     }

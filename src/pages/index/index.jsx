@@ -106,11 +106,8 @@ export default function Index() {
 
   // 自选接口、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
   const footerIfList = [{
-    interface: Interface.find_coin,
-    data: {
-      pageSize: 10,
-      pageNo: 1
-    }
+    interface: Interface.COIN_SELF,
+    data: {}
   }, {
     interface: Interface.price_change,
     data: {
@@ -172,12 +169,14 @@ export default function Index() {
       let tempData = null;
       if (i === 0) {
         // 自选榜，数据额外处理
-        tempData = itemListData.data.list.map((item) => {
+        // /selfselect/all 接口返回的是数组，字段为 last 和 price24h
+        const selfData = Array.isArray(itemListData.data) ? itemListData.data : [];
+        tempData = selfData.slice(0, 10).map((item) => {
           return {
             symbol: <View className='ownTitle'><Image className='ownImg' mode='aspectFit' src={item.url} />{item.symbol}</View>,
-            currentPrice: item.currentPrice,
-            priceChange24h: <HighlightArea value={item.priceChangePercentage24h}></HighlightArea>,
-            own: <AddCollect symbol={item.symbol} isOwn={item.favorite} loginCb={() => {setPopVis(true)}} />,
+            currentPrice: item.last,
+            priceChange24h: <HighlightArea value={item.price24h}></HighlightArea>,
+            own: <AddCollect symbol={item.symbol} isOwn={true} loginCb={() => {setPopVis(true)}} />,
             monitor: <AddMonitor symbol={item.symbol} />,
             key: item.symbol,
           };
