@@ -70,6 +70,9 @@ export default function Mywarn() {
   const init = async () => {
     const { data } = await request({
       url: Interface.MY_WARN,
+      data: {
+        channel: 'miniapp'
+      }
     });
 
     if (isEmpty(data)) {
@@ -174,6 +177,7 @@ export default function Mywarn() {
       method: 'POST',
       data: {
         symbol,
+        channel: 'miniapp',
         content: {
           [code]: formattedValue
         }
@@ -267,7 +271,8 @@ export default function Mywarn() {
       url: interfaceurl,
       data: {
         code,
-        symbol: Object.keys(warnData.data)[activeKey]
+        symbol: Object.keys(warnData.data)[activeKey],
+        channel: 'miniapp'
       }
     });
     if (data) {
@@ -325,9 +330,9 @@ export default function Mywarn() {
     Taro.showLoading({ title: '删除中...' });
     
     try {
-      // 与原项目联调一致：使用 DELETE 方法，symbol 作为 Query String
+      // 与原项目联调一致：使用 DELETE 方法，symbol 和 channel 作为 Query String
       const response = await request({
-        url: `${Interface.DELETE_ALARM}?symbol=${symbol}`,
+        url: `${Interface.DELETE_ALARM}?symbol=${symbol}&channel=miniapp`,
         method: 'DELETE',
       });
       

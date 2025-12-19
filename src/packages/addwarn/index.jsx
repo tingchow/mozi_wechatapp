@@ -160,6 +160,7 @@ export default function Addwarn() {
       method: 'POST',
       data: {
         symbol,
+        channel: 'miniapp',
         content: apiData
       }
     });

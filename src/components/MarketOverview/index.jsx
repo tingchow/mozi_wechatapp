@@ -30,7 +30,12 @@ const MarketOverview = memo(({ data }) => {
           setSmartOnClick(() => () => jump2NoTab('addwarn', { symbol: 'BTC' }));
           return;
         }
-        const myWarnRes = await request({ url: Interface.MY_WARN });
+        const myWarnRes = await request({ 
+          url: Interface.MY_WARN,
+          data: {
+            channel: 'miniapp'
+          }
+        });
         const groups = myWarnRes?.data || {};
         // 在所有币种里挑选：激活的告警中“最新配置”的那个币
         let chosenSymbol = null;
