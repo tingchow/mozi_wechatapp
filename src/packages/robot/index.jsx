@@ -216,7 +216,13 @@ export default function Robot() {
       console.log('📜 收到历史记录:', data)
       setIsLoadingHistory(false)
       
-      const { messages: historyMessages, conversationId } = data.data || {}
+      const { messages: historyMessages, conversationId, suggestedQuestions } = data.data || {}
+      
+      // 处理建议问题
+      if (suggestedQuestions && Array.isArray(suggestedQuestions) && suggestedQuestions.length > 0) {
+        console.log('💡 收到建议问题:', suggestedQuestions)
+        setSuggestedQuestions(suggestedQuestions)
+      }
       
       if (historyMessages && historyMessages.length > 0) {
         console.log(`✅ 加载了 ${historyMessages.length} 条历史消息`)
