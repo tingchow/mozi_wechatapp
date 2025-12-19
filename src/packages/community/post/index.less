@@ -118,6 +118,115 @@ page {
     }
 
     .discovery-form {
+      /* 发现好币大输入框容器 */
+      .discovery-info-box {
+        background: transparent;
+        border-radius: 16px;
+        padding: 0;
+        margin-bottom: 24px;
+      }
+
+      /* 每一行的样式 */
+      .coin-info-row {
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: none;
+        position: relative;
+
+        /* 图标样式 */
+        .coin-info-icon-img {
+          width: 32px;
+          height: 32px;
+          margin-right: 16px;
+          flex-shrink: 0;
+        }
+
+        /* 标签样式 */
+        .coin-info-label {
+          font-size: 28px;
+          color: #333;
+          font-weight: 500;
+          min-width: 140px;
+          flex-shrink: 0;
+
+          .required {
+            color: #FF3B30;
+            margin-left: 4px;
+          }
+        }
+
+        /* 值/占位符样式 */
+        .coin-info-value {
+          flex: 1;
+          font-size: 28px;
+          color: #333;
+          text-align: left;
+        }
+
+        .coin-info-placeholder {
+          flex: 1;
+          font-size: 28px;
+          color: #999;
+          text-align: left;
+        }
+
+        /* 箭头图标 */
+        .icon-arrow {
+          font-size: 32px;
+          color: #999;
+          margin-left: 8px;
+          flex-shrink: 0;
+        }
+
+        .icon-arrow-img {
+          width: 24px;
+          height: 24px;
+          margin-left: 8px;
+          flex-shrink: 0;
+          opacity: 0.5;
+        }
+
+        /* 内联输入框样式 */
+        .sector-input-inline {
+          flex: 1;
+          font-size: 28px;
+          color: #333;
+          text-align: left;
+          background: transparent;
+          border: none;
+          padding: 0;
+          height: auto;
+        }
+
+        /* 推荐理由行特殊样式 */
+        &.reason-row {
+          align-items: flex-start;
+
+          .coin-info-icon-img {
+            margin-top: 4px;
+          }
+
+          .coin-info-label {
+            margin-top: 4px;
+          }
+
+          .reason-textarea-inline {
+            flex: 1;
+            min-height: 60px;
+            font-size: 28px;
+            color: #333;
+            background: transparent;
+            border: none;
+            padding: 0;
+            padding-top: 10px;
+            line-height: 1.6;
+            box-sizing: border-box;
+            text-align: left;
+          }
+        }
+      }
+
       .form-item {
         margin-bottom: 32px;
 

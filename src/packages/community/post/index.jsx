@@ -257,13 +257,22 @@ export default function PostPage() {
       return;
     }
 
-    // 验证'发现好币'模板必须选择至少一个币种
-    if (selectedTemplate === '发现好币' && selectedCoins.length === 0) {
-      Taro.showToast({
-        title: '请选择至少一个币种',
-        icon: 'none'
-      })
-      return
+    // 验证'发现好币'模板必须选择至少一个币种和填写推荐理由
+    if (selectedTemplate === '发现好币') {
+      if (selectedCoins.length === 0) {
+        Taro.showToast({
+          title: '请选择币种',
+          icon: 'none'
+        })
+        return
+      }
+      if (!content || content.trim() === '') {
+        Taro.showToast({
+          title: '请填写推荐理由',
+          icon: 'none'
+        })
+        return
+      }
     }
 
     // 设置发布中状态，禁用按钮
@@ -284,6 +293,12 @@ export default function PostPage() {
         }).filter(Boolean) : [],
         images
       }
+      
+      // 如果是发现好币模板，添加sector字段
+      if (selectedTemplate === '发现好币' && formData.sector) {
+        postData.sector = formData.sector;
+      }
+      
       console.log('发布帖子 - 完整数据:', postData);
       
       // 如果有投票信息，添加到postData中
@@ -491,7 +506,8 @@ export default function PostPage() {
 
         // 如果来源于“发现好币”，则进入页面时自动弹出模板选择弹窗，且默认选中“发现好币”
         if (decodedTemplateType === '发现好币') {
-          setShowTemplates(true);
+          // 暂时隐藏自动弹出模板选择弹窗
+          // setShowTemplates(true);
           setTemplatePriorityFirst('发现好币');
         } else {
           setTemplatePriorityFirst(null);
@@ -710,7 +726,38 @@ export default function PostPage() {
 
   // 选择币种
   const selectCoin = (coin) => {
-    // 检查是否已经选择了该币种
+    // 如果是发现好币模板，只允许选择一个币种，直接替换
+    if (selectedTemplate === '发现好币') {
+      const newCoinSymbol = coin.symbol || coin.name || coin;
+      const oldCoinSymbol = selectedCoins.length > 0 
+        ? (selectedCoins[0].symbol || selectedCoins[0].name || selectedCoins[0])
+        : '';
+      
+      setSelectedCoins([coin]);
+      
+      // 处理推荐理由
+      if (!content || content.trim() === '') {
+        // 如果推荐理由为空，自动填充模板文案
+        const templates = [
+          `${newCoinSymbol}即将上涨，请注意`,
+          `看好${newCoinSymbol}的长期发展`,
+          `${newCoinSymbol}技术面表现强劲`,
+          `${newCoinSymbol}基本面优秀，值得关注`
+        ];
+        const randomIndex = Math.floor(Math.random() * templates.length);
+        setContent(templates[randomIndex]);
+      } else if (oldCoinSymbol && content.includes(oldCoinSymbol)) {
+        // 如果推荐理由中包含旧币种名称，替换为新币种
+        const updatedContent = content.replace(new RegExp(oldCoinSymbol, 'g'), newCoinSymbol);
+        setContent(updatedContent);
+      }
+      
+      setShowCoinSelect(false);
+      setActiveButton('');
+      return;
+    }
+    
+    // 其他模板允许选择多个币种
     const exists = selectedCoins.some(item => 
       (item.symbol && item.symbol === coin.symbol) || 
       (item.name && item.name === coin.name) ||
@@ -764,48 +811,94 @@ export default function PostPage() {
       {/* 内容区域 */}
       <View className='content-section'>
         {(selectedTemplate === '普通' || selectedTemplate === '不懂就问') && (
-          <Textarea
-            className='content-textarea'
-            placeholder={selectedTemplate === '普通' ? '写下你的想法...': '详细描述你的问题...'}
-            value={content}
-            onInput={e => setContent(e.detail.value)}
-            maxlength={300}
-          />
-        )}
-        {/* 图片上传区（隐藏开关） */}
-        {SHOW_IMAGE_UPLOAD && (
-          <View className='image-uploader'>
-            {images.map((src, idx) => (
-              <View key={idx} className='image-wrapper'>
-                <Image className='uploaded-img' src={src} mode='aspectFill' />
-                <View className='delete-icon' onClick={() => handleRemoveImage(idx)}>×</View>
-              </View>
-            ))}
-            {images.length < 9 && (
-              <View className='upload-tile' onClick={handleChooseImage}>+
+          <>
+            <Textarea
+              className='content-textarea'
+              placeholder={selectedTemplate === '普通' ? '写下你的想法...': '详细描述你的问题...'}
+              value={content}
+              onInput={e => setContent(e.detail.value)}
+              maxlength={300}
+            />
+            {/* 图片上传区 - 普通和不懂就问模板 */}
+            {SHOW_IMAGE_UPLOAD && (
+              <View className='image-uploader'>
+                {images.map((src, idx) => (
+                  <View key={idx} className='image-wrapper'>
+                    <Image className='uploaded-img' src={src} mode='aspectFill' />
+                    <View className='delete-icon' onClick={() => handleRemoveImage(idx)}>×</View>
+                  </View>
+                ))}
+                {images.length < 9 && (
+                  <View className='upload-tile' onClick={handleChooseImage}>+
+                  </View>
+                )}
               </View>
             )}
-          </View>
+          </>
         )}
 
         {selectedTemplate === '发现好币' && (
           <View className='discovery-form'>
-            <View className='form-item'>
-              <Text className='label'>推荐理由</Text>
-              <Textarea
-                value={content}
-                onInput={e => setContent(e.detail.value)}
-                placeholder='请输入推荐理由'
-                maxlength={300}
-              />
-            </View>
-            <View className='form-item'>
-              <Text className='label'>币种名称</Text>
-              <View className='coin-select-btn' onClick={() => setShowCoinSelect(true)}>
-                <Text className='placeholder'>{selectedCoins.length > 0 ? `已选择 ${selectedCoins.length} 个币种` : '请选择你的币种'}</Text>
-                <Text className='icon-arrow'></Text>
+            {/* 大输入框 - 显示三个字段的信息 */}
+            <View className='discovery-info-box'>
+              {/* 1. 币种名称 - 必填 */}
+              <View className='coin-info-row' onClick={() => setShowCoinSelect(true)}>
+                <Image className='coin-info-icon-img' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/integral.png' mode='widthFix' />
+                <Text className='coin-info-label'>
+                  币种名称
+                  <Text className='required'>*</Text>
+                </Text>
+                <Text className={selectedCoins.length > 0 ? 'coin-info-value' : 'coin-info-placeholder'}>
+                  {selectedCoins.length > 0 
+                    ? (selectedCoins[0]?.symbol || selectedCoins[0]?.name || selectedCoins[0])
+                    : '请选择你的币种'}
+                </Text>
+                <Image className='icon-arrow-img' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/arrow-right.png' mode='widthFix' />
+              </View>
+
+              {/* 2. 所属版块 - 选填 */}
+              <View className='coin-info-row'>
+                <Image className='coin-info-icon-img' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/plate.png' mode='widthFix' />
+                <Text className='coin-info-label'>所属版块</Text>
+                <Input
+                  value={formData.sector || ''}
+                  onInput={e => handleFormChange('sector', e.detail.value)}
+                  placeholder='请输入所属版块（选填）'
+                  className='sector-input-inline'
+                />
+              </View>
+
+              {/* 3. 推荐理由 - 必填 */}
+              <View className='coin-info-row reason-row'>
+                <Image className='coin-info-icon-img' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/reason.png' mode='widthFix' />
+                <Text className='coin-info-label'>
+                  推荐理由
+                  <Text className='required'>*</Text>
+                </Text>
+                <Textarea
+                  value={content}
+                  onInput={e => setContent(e.detail.value)}
+                  placeholder='请输入推荐理由'
+                  maxlength={300}
+                  className='reason-textarea-inline'
+                />
               </View>
             </View>
+
+            {/* 4. 图片上传区 - 发现好币模板 */}
+            {SHOW_IMAGE_UPLOAD && (
+              <View className='image-uploader'>
+                {images.map((src, idx) => (
+                  <View key={idx} className='image-wrapper'>
+                    <Image className='uploaded-img' src={src} mode='aspectFill' />
+                    <View className='delete-icon' onClick={() => handleRemoveImage(idx)}>×</View>
+                  </View>
+                ))}
+                {images.length < 9 && (
+                  <View className='upload-tile' onClick={handleChooseImage}>+</View>
+                )}
+              </View>
+            )}
           </View>
         )}
       </View>

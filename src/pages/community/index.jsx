@@ -1654,7 +1654,7 @@ export default function CommunityPage() {
                             <Image className="coin-info-icon-img" src={plateIcon} mode="widthFix" />
                             <Text className="coin-info-label">所属板块：</Text>
                             <Text className="coin-info-value">
-                              {item.tags && item.tags.length > 0 ? 'Cash' : 'DeFi'}
+                              {item.sector || 'DeFi'}
                             </Text>
                           </View>
                           
