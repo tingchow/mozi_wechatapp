@@ -719,14 +719,15 @@ export default function Find() {
   const [isUpTradeLoading, setUpTradeLoading] = useState(true);
   const upTradeArr = useRef([]);
   const upTradeSelect = [];
+  const currentUpTradeInterval = useRef('1_day'); // 记录当前选中的时间周期
 
-  // 飙升请求 - 只请求1天的数据
+  // 飙升请求 - 使用当前选中的时间周期
   const upTradeRequest = async () => {
     try {
       const wave = await request({
         url: Interface.PRICE_UPTRADE,
         data: {
-          intervals: '1_day'
+          intervals: currentUpTradeInterval.current
         }
       });
 
@@ -774,9 +775,11 @@ export default function Find() {
   });
 
   const upTradePickChange = async (idx) => {
-    // 根据选中的索引动态请求对应时间周期的数据
+    // 更新当前选中的时间周期
     const intervals = upTradeIntervalsArr[idx];
     if (!intervals) return;
+    
+    currentUpTradeInterval.current = intervals; // 更新当前时间周期
     
     try {
       const wave = await request({
