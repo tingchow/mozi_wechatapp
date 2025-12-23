@@ -62,21 +62,19 @@ export default function Fundingrate() {
           if (chartData.current.type === 'updownbarline') {
             options.grid = {
               left: '17%',
-              right: '17%',
+              right: '5%',
               top: '5%',
               bottom: '25%',
               containLabel: false
             };
-            // 去掉纵坐标的$符号，但保留其他单位
+            // 左侧Y轴：将值乘以100并加上%符号
             options.yAxis[0].axisLabel.formatter = (value) => {
-              const originalFormat = chartData.current.data.yAxisLeftSlot?.replace('{}', value) ?? value;
-              return originalFormat.replace(/\$/g, '');
+              return (value * 100).toFixed(4) + '%';
             };
-            options.yAxis[1].axisLabel.formatter = (value) => {
-              const adjustedValue = (value / 10).toFixed(6).replace(/\.?0+$/, '');
-              const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', adjustedValue).replace('千', '万') ?? adjustedValue;
-              return originalFormat.replace(/\$/g, '');
-            };
+            // 隐藏右侧Y轴
+            if (options.yAxis[1]) {
+              options.yAxis[1].show = false;
+            }
           }
           chartRef.current.setOption(options);
           console.log('图表数据重新设置完成');
@@ -111,21 +109,19 @@ export default function Fundingrate() {
       if (chartData.current.type === 'updownbarline') {
         options.grid = {
           left: '17%',
-          right: '17%',
+          right: '5%',
           top: '5%',
           bottom: '25%',
           containLabel: false
         };
-        // 去掉纵坐标的$符号，但保留其他单位
+        // 左侧Y轴：将值乘以100并加上%符号
         options.yAxis[0].axisLabel.formatter = (value) => {
-          const originalFormat = chartData.current.data.yAxisLeftSlot?.replace('{}', value) ?? value;
-          return originalFormat.replace(/\$/g, '');
+          return (value * 100).toFixed(4) + '%';
         };
-        options.yAxis[1].axisLabel.formatter = (value) => {
-          const adjustedValue = (value / 10).toFixed(6).replace(/\.?0+$/, '');
-          const originalFormat = chartData.current.data.yAxisRightSlot?.replace('{}', adjustedValue).replace('千', '万') ?? adjustedValue;
-          return originalFormat.replace(/\$/g, '');
-        };
+        // 隐藏右侧Y轴
+        if (options.yAxis[1]) {
+          options.yAxis[1].show = false;
+        }
       }
       chart.setOption(options);
       console.log('图表初始化时设置数据完成');
@@ -260,21 +256,20 @@ export default function Fundingrate() {
     // 为资金费率图表添加特殊的 grid 配置
     options.grid = {
       left: '17%',
-      right: '17%',
+      right: '5%',
       top: '5%',
       bottom: '25%',
       containLabel: false
     };
     // 去掉纵坐标的$符号，但保留其他单位
+    // 左侧Y轴：将值乘以100并加上%符号
     options.yAxis[0].axisLabel.formatter = (value) => {
-      const originalFormat = frHisData.data.yAxisLeftSlot?.replace('{}', value) ?? value;
-      return originalFormat.replace(/\$/g, '');
+      return (value * 100).toFixed(4) + '%';
     };
-    options.yAxis[1].axisLabel.formatter = (value) => {
-      const adjustedValue = (value / 10).toFixed(6).replace(/\.?0+$/, '');
-      const originalFormat = frHisData.data.yAxisRightSlot?.replace('{}', adjustedValue).replace('千', '万') ?? adjustedValue;
-      return originalFormat.replace(/\$/g, '');
-    };
+    // 隐藏右侧Y轴
+    if (options.yAxis[1]) {
+      options.yAxis[1].show = false;
+    }
     chartRef.current.setOption(options);
     setHisLoading(false);
   };
