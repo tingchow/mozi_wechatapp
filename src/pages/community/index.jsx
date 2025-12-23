@@ -312,7 +312,6 @@ export default function CommunityPage() {
             }
           } else if (subTab === 'currency' && selectedCoin) {
             // 币种标签
-            requestData.userType = 'real'; // 精选推荐：真实用户
             requestData.symbol = selectedCoin;
             
             // 检查是否有缓存的帖子列表
@@ -331,17 +330,20 @@ export default function CommunityPage() {
           // 设置请求参数
           // 根据mainTab设置userType参数（与原项目对齐）
           if (mainTab === 'recommend') {
-            requestData.userType = 'real'; // 精选推荐：真实用户
-            
             // 根据subTab设置不同的参数
             if (subTab === 'discovery') {
+              requestData.userType = 'real'; // 精选推荐：真实用户
               requestData.category = '发现好币';
             } else if (subTab === 'question') {
+              requestData.userType = 'real'; // 精选推荐：真实用户
               requestData.category = '不懂就问';
             } else if (subTab === 'currency' && selectedCoin) {
+              // 币种标签：不设置 userType，只设置 symbol
               requestData.symbol = selectedCoin;
+            } else {
+              // 'all' 标签
+              requestData.userType = 'real'; // 精选推荐：真实用户
             }
-            // 'all' 标签不需要额外参数
           } else if (mainTab === 'news') {
             requestData.userType = 'virtual'; // 快讯：虚拟用户
           }
@@ -385,7 +387,12 @@ export default function CommunityPage() {
           // 前端兜底过滤：根据标签过滤不同的 userType（与原项目对齐）
           // 精选推荐：显示非 'virtual' 的帖子（包括 'real'、'jinancn' 等真实用户）
           // 快讯：只显示 userType === 'virtual' 的帖子
+          // 币种标签：不进行 userType 过滤
           const filteredData = formattedData.filter(item => {
+            // 币种标签不过滤 userType
+            if (mainTab === 'recommend' && subTab === 'currency') {
+              return true;
+            }
             if (mainTab === 'recommend') {
               return item.userType !== 'virtual';
             } else if (mainTab === 'news') {
@@ -960,7 +967,6 @@ export default function CommunityPage() {
           data: {
             page: 1,
             size,
-            userType: 'real', // 精选推荐：真实用户
             symbol: coin
           }
         });

@@ -678,7 +678,7 @@ export default function CommentInfo() {
                   className="coin-tag"
                   onClick={() => Taro.navigateTo({ url: `/packages/detail/index?symbol=${tag.name}` })}
                 >
-                  @{tag.name}
+                  ${tag.name}$
                 </Text>
               ))}
               
