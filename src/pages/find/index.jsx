@@ -666,7 +666,7 @@ export default function Find() {
       tempXinbi = xinbi.data.slice(0, 3).map((item) => {
         return {
           symbol: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
-          volume_24h: item.volume_24h,
+          last: item.last,
           img: item.url,
           key: item.symbol
         };
@@ -702,6 +702,15 @@ export default function Find() {
   // };
 
   // 飙升榜详情
+  const upTradeIntervalsArr = ['1_day', '7_day', '1_month', '1_year']; // 飙升榜专用，从1天开始
+  const upTradePickArr = ['1天', '1周', '1月', '1年']; // 飙升榜专用选项
+  const upTradeRequestData = () => {
+    return upTradeIntervalsArr.map((item) => {
+      return {
+        intervals: item
+      }
+    });
+  };
   const [upTradeData, setUpTradeData] = useState({
     upTradeSelect: [],
     upTradeArr: []
@@ -711,15 +720,13 @@ export default function Find() {
   const upTradeArr = useRef([]);
   const upTradeSelect = [];
 
-  // 飙升请求
+  // 飙升请求 - 只请求1天的数据
   const upTradeRequest = async () => {
-    upTradeArr.current = []; // 清空数组
-    const tempUpTradeSelect = [];
-    for (let i = 0; i < dimArr.length; i++) {
+    try {
       const wave = await request({
         url: Interface.PRICE_UPTRADE,
         data: {
-          intervals: intervalsArr[i]
+          intervals: '1_day'
         }
       });
 
@@ -735,39 +742,67 @@ export default function Find() {
           };
         });
       }
+      
       if (tempWave) {
-        upTradeArr.current.push(tempWave);
-        tempUpTradeSelect.push(tradePickArr[i]);
+        upTradeArr.current = tempWave;
       }
       
-    }
-    if (upTradeArr.current.length === 0) {
+      if (upTradeArr.current.length === 0) {
+        setUpTradeError(true);
+        setUpTradeLoading(false);
+        return;
+      }
+      
+      setUpTradeData({
+        upTradeArr: upTradeArr.current,
+        upTradeSelect: upTradePickArr,
+      });
+      
+      setUpTradeLoading(false);
+      
+      setTimeout(() => {
+        if (needLoop.current) upTradeRequest();
+      }, LOOPTIME);
+    } catch (error) {
+      console.error('[飙升榜] 请求出错:', error);
       setUpTradeError(true);
-      return;
+      setUpTradeLoading(false);
     }
-    setUpTradeData({
-      upTradeArr: upTradeArr.current[0],
-      upTradeSelect: tempUpTradeSelect,
-    });
-    setUpTradeLoading(false);
-    setTimeout(() => {
-      if (needLoop.current) upTradeRequest();
-    }, LOOPTIME);
   };
   useDidShow(() => {
     upTradeRequest();
   });
 
-  const upTradePickChange = (idx) => {
-    // console.log('pick', e);
-    // setExchangeIndex(idx);
-    // console.log('waveArr', waveArr);
-    // 添加防护性检查，确保数组和索引都存在
-    if (upTradeArr.current && upTradeArr.current[idx]) {
-      setUpTradeData({
-        ...upTradeData,
-        upTradeArr: upTradeArr.current[idx],
+  const upTradePickChange = async (idx) => {
+    // 根据选中的索引动态请求对应时间周期的数据
+    const intervals = upTradeIntervalsArr[idx];
+    if (!intervals) return;
+    
+    try {
+      const wave = await request({
+        url: Interface.PRICE_UPTRADE,
+        data: {
+          intervals: intervals
+        }
       });
+
+      if (!isEmpty(wave.data)) {
+        const tempWave = wave.data.slice(0, 3).map((item) => {
+          return {
+            symbol: <View className='gridText'><Image className='gridIcon' mode='aspectFit' src={item.url} />{item.symbol}</View>,
+            priceRange: item.movers,
+            img: item.url,
+            key: item.symbol
+          };
+        });
+        
+        setUpTradeData({
+          ...upTradeData,
+          upTradeArr: tempWave,
+        });
+      }
+    } catch (e) {
+      console.error('飙升榜切换时间周期失败:', e);
     }
   };
 
@@ -1304,7 +1339,7 @@ export default function Find() {
                     data: ['url', 'symbol']
                   }, {
                     type: 'Text',
-                    data: 'volume_24h'
+                    data: 'last'
                   }, {
                     type: 'HighlightArea',
                     data: 'price_24h'
@@ -1325,6 +1360,7 @@ export default function Find() {
                   rankName: 'Top100',
                   rankDesc: '每天更新',
                   showHeader: true,
+                  showRanking: true,
                   rankType: 'newsymbol',
                   // selectArr: xinbiData.tradeSelect
                 });
@@ -1341,7 +1377,7 @@ export default function Find() {
                     data: ['url', 'symbol']
                   }, {
                     type: 'Text',
-                    data: 'volume_24h'
+                    data: 'last'
                   }, {
                     type: 'HighlightArea',
                     data: 'price_24h'
@@ -1385,7 +1421,7 @@ export default function Find() {
               callback={() => {
                 jump2List({
                   interFace: Interface.PRICE_UPTRADE,
-                  requestData: tradeRequestData(),
+                  requestData: upTradeRequestData(),
                   gridTitle: ['币种', '最新价', '增长值', '加自选', '加监控'],
                   gridCon: [{
                     type: 'Img+Text',

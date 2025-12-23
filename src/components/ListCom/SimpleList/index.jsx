@@ -38,7 +38,8 @@ export const SimpleList = ({
   commentCount = 0,
   shareCount = 0,
   onShare,
-  showRanking = false
+  showRanking = false,
+  hideActions = false // 新增：是否隐藏右侧评论和分享按钮
 }) => {
   const isHotSpecial =
     rankTitle === '热门币种' ||
@@ -226,26 +227,28 @@ export const SimpleList = ({
               </View>
             )}
           {/* 右侧操作胶囊：评论与分享 */}
-          <View className='actions-capsule'>
-            <View
-              className='capsule comment-capsule'
-              onClick={() => {
-                try { Taro.setStorageSync('communityMainTabPreset', 'hot'); } catch (e) {}
-                Taro.switchTab({ url: '/pages/community/index' });
-              }}
-            >
-              <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/comment.png' />
-              <Text className='capsule-text'>{commentCount || 0}</Text>
+          {!hideActions && (
+            <View className='actions-capsule'>
+              <View
+                className='capsule comment-capsule'
+                onClick={() => {
+                  try { Taro.setStorageSync('communityMainTabPreset', 'hot'); } catch (e) {}
+                  Taro.switchTab({ url: '/pages/community/index' });
+                }}
+              >
+                <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/comment.png' />
+                <Text className='capsule-text'>{commentCount || 0}</Text>
+              </View>
+              <View className='divider'></View>
+              <Button
+                className='capsule share-capsule'
+                openType='share'
+              >
+                <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png' />
+                <Text className='capsule-text'>{shareCount || 0}</Text>
+              </Button>
             </View>
-            <View className='divider'></View>
-            <Button
-              className='capsule share-capsule'
-              openType='share'
-            >
-              <Image className='capsule-icon' mode='aspectFit' src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png' />
-              <Text className='capsule-text'>{shareCount || 0}</Text>
-            </Button>
-          </View>
+          )}
           </View>
         )
       }

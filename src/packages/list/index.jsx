@@ -268,6 +268,7 @@ export default function List() {
         extraClass='rank-large'
         showRanking={listParam.showRanking}
         shareCount={shareCount}
+        hideActions={listParam.hideActions}
         // loginCb={() => {setPopVis(true)}}
       />
        }

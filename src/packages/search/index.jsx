@@ -549,7 +549,6 @@ export default function Search() {
                     requestData: {
                       coin: searchValue
                     },
-                    rankName: '交易对',
                     selectArr: ['现货交易对', '衍生品交易对'],
                     reponseData: ['spot', 'nonSpot'],
                     gridTitle: ['交易对', '交易所', '最新价', '24H变化'],
@@ -569,6 +568,8 @@ export default function Search() {
                       type: 'img',
                       data: 'url'
                     }],
+                    extraClass: 'trading-pairs',
+                    hideActions: true
                   });
                 }}>
                   交易对
@@ -584,7 +585,6 @@ export default function Search() {
                     rankTitle: `${(searchValue || '').toUpperCase()}交易对`,
                     interFace: Interface.COIN_SPOT,
                     requestData: { coin: searchValue },
-                    rankName: '交易对',
                     selectArr: ['现货交易对', '衍生品交易对'],
                     reponseData: ['spot', 'nonSpot'],
                     gridTitle: ['交易对', '交易所', '最新价', '24H变化'],
@@ -594,7 +594,9 @@ export default function Search() {
                       { type: 'Text', data: 'lasts' },
                       { type: 'HighlightArea', data: 'price24h' },
                       { type: 'img', data: 'url' }
-                    ]
+                    ],
+                    extraClass: 'trading-pairs',
+                    hideActions: true
                   });
                 }}
               >

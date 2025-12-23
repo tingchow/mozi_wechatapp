@@ -247,7 +247,6 @@
         margin: 0 8 0 0rpx;
         white-space: nowrap;
         /* 自适应内容宽度 */
-        max-width: 40px;
         padding: 0 20rpx;
 
         &.active {
@@ -307,6 +306,19 @@
       .share-capsule {
         border: none;
         &::after { display: none; }
+      }
+    }
+  }
+}
+
+
+// 交易对页面：tab 按钮宽度限制
+.scroll-list.trading-pairs {
+  .header-new {
+    .tab-select {
+      .tab-item {
+        min-width: 120rpx;
+        max-width: 200rpx;
       }
     }
   }

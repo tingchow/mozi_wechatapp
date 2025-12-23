@@ -136,7 +136,7 @@ export default function Index() {
   {
     interface: Interface.PRICE_UPTRADE,
     data: {
-      intervals: '7_day'
+      intervals: '1_day'
     }
   }];
 
@@ -274,40 +274,34 @@ export default function Index() {
     }, {
       dim: '1_day'
     }, {
-      dim: '3_day'
-    }, {
       dim: '7_day'
     }, {
-      dim: '15_day'
-    }, {
       dim: '1_month'
+    }, {
+      dim: '1_year'
     }];
     const requestintervalData = [{
       intervals: 'today'
     }, {
       intervals: '1_day'
     }, {
-      intervals: '3_day'
-    }, {
       intervals: '7_day'
     }, {
-      intervals: '15_day'
-    }, {
       intervals: '1_month'
+    }, {
+      intervals: '1_year'
     }];
     const requestbiaoshengintervalsData = [{
       intervals: '1_day'
     }, {
-      intervals: '3_day'
-    }, {
       intervals: '7_day'
     }, {
-      intervals: '15_day'
-    }, {
       intervals: '1_month'
+    }, {
+      intervals: '1_year'
     }];
-    const selectArr = ['今日', '1天', '3天', '7天', '15天', '1月'];
-    const selectbiaoshengArr = ['1天', '3天', '7天', '15天', '1月'];
+    const selectArr = ['实时', '1天', '1周', '1月', '1年'];
+    const selectbiaoshengArr = ['1天', '1周', '1月', '1年'];
     // 榜单类型映射：自选、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
     const rankTypeArr = ['selfselect', 'pricechange', 'pricechangeasc', 'pricewave', 'trade', 'newsymbol', 'trademovers'];
     // const  = footerArr[activeArr.indexOf(rankActiveKey)];
@@ -323,10 +317,10 @@ export default function Index() {
         data: ['url', 'symbol']
       }, {
         type: 'Text',
-        data: arrIndex === 0? 'currentPrice': arrIndex === 5? 'volume_24h': 'last'
+        data: 'last'
       }, {
         type: 'HighlightArea',
-        data: arrIndex === 0? 'priceChangePercentage24h': arrIndex === 4 || arrIndex === 5 || arrIndex === 6 ? 'price_24h': 'priceRange'
+        data: arrIndex === 0? 'price24h': arrIndex === 4 || arrIndex === 5 || arrIndex === 6 ? 'price_24h': 'priceRange'
       }, {
         type: 'AddCollect',
         data: ['favorite', 'symbol']
