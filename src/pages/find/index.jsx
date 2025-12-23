@@ -702,8 +702,8 @@ export default function Find() {
   // };
 
   // 飙升榜详情
-  const upTradeIntervalsArr = ['1_day', '7_day', '1_month', '1_year']; // 飙升榜专用，从1天开始
-  const upTradePickArr = ['1天', '1周', '1月', '1年']; // 飙升榜专用选项
+  const upTradeIntervalsArr = ['7_day', '1_month', '2_month']; // 飙升榜专用，1周、1月、2月
+  const upTradePickArr = ['1周', '1月', '2月']; // 飙升榜专用选项
   const upTradeRequestData = () => {
     return upTradeIntervalsArr.map((item) => {
       return {
@@ -719,7 +719,7 @@ export default function Find() {
   const [isUpTradeLoading, setUpTradeLoading] = useState(true);
   const upTradeArr = useRef([]);
   const upTradeSelect = [];
-  const currentUpTradeInterval = useRef('1_day'); // 记录当前选中的时间周期
+  const currentUpTradeInterval = useRef('7_day'); // 记录当前选中的时间周期，默认1周
 
   // 飙升请求 - 使用当前选中的时间周期
   const upTradeRequest = async () => {

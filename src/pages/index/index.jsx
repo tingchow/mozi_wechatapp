@@ -136,7 +136,7 @@ export default function Index() {
   {
     interface: Interface.PRICE_UPTRADE,
     data: {
-      intervals: '1_day'
+      intervals: '7_day'
     }
   }];
 
@@ -292,16 +292,14 @@ export default function Index() {
       intervals: '1_year'
     }];
     const requestbiaoshengintervalsData = [{
-      intervals: '1_day'
-    }, {
       intervals: '7_day'
     }, {
       intervals: '1_month'
     }, {
-      intervals: '1_year'
+      intervals: '2_month'
     }];
     const selectArr = ['实时', '1天', '1周', '1月', '1年'];
-    const selectbiaoshengArr = ['1天', '1周', '1月', '1年'];
+    const selectbiaoshengArr = ['1周', '1月', '2月'];
     // 榜单类型映射：自选、涨幅榜、跌幅榜、振幅榜、成交额榜、新币榜、飙升榜
     const rankTypeArr = ['selfselect', 'pricechange', 'pricechangeasc', 'pricewave', 'trade', 'newsymbol', 'trademovers'];
     // const  = footerArr[activeArr.indexOf(rankActiveKey)];
