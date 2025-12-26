@@ -40,6 +40,7 @@ const NewCoinListing = ({ showMore = false, data = [], loading = false, onMoreCl
           >
             {coinListings.map((coin, index) => {
               const isLast = index === coinListings.length - 1;
+              const isSingle = coinListings.length === 1; // 判断是否只有一个项目
               // 适配多种字段格式
               const exchangeName = coin.exchanges || coin.exchange || coin.name;
               const exchangeIcon = coin.logoUrl || coin.exchangeIcon || coin.icon || 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/biannce.png';
@@ -50,7 +51,7 @@ const NewCoinListing = ({ showMore = false, data = [], loading = false, onMoreCl
               const link = coin.link;
               
               return (
-                <View className={`coin-item ${isLast ? 'last' : ''}`} key={coin.id || index}>
+                <View className={`coin-item ${isLast ? 'last' : ''} ${isSingle ? 'single' : ''}`} key={coin.id || index}>
                   <View className='coin-info'>
                     <Image className='exchange-icon' src={exchangeIcon} mode='aspectFit' />
                     <Text className='exchange-name'>{exchangeName}</Text>

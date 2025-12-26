@@ -174,9 +174,6 @@ export default function Index() {
         if (typeof res.data !== 'undefined') {
           setSubscribeAnnouncement(!!res.data);
         }
-      },
-      fail: function () {
-        setSubscribeAnnouncement(false);
       }
     });
   })
@@ -253,7 +250,7 @@ export default function Index() {
         method: 'POST',
         data: {
           platform: 'miniapp',
-          limit: 20,
+          limit: 200,
           time: timeStr
         }
       });
@@ -315,7 +312,7 @@ export default function Index() {
         method: 'POST',
         data: {
           platform: 'miniapp',
-          limit: 20,
+          limit: 50,
           time: timeStr
         }
       });
@@ -526,9 +523,16 @@ export default function Index() {
             setIsLogin(true);
 
             // 先保存用户信息
-            console.log('userId', tokenInfo?.data?.userId);
             const userInfo = tokenInfo?.data?.userInfo;
             const userId = tokenInfo?.data?.userId;
+            
+            // 保存订阅公告状态
+            const subscribeAnnouncementValue = tokenInfo?.data?.subscribeAnnouncement;
+            if (typeof subscribeAnnouncementValue !== 'undefined') {
+              const subscribeStatus = !!subscribeAnnouncementValue;
+              Taro.setStorageSync('subscribeAnnouncement', subscribeStatus);
+              setSubscribeAnnouncement(subscribeStatus);
+            }
             
             // 单独保存 userId 供订阅等功能使用
             if (userId) {

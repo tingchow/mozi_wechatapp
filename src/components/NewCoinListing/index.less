@@ -125,6 +125,13 @@
   margin-right: 0;
 }
 
+/* 单个项目时占满剩余空间 */
+.coin-item.single {
+  width: calc(100vw - 68px); // 减去页面左右padding(24px*2) + 左右margin(10px*2)
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 /* 加载状态 */
 .loading-state {
   display: flex;

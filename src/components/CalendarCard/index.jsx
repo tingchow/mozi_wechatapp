@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import IconFont from '../iconfont';
 import './index.less';
@@ -19,6 +19,11 @@ export const CalendarCard = (props) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isToggleOn, setIsToggleOn] = useState(defaultToggle);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // 监听 defaultToggle 的变化，同步更新内部状态
+  useEffect(() => {
+    setIsToggleOn(defaultToggle);
+  }, [defaultToggle]);
 
   // 处理开关切换（支持异步回调，可阻止切换）
   const handleToggleChange = async () => {
