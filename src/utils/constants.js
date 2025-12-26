@@ -173,6 +173,10 @@ export const Interface = {
   MARK_NOTICES_READ: '/easy/markNoticeAsRead',
   // 获取我的交互数据（新币上线等）
   GET_MY_INTERFACE: '/easy/getMyInterface',
+  
+  // 绑定邮箱
+  SEND_EMAIL_CODE: '/user/sendEmailCode',
+  BIND_EMAIL: '/user/bindEmail',
 
   // 是否展示全部内容
   SHOW_ALL: '/switch/status',

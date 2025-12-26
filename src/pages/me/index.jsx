@@ -2,6 +2,7 @@ import { View, Text, Image, Button, PageContainer, OfficialAccount, ScrollView, 
 import { List, Popup, Grid } from 'antd-mobile';
 import IconFont from '../../components/iconfont';
 import CalendarCard from '../../components/CalendarCard';
+import BindEmailModal from '../../components/BindEmailModal';
 import Taro from '@tarojs/taro';
 import { useState, useEffect, useRef } from 'react';
 import { useLoad, useShareTimeline, useDidShow } from '@tarojs/taro';
@@ -46,6 +47,7 @@ export default function Index() {
   const [selectedDate, setSelectedDate] = useState(null); // 当前选中的日期
   const [calendarEventDates, setCalendarEventDates] = useState([]); // 日历上有事件的日期（日期数字数组）
   const [subscribeAnnouncement, setSubscribeAnnouncement] = useState(false);
+  const [showBindEmailPop, setShowBindEmailPop] = useState(false); // 控制绑定邮箱弹窗
   // 积分数据
   const [pointsData, setPointsData] = useState({
     totalPoints: 0,
@@ -55,6 +57,12 @@ export default function Index() {
 
   const footerList = [
   {
+    key: 'bind-email',
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    text: '绑定邮箱',
+    extra: <IconFont name='right' size={32} color='#ccc' />,
+    callback: () => {bindEmail()}
+  }, {
     key: 'theme',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/skin%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '皮肤中心',
@@ -260,6 +268,18 @@ export default function Index() {
     setPopVis(true);
     setPopType('social');
   };
+  
+  // 绑定邮箱
+  const bindEmail = () => {
+    setShowBindEmailPop(true);
+  };
+  
+  // 绑定邮箱成功回调
+  const handleBindEmailSuccess = (email) => {
+    console.log('邮箱绑定成功:', email);
+    // 可以在这里更新用户信息或做其他操作
+  };
+  
   const attendUs = () => {
     setPopVis(true);
     setPopType('attend');
@@ -1127,6 +1147,13 @@ export default function Index() {
         onClose={() => setDonateVisible(false)}
         image={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/wechat_pay.jpg'}
         text={'如果觉得好用，欢迎打赏支持'}
+      />
+      
+      {/* 绑定邮箱弹窗 */}
+      <BindEmailModal
+        visible={showBindEmailPop}
+        onClose={() => setShowBindEmailPop(false)}
+        onSuccess={handleBindEmailSuccess}
       />
     </View>
   )
