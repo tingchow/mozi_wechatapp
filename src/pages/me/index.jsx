@@ -46,6 +46,12 @@ export default function Index() {
   const [selectedDate, setSelectedDate] = useState(null); // 当前选中的日期
   const [calendarEventDates, setCalendarEventDates] = useState([]); // 日历上有事件的日期（日期数字数组）
   const [subscribeAnnouncement, setSubscribeAnnouncement] = useState(false);
+  // 积分数据
+  const [pointsData, setPointsData] = useState({
+    totalPoints: 0,
+    dailyPoints: 0,
+    currentRank: null
+  });
 
   const footerList = [
   {
@@ -109,6 +115,47 @@ export default function Index() {
     }
   };
 
+  // 获取积分数据
+  const fetchPointsData = async () => {
+    try {
+      const token = Taro.getStorageSync('token');
+      if (!token) return;
+      
+      // 获取积分数据
+      const res = await request({
+        url: Interface.TASK_POINTS,
+        method: 'GET'
+      });
+      
+      if (res?.code === 0 && res?.data) {
+        const data = res.data;
+        
+        // 获取总榜排名
+        const rankRes = await request({
+          url: Interface.TASK_RANKING,
+          method: 'GET',
+          params: {
+            type: 'total',
+            limit: 50
+          }
+        });
+        
+        let currentRank = null;
+        if (rankRes?.code === 0 && rankRes?.data) {
+          currentRank = rankRes.data.currentUserRank ?? null;
+        }
+        
+        setPointsData({
+          totalPoints: data.totalPoints ?? 0,
+          dailyPoints: data.dailyPoints ?? 0,
+          currentRank: currentRank
+        });
+      }
+    } catch (error) {
+      console.error('获取积分数据失败:', error);
+    }
+  };
+
   // 开始轮询未读通知数量
   const startPolling = () => {
     // 清除之前的定时器
@@ -144,6 +191,8 @@ export default function Index() {
           setIsLogin(true);
           // 登录后开始轮询未读通知
           startPolling();
+          // 获取积分数据
+          fetchPointsData();
           // 页面显示时加载当前月份的日历事件数据（只传年月）
           fetchCalendarEvents(new Date());
         } else {
@@ -788,11 +837,15 @@ export default function Index() {
           <View className='pointsInfo' onClick={() => Taro.navigateTo({ url: '/packages/points/index' })}>
             <Text className='pointsTitle'>我的积分</Text>
             <View className='pointsValueRow'>
-              <Text className='pointsValue'>2000</Text>
-              <Text className='pointsDaily'>昨日积分：+100</Text>
+              <Text className='pointsValue'>{pointsData.totalPoints}</Text>
+              <Text className='pointsDaily'>昨日积分：+{pointsData.dailyPoints}</Text>
             </View>
             <Text className='pointsRank'>
-                         当前排名：总榜第 <Text style={{color: '#000', fontWeight: 'bold'}}>23</Text> 名
+              {pointsData.currentRank ? (
+                <>当前排名：总榜第 <Text style={{color: '#000', fontWeight: 'bold'}}>{pointsData.currentRank}</Text> 名</>
+              ) : (
+                '暂无排名'
+              )}
             </Text>
           </View>
           <View className='pointsAction' onClick={() => Taro.navigateTo({ url: '/packages/more/pointsrank/index' })}>
