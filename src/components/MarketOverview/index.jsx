@@ -19,6 +19,49 @@ const MarketOverview = memo(({ data }) => {
   const [smartValue, setSmartValue] = useState('暂无配置');
   const [smartAction, setSmartAction] = useState('去配置');
   const [smartOnClick, setSmartOnClick] = useState(() => () => jump2NoTab('addwarn', { symbol: 'BTC' }));
+  const [calendarValue, setCalendarValue] = useState('暂无公告'); // 公告日历状态
+
+  // 检查当天是否有交易所公告事件
+  useEffect(() => {
+    const checkTodayEvents = async () => {
+      try {
+        const token = Taro.getStorageSync('token');
+        if (!token) {
+          setCalendarValue('暂无公告');
+          return;
+        }
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const timeStr = `${year}-${month}-${day}`; // 具体到当天日期
+
+        const res = await request({
+          url: Interface.GET_MY_INTERFACE,
+          method: 'POST',
+          data: {
+            platform: 'miniapp',
+            limit: 200,
+            time: timeStr
+          }
+        });
+
+        // 如果接口有数据返回，说明今天有公告事件
+        if (res?.success === true && res?.data) {
+          const rawData = Array.isArray(res.data) ? res.data : (res.data?.newCoinListings || res.data?.listings || []);
+          const hasTodayEvent = rawData && rawData.length > 0;
+          setCalendarValue(hasTodayEvent ? '今日有更新' : '暂无公告');
+        } else {
+          setCalendarValue('暂无公告');
+        }
+      } catch (error) {
+        console.error('检查今日公告失败:', error);
+        setCalendarValue('暂无公告');
+      }
+    };
+    checkTodayEvents();
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -147,7 +190,7 @@ const MarketOverview = memo(({ data }) => {
       icon: CalendarIcon, /* 替换为新的图标 */
       iconColor: 'purple',
       title: '公告日历',
-      value: '今日有更新',
+      value: calendarValue, // 使用动态值
       desc: '去订阅', /* 修改描述为去订阅 */
       isActionButton: true, /* 标记为按钮样式 */
       onClick: () => {

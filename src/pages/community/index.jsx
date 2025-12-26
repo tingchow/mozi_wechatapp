@@ -1237,6 +1237,13 @@ export default function CommunityPage() {
     setShowCoinSelector(true)
   }
 
+  // 处理热门话题加载更多
+  const handleLoadMore = () => {
+    if (mainTab === 'hot' && !hotTopicsLoading && !hotTopicsAllLoaded) {
+      fetchHotTopics();
+    }
+  }
+
   // 处理子标签切换
   const handleSubTabChange = (tab) => {
     // 如果切换到不同的标签，重置页码并设置加载状态
@@ -1500,9 +1507,15 @@ export default function CommunityPage() {
       {/* 内容列表 */}
       <View 
         className={`content-list ${mainTab === 'recommend' ? (subTab === 'currency' ? 'with-coin-tabs' : 'with-sub-tabs') : (mainTab === 'news' ? 'with-sub-tabs' : 'topic-sub-tabs')}`}
+        catchtouchmove={mainTab === 'hot' ? 'true' : ''}
       >
         {mainTab === 'hot' ? (
-          <View className="hot-topics">
+          <ScrollView 
+            className="hot-topics"
+            scrollY
+            enableBackToTop
+            onScrollToLower={handleLoadMore}
+          >
             {hotTopics.length > 0 && hotTopics.map((topic, index) => (
               <View key={topic.id} className="hot-topic-item" onClick={() => navigateToTopicInfo(topic.id, topic.name, topic.description)}>
                 <View className={`topic-rank ${index < 3 ? 'medal-rank' : ''}`}>
@@ -1544,7 +1557,7 @@ export default function CommunityPage() {
                 <Text>暂无更多内容</Text>
               </View>
             )}
-          </View>
+          </ScrollView>
         ) : (
           <View>
             {subTab === 'question' && showQuestionButtons && (

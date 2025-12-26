@@ -129,6 +129,7 @@
   .content-list {
     padding-top: 90px;
     transition: padding-top 0.3s ease;
+    background: #EEF0F3;
   
     &.with-sub-tabs {
       padding-top: 240px; /* 主导航图片(120px) + 子导航容器高度 */
@@ -144,6 +145,7 @@
 
     &.topic-sub-tabs {
       padding-top: 260px;
+      background: #EEF0F3;
     }
 
     .empty-state {
@@ -162,16 +164,18 @@
       border-radius: 40px 40px 0 0;
       overflow: hidden;
       background: #fff;
-      min-height: 100vh;
+      height: calc(100vh - 260px); /* 减去顶部导航和搜索栏的高度 */
+      box-sizing: border-box;
     }
 
     .hot-topic-item {
       display: flex;
       align-items: stretch;
-      padding: 30px ;
+      padding: 30px;
       border-bottom: 1px solid #f5f5f5;
       background: #fff;
       min-height: 120px;
+      box-sizing: border-box;
 
       .topic-rank {
         width: 42px;
@@ -836,6 +840,7 @@
 .community-container.hot-mode {
   padding-left: 0;
   padding-right: 0;
+  background: #EEF0F3;
 }
 
 .hot-search-bar {
