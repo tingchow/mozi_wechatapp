@@ -58,7 +58,7 @@ export default function Index() {
   const footerList = [
   {
     key: 'bind-email',
-    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
+    icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/mail%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '绑定邮箱',
     extra: <IconFont name='right' size={32} color='#ccc' />,
     callback: () => {bindEmail()}

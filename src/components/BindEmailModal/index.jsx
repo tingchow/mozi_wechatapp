@@ -197,6 +197,47 @@ const BindEmailModal = ({ visible, onClose, onSuccess }) => {
           <View className='bind-email-tip'>
             绑定邮箱后，可以在Telegram端使用相同账号登录
           </View>
+          
+          {/* 添加链接区域 */}
+          <View className='bind-email-links'>
+            <View 
+              className='bind-email-link'
+              onClick={() => {
+                Taro.setClipboardData({
+                  data: 'https://t.me/Moziinovations_bot',
+                  success: () => {
+                    Taro.showToast({
+                      title: 'Tg链接已复制',
+                      icon: 'success',
+                      duration: 2000
+                    });
+                  }
+                });
+              }}
+            >
+              <Text className='link-icon'></Text>
+              <Text className='link-text'>Telegram Bot</Text>
+            </View>
+            
+            <View 
+              className='bind-email-link'
+              onClick={() => {
+                Taro.setClipboardData({
+                  data: 'https://moziinnovations-production.up.railway.app/',
+                  success: () => {
+                    Taro.showToast({
+                      title: '官网链接已复制',
+                      icon: 'success',
+                      duration: 2000
+                    });
+                  }
+                });
+              }}
+            >
+              <Text className='link-icon'></Text>
+              <Text className='link-text'>官方网站</Text>
+            </View>
+          </View>
 
           <View className='bind-email-input-group'>
             <Text className='bind-email-label'>邮箱地址</Text>
