@@ -268,6 +268,10 @@ function PointsPage() {
           if (task.taskCode === 'TWITTER') return false
           if (task.taskCode === 'FOLLOW_TWITTER') return false
           
+          // 过滤完成视频学习任务
+          if (task.taskCode === 'VIDEO') return false
+          if (task.taskCode === 'VIDEO_LEARN') return false
+          
           return true
         })
         
@@ -1375,7 +1379,13 @@ function PointsPage() {
             <Image src={imgPointAlert} className='bottom-icon' mode='aspectFit' />
           </View>
 
-          <View className='bottom-btn' onClick={() => Taro.navigateTo({ url: '/packages/kyc/index' })}>
+          <View className='bottom-btn' onClick={() => {
+            Taro.showToast({
+              title: '敬请期待',
+              icon: 'none',
+              duration: 2000
+            })
+          }}>
             <View className='bottom-btn-content'>
               <Text className='bottom-btn-title'>认证</Text>
               <Text className='bottom-btn-subtitle'>certification</Text>

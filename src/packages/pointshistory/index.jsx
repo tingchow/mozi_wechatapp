@@ -102,75 +102,101 @@ export default function PointsHistoryPage() {
     console.log('🔍 [积分历史] 开始加载数据...')
     setLoading(true)
     
-    const res = await request({
-      url: Interface.TASK_POINTS_HISTORY,
-      method: 'GET',
-      data: {
-        page: page,
-        limit: 20
+    try {
+      const res = await request({
+        url: `${Interface.TASK_POINTS_HISTORY}?page=${page}&limit=20`,
+        method: 'GET'
+      })
+      
+      console.log('🔍 [积分历史] 接口返回:', res)
+      
+      if (res?.code === 0 && res?.data) {
+        const newList = res.data.list || res.data || []
+        console.log('🔍 [积分历史] 数据列表长度:', newList.length)
+        if (newList.length > 0) {
+          console.log('🔍 [积分历史] 第一条数据示例:', JSON.stringify(newList[0], null, 2))
+        }
+        
+        setHistoryList(newList)
+        
+        // 判断是否还有更多数据
+        const total = res.data.total || 0
+        setHasMore(newList.length < total)
+        
+        console.log('✅ [积分历史] 加载成功，共', newList.length, '条记录')
+      } else {
+        console.log('⚠️ [积分历史] 接口返回非成功状态:', res)
+        setHistoryList([])
       }
-    })
-    
-    console.log('🔍 [积分历史] 接口返回:', res)
-    
-    if (res?.code === 0 && res?.data) {
-      const newList = res.data.list || res.data || []
-      setHistoryList(newList)
-      
-      // 判断是否还有更多数据
-      const total = res.data.total || 0
-      setHasMore(newList.length < total)
-      
-      console.log('✅ [积分历史] 加载成功，共', newList.length, '条记录')
-    } else {
-      console.log('⚠️ [积分历史] 接口返回非成功状态:', res)
+    } catch (error) {
+      console.error('❌ [积分历史] 加载失败:', error)
       setHistoryList([])
+    } finally {
+      setLoading(false)
     }
-    
-    setLoading(false)
   }
 
 
   // 格式化时间
   const formatTime = (timeStr) => {
-    const now = new Date()
-    const time = new Date(timeStr)
-    const diff = now - time
+    if (!timeStr) return '-'
     
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
-    
-    if (minutes < 1) return '刚刚'
-    if (minutes < 60) return `${minutes}分钟前`
-    if (hours < 24) return `${hours}小时前`
-    if (days < 7) return `${days}天前`
-    
-    return timeStr.split(' ')[0]
+    try {
+      const now = new Date()
+      const time = new Date(timeStr)
+      const diff = now - time
+      
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(diff / 3600000)
+      const days = Math.floor(diff / 86400000)
+      
+      if (minutes < 1) return '刚刚'
+      if (minutes < 60) return `${minutes}分钟前`
+      if (hours < 24) return `${hours}小时前`
+      if (days < 7) return `${days}天前`
+      
+      return timeStr.split(' ')[0]
+    } catch (error) {
+      console.error('格式化时间失败:', error)
+      return timeStr || '-'
+    }
   }
 
-  // 根据 taskCode 获取类型图标（与原项目保持一致）
+  // 根据 taskCode 获取类型图标（与积分页面保持一致）
   const getTypeIcon = (taskCode) => {
-    const icons = {
-      // 每日任务图标
+    // 活动任务图标映射
+    const taskIcons = {
+      'REGISTER': `${CDN_BASE}/contact_person@2x.png`,
+      'WECHAT': `${CDN_BASE}/like@2x.png`,
+      'COMMUNITY': `${CDN_BASE}/social_group@2x.png`,
+      'EARLY_BIRD': `${CDN_BASE}/twitter@2x.png`,
+      'ALARM': `${CDN_BASE}/set_alert@2x.png`,
+      'VIDEO': `${CDN_BASE}/video@2x.png`,
+    }
+    
+    // 每日任务图标映射
+    const dailyTaskIcons = {
       'DAILY_LIKE': `${CDN_BASE}/glove_praise@2x.png`,
       'POST': `${CDN_BASE}/paper_airplane@2x.png`,
       'RECEIVE_LIKE': `${CDN_BASE}/%20no_glove_praise@2x.png`,
       'REPLY': `${CDN_BASE}/notification_1@2x.png`,
       'POST_RECEIVE_REPLY': `${CDN_BASE}/notification_2@2x.png`,
       'DAILY_LOGIN': `${CDN_BASE}/contact_person@2x.png`,
-      // 活动任务图标
-      'INVITE_USER': `${CDN_BASE}/invite@2x.png`,
-      'REGISTER': `${CDN_BASE}/contact_person@2x.png`,
-      'FOLLOW_TWITTER': `${CDN_BASE}/like@2x.png`,
-      'JOIN_COMMUNITY': `${CDN_BASE}/social_group@2x.png`,
-      'COMMUNITY': `${CDN_BASE}/social_group@2x.png`,
-      'SET_ALARM': `${CDN_BASE}/set_alert@2x.png`,
-      'ALARM': `${CDN_BASE}/set_alert@2x.png`,
-      'VIDEO_LEARN': `${CDN_BASE}/video@2x.png`,
-      'VIDEO': `${CDN_BASE}/video@2x.png`,
     }
-    return icons[taskCode] || `${CDN_BASE}/glove_praise@2x.png`
+    
+    // 其他任务图标
+    const otherIcons = {
+      'INVITE_USER': `${CDN_BASE}/invite@2x.png`,
+      'FOLLOW_TWITTER': `${CDN_BASE}/twitter@2x.png`,
+      'JOIN_COMMUNITY': `${CDN_BASE}/social_group@2x.png`,
+      'SET_ALARM': `${CDN_BASE}/set_alert@2x.png`,
+      'VIDEO_LEARN': `${CDN_BASE}/video@2x.png`,
+    }
+    
+    // 合并所有图标映射
+    const allIcons = { ...taskIcons, ...dailyTaskIcons, ...otherIcons }
+    
+    return allIcons[taskCode] || `${CDN_BASE}/glove_praise@2x.png`
   }
 
   return (
@@ -187,30 +213,40 @@ export default function PointsHistoryPage() {
           </View>
         )}
 
-        {historyList.map(item => (
-          <View key={item.id} className='history-item'>
-            <View className='item-icon'>
-              <Image src={getTypeIcon(item.type)} className='icon-img' mode='aspectFit' />
-            </View>
-            
-            <View className='item-content'>
-              <View className='item-header'>
-                <Text className='item-title'>{item.title}</Text>
-                <View className='item-points'>
-                  <Text className={`points-text ${item.status === 'add' ? 'add' : 'sub'}`}>
-                    {item.status === 'add' ? '+' : '-'}{item.points}
-                  </Text>
-                  <Image src={imgCoinIcon} className='coin-icon' mode='aspectFit' />
-                </View>
+        {historyList.map(item => {
+          // 判断是增加还是减少积分
+          // 默认为增加，只有明确标记为减少时才显示减号
+          const isAdd = item.changeType !== 'SUB' && 
+                        item.changeType !== 'SUBTRACT' && 
+                        item.status !== 'sub' && 
+                        item.status !== 'subtract' &&
+                        (item.changeAmount || item.points || 0) >= 0
+          
+          return (
+            <View key={item.id} className='history-item'>
+              <View className='item-icon'>
+                <Image src={getTypeIcon(item.taskCode || item.type)} className='icon-img' mode='aspectFit' />
               </View>
               
-              <View className='item-footer'>
-                <Text className='item-type'>{item.typeName}</Text>
-                <Text className='item-time'>{formatTime(item.createTime)}</Text>
+              <View className='item-content'>
+                <View className='item-header'>
+                  <Text className='item-title'>{item.taskName || item.title || '未知任务'}</Text>
+                  <View className='item-points'>
+                    <Text className={`points-text ${isAdd ? 'add' : 'sub'}`}>
+                      {isAdd ? '+' : '-'}{Math.abs(item.points || item.changeAmount || 0)}
+                    </Text>
+                    <Image src={imgCoinIcon} className='coin-icon' mode='aspectFit' />
+                  </View>
+                </View>
+                
+                <View className='item-footer'>
+                  <Text className='item-type'>{item.taskType || item.typeName || '任务'}</Text>
+                  <Text className='item-time'>{formatTime(item.createTime || item.createdAt)}</Text>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
+          )
+        })}
 
         {loading && (
           <View className='loading-more'>
