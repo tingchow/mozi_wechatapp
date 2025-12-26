@@ -84,6 +84,16 @@ export default function ThemeCenter() {
 
   // 选择主题
   const handleSelectTheme = async (themeId) => {
+    // 如果不是默认主题，显示敬请期待
+    if (themeId !== 'default') {
+      Taro.showToast({
+        title: '敬请期待',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
     // 找到对应的主题配置
     const selectedTheme = themes.find(theme => theme.id === themeId);
     if (!selectedTheme) return;

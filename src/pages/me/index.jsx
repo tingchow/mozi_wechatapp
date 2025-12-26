@@ -40,7 +40,7 @@ export default function Index() {
   // 这里通过布尔值来控制日历显示，若为 false，我们在布局末尾插入一个占位 flex 项将按钮推到底部。
   const [showThemeOption, setShowThemeOption] = useState(true); // 控制皮肤中心选项的显示/隐藏
   const [showSocialOption, setShowSocialOption] = useState(true); // 控制社交媒体选项的显示/隐藏
-  const [showContactPop, setShowContactPop] = useState(false); // 控制“联系我们”弹层显示/隐藏（默认隐藏）
+  const [showContactPop, setShowContactPop] = useState(true); // 控制“联系我们”弹层显示/隐藏（默认显示）
   const [newCoinListings, setNewCoinListings] = useState([]); // 新币上线数据
   const [newCoinLoading, setNewCoinLoading] = useState(false); // 新币上线加载状态
   const [selectedDate, setSelectedDate] = useState(null); // 当前选中的日期
@@ -65,13 +65,13 @@ export default function Index() {
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/me-contact%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '联系我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
-    callback: () => {comingSoon()}
+    callback: () => {contact()}
   }, {
     key: 'social',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/social%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
     text: '到社交媒体找我们',
     extra: <IconFont name='right' size={32} color='#ccc' />,
-    callback: () => {comingSoon()}
+    callback: () => {social()}
   }, {
     key: 'about',
     icon: <Image src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/me_slices/about%402x.png'} style={{width: '44px', height: '44px'}} mode="aspectFit" />,
@@ -255,6 +255,10 @@ export default function Index() {
       setPopVis(true);
       setPopType('contact');
     }
+  };
+  const social = () => {
+    setPopVis(true);
+    setPopType('social');
   };
   const attendUs = () => {
     setPopVis(true);
@@ -1003,6 +1007,78 @@ export default function Index() {
               // style='width: 300px;height: 100px;background: #fff;'
               src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/wechat_account.jpg'
             />
+          </View>
+          )
+        }
+        {
+          popType === 'social' && (
+          <View className='popContainer socialPopContainer'>
+            <Text className='contactTitle'>到社交媒体找我们</Text>
+            <View className='socialGrid'>
+              <View className='socialItem' onClick={() => {
+                Taro.setClipboardData({
+                  data: 'https://x.com/Innovation56171',
+                  success: () => {
+                    Taro.showToast({
+                      title: '链接已复制',
+                      icon: 'success'
+                    })
+                  }
+                })
+              }}>
+                <View className='iconWrapper' style='border-color: #000000;'>
+                  <Image 
+                    className='socialIcon iconTwitter'
+                    mode='aspectFit'
+                    src='https://mozi-web-develop.up.railway.app/icons/x-logo.svg'
+                  />
+                </View>
+                <Text className='socialName'>Twitter / X</Text>
+              </View>
+              
+              <View className='socialItem' onClick={() => {
+                Taro.setClipboardData({
+                  data: 'https://t.me/MoziInnovations',
+                  success: () => {
+                    Taro.showToast({
+                      title: '链接已复制',
+                      icon: 'success'
+                    })
+                  }
+                })
+              }}>
+                <View className='iconWrapper' style='border-color: #2AABEE;'>
+                  <Image 
+                    className='socialIcon iconLarge'
+                    mode='aspectFit'
+                    src='https://mozi-web-develop.up.railway.app/icons/telegram-group.svg'
+                  />
+                </View>
+                <Text className='socialName'>Telegram群组</Text>
+              </View>
+              
+              <View className='socialItem' onClick={() => {
+                Taro.setClipboardData({
+                  data: 'https://xhslink.com/m/60xi0L4Wsea',
+                  success: () => {
+                    Taro.showToast({
+                      title: '链接已复制',
+                      icon: 'success'
+                    })
+                  }
+                })
+              }}>
+                <View className='iconWrapper' style='border-color: #FF2442;'>
+                  <Image 
+                    className='socialIcon iconLarge'
+                    mode='aspectFit'
+                    src='https://mozi-web-develop.up.railway.app/icons/xiaohongshu.svg'
+                  />
+                </View>
+                <Text className='socialName'>小红书</Text>
+              </View>
+            </View>
+            <Text className='socialTip'>点击图标复制链接或账号</Text>
           </View>
           )
         }
