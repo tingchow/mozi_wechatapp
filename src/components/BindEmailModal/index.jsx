@@ -6,16 +6,11 @@ import { Interface } from '../../utils/constants';
 import IconFont from '../iconfont';
 import './index.less';
 
-/**
- * 绑定邮箱弹窗组件
- * @param {boolean} visible - 是否显示弹窗
- * @param {function} onClose - 关闭弹窗回调
- * @param {function} onSuccess - 绑定成功回调
- */
-export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
+const BindEmailModal = ({ visible, onClose, onSuccess }) => {
   const [emailInput, setEmailInput] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isBinding, setIsBinding] = useState(false); // 添加绑定中的状态
   const [countdown, setCountdown] = useState(0);
 
   // 倒计时效果
@@ -27,15 +22,6 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
       return () => clearTimeout(timer);
     }
   }, [countdown]);
-
-  // 关闭弹窗时清空输入
-  useEffect(() => {
-    if (!visible) {
-      setEmailInput('');
-      setVerificationCode('');
-      setCountdown(0);
-    }
-  }, [visible]);
 
   // 发送验证码
   const sendVerificationCode = async () => {
@@ -60,16 +46,31 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
     }
 
     setIsSendingCode(true);
+    Taro.showLoading({
+      title: '发送中...',
+      mask: true
+    });
+    
     try {
+      // 获取当前语言设置，默认为中文
+      const language = 'zh'; // 小程序默认使用中文
+
+      console.log('准备发送验证码，邮箱:', emailInput, '语言:', language);
+
       const res = await request({
         url: Interface.SEND_EMAIL_CODE,
         method: 'POST',
         data: {
-          email: emailInput
+          email: emailInput,
+          language: language
         }
       });
 
-      if (res?.code === 0) {
+      console.log('发送验证码响应:', res);
+
+      Taro.hideLoading();
+
+      if (res?.code === 200 || res?.success) {
         Taro.showToast({
           title: '验证码已发送',
           icon: 'success',
@@ -87,6 +88,7 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
       }
     } catch (error) {
       console.error('发送验证码失败:', error);
+      Taro.hideLoading();
       Taro.showToast({
         title: '发送失败',
         icon: 'none',
@@ -117,6 +119,12 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
       return;
     }
 
+    setIsBinding(true);
+    Taro.showLoading({
+      title: '绑定中...',
+      mask: true
+    });
+
     try {
       const res = await request({
         url: Interface.BIND_EMAIL,
@@ -127,7 +135,9 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
         }
       });
 
-      if (res?.code === 0) {
+      Taro.hideLoading();
+
+      if (res?.code === 0 || res?.code === 200 || res?.success) {
         Taro.showToast({
           title: '绑定成功',
           icon: 'success',
@@ -135,10 +145,12 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
         });
 
         // 调用成功回调
-        onSuccess && onSuccess(emailInput);
+        if (onSuccess) {
+          onSuccess(emailInput);
+        }
 
-        // 关闭弹窗
-        onClose && onClose();
+        // 关闭弹窗并清空输入
+        handleClose();
       } else {
         Taro.showToast({
           title: res?.message || '绑定失败',
@@ -148,21 +160,37 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
       }
     } catch (error) {
       console.error('绑定邮箱失败:', error);
+      Taro.hideLoading();
       Taro.showToast({
         title: '绑定失败',
         icon: 'none',
         duration: 2000
       });
+    } finally {
+      setIsBinding(false);
+    }
+  };
+
+  // 关闭弹窗并清空状态
+  const handleClose = () => {
+    setEmailInput('');
+    setVerificationCode('');
+    setCountdown(0);
+    if (onClose) {
+      onClose();
     }
   };
 
   if (!visible) return null;
 
   return (
-    <View className='bind-email-mask' onClick={onClose}>
+    <View className='bind-email-mask' onClick={handleClose}>
       <View className='bind-email-popup' onClick={(e) => e.stopPropagation()}>
         <View className='bind-email-header'>
           <Text className='bind-email-title'>绑定邮箱</Text>
+          <View className='bind-email-close' onClick={handleClose}>
+            <IconFont name='close' size={40} color='#999' />
+          </View>
         </View>
 
         <View className='bind-email-content'>
@@ -203,11 +231,15 @@ export const BindEmailModal = ({ visible, onClose, onSuccess }) => {
         </View>
 
         <View className='bind-email-footer'>
-          <Button className='bind-email-cancel-btn' onClick={onClose}>
+          <Button className='bind-email-cancel-btn' onClick={handleClose}>
             取消
           </Button>
-          <Button className='bind-email-confirm-btn' onClick={confirmBindEmail}>
-            确认绑定
+          <Button 
+            className='bind-email-confirm-btn' 
+            onClick={confirmBindEmail}
+            disabled={isBinding}
+          >
+            {isBinding ? '绑定中...' : '确认绑定'}
           </Button>
         </View>
       </View>

@@ -277,6 +277,11 @@ export default function Index() {
   // 绑定邮箱成功回调
   const handleBindEmailSuccess = (email) => {
     console.log('邮箱绑定成功:', email);
+    Taro.showToast({
+      title: '绑定成功',
+      icon: 'success',
+      duration: 2000
+    });
     // 可以在这里更新用户信息或做其他操作
   };
   

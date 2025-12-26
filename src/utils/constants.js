@@ -175,7 +175,7 @@ export const Interface = {
   GET_MY_INTERFACE: '/easy/getMyInterface',
   
   // 绑定邮箱
-  SEND_EMAIL_CODE: '/user/sendEmailCode',
+  SEND_EMAIL_CODE: '/email/sendVerificationCode',
   BIND_EMAIL: '/user/bindEmail',
 
   // 是否展示全部内容

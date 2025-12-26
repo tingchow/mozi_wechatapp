@@ -13,59 +13,63 @@
 }
 
 .bind-email-popup {
-  width: 580px;
+  width: 600px;
   background: #fff;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
 }
 
 .bind-email-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 28px 28px 20px;
+  padding: 32px 32px 24px;
   border-bottom: 1px solid #f5f5f5;
+  position: relative;
 }
 
 .bind-email-title {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 600;
   color: #333;
+  text-align: center;
 }
 
 .bind-email-close {
+  position: absolute;
+  right: 32px;
   cursor: pointer;
 }
 
 .bind-email-content {
-  padding: 28px;
+  padding: 32px;
 }
 
 .bind-email-tip {
-  font-size: 24px;
+  font-size: 26px;
   color: #666;
   line-height: 1.5;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .bind-email-input-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .bind-email-label {
   display: block;
-  font-size: 26px;
+  font-size: 28px;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .bind-email-input {
   width: 100%;
-  height: 72px;
+  height: 68px;
   background: #f5f5f5;
   border-radius: 10px;
-  padding: 0 20px;
-  font-size: 26px;
+  padding: 0 24px;
+  font-size: 28px;
   box-sizing: border-box;
 }
 
@@ -102,7 +106,7 @@
 
 .bind-email-footer {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   padding: 20px 32px 28px;
   border-top: 1px solid #f5f5f5;
 }
@@ -131,4 +135,9 @@
 .bind-email-confirm-btn {
   background: #11B787;
   color: #fff;
+  
+  &[disabled] {
+    background: #ccc;
+    color: #999;
+  }
 }
