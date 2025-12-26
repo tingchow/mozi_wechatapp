@@ -1,4 +1,4 @@
-import { View, Text, Input, Button } from '@tarojs/components';
+import { View, Text, Input, Button, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useState, useEffect } from 'react';
 import { request } from '../../utils/request';
@@ -215,7 +215,11 @@ const BindEmailModal = ({ visible, onClose, onSuccess }) => {
                 });
               }}
             >
-              <Text className='link-icon'></Text>
+              <Image 
+                className='link-icon-img' 
+                src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/bind_email_telegram.png'
+                mode='aspectFit'
+              />
               <Text className='link-text'>Telegram Bot</Text>
             </View>
             
@@ -234,7 +238,11 @@ const BindEmailModal = ({ visible, onClose, onSuccess }) => {
                 });
               }}
             >
-              <Text className='link-icon'></Text>
+              <Image 
+                className='link-icon-img' 
+                src='https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/bind_email_internet.png'
+                mode='aspectFit'
+              />
               <Text className='link-text'>官方网站</Text>
             </View>
           </View>
