@@ -187,7 +187,7 @@ const BindEmailModal = ({ visible, onClose, onSuccess }) => {
     <View className='bind-email-mask' onClick={handleClose}>
       <View className='bind-email-popup' onClick={(e) => e.stopPropagation()}>
         <View className='bind-email-header'>
-          <Text className='bind-email-title'>绑定邮箱</Text>
+          <Text className='bind-email-title'>更多端</Text>
           <View className='bind-email-close' onClick={handleClose}>
             <IconFont name='close' size={40} color='#999' />
           </View>
@@ -195,7 +195,7 @@ const BindEmailModal = ({ visible, onClose, onSuccess }) => {
 
         <View className='bind-email-content'>
           <View className='bind-email-tip'>
-            绑定邮箱后，可以在Telegram端使用相同账号登录
+            体验更多端，随时随地使用Mozi
           </View>
           
           {/* 添加链接区域 */}
@@ -246,49 +246,14 @@ const BindEmailModal = ({ visible, onClose, onSuccess }) => {
               <Text className='link-text'>官方网站</Text>
             </View>
           </View>
-
-          <View className='bind-email-input-group'>
-            <Text className='bind-email-label'>邮箱地址</Text>
-            <Input
-              className='bind-email-input'
-              type='text'
-              placeholder='请输入邮箱地址'
-              value={emailInput}
-              onInput={(e) => setEmailInput(e.detail.value)}
-            />
-          </View>
-
-          <View className='bind-email-input-group'>
-            <Text className='bind-email-label'>验证码</Text>
-            <View className='bind-email-code-row'>
-              <Input
-                className='bind-email-input bind-email-code-input'
-                type='text'
-                placeholder='请输入验证码'
-                value={verificationCode}
-                onInput={(e) => setVerificationCode(e.detail.value)}
-              />
-              <Button
-                className='bind-email-send-btn'
-                disabled={isSendingCode || countdown > 0}
-                onClick={sendVerificationCode}
-              >
-                {countdown > 0 ? `${countdown}s` : '发送验证码'}
-              </Button>
-            </View>
-          </View>
         </View>
 
         <View className='bind-email-footer'>
-          <Button className='bind-email-cancel-btn' onClick={handleClose}>
-            取消
-          </Button>
           <Button 
-            className='bind-email-confirm-btn' 
-            onClick={confirmBindEmail}
-            disabled={isBinding}
+            className='bind-email-confirm-btn bind-email-confirm-btn-full' 
+            onClick={handleClose}
           >
-            {isBinding ? '绑定中...' : '确认绑定'}
+            知道了
           </Button>
         </View>
       </View>
