@@ -19,6 +19,20 @@ export default function PointsRank() {
   // 默认头像
   const defaultAvatar = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png';
 
+  // 智能返回函数
+  const handleBack = () => {
+    const pages = Taro.getCurrentPages();
+    if (pages.length > 1) {
+      // 有历史记录，正常返回
+      Taro.navigateBack();
+    } else {
+      // 没有历史记录，返回首页
+      Taro.switchTab({
+        url: '/pages/index/index'
+      });
+    }
+  };
+
   // 获取排行榜数据（与原项目保持一致）
   const fetchRankData = useCallback(async (type) => {
     try {
@@ -100,6 +114,16 @@ export default function PointsRank() {
   // 获取用户信息（包括邀请码、头像、昵称）
   const fetchUserInfo = useCallback(async () => {
     try {
+      // 先从本地存储获取用户信息作为备用
+      const localUserInfo = Taro.getStorageSync('userInfo');
+      if (localUserInfo) {
+        setUserInfo({
+          avatar: localUserInfo.avatar || null,
+          nickname: localUserInfo.nickName || localUserInfo.nickname || null
+        });
+      }
+      
+      // 再从接口获取最新信息
       const res = await request({
         url: Interface.USER_DATA_INFO,
         method: 'GET'
@@ -109,8 +133,8 @@ export default function PointsRank() {
           setInviteCode(res.data.inviteCode);
         }
         setUserInfo({
-          avatar: res.data.avatar || null,
-          nickname: res.data.nickName || res.data.nickname || null
+          avatar: res.data.avatar || localUserInfo?.avatar || null,
+          nickname: res.data.nickName || res.data.nickname || localUserInfo?.nickName || localUserInfo?.nickname || null
         });
       }
     } catch (error) {
@@ -383,7 +407,7 @@ export default function PointsRank() {
   const myRank = currentUserInfo.rank ? {
     rank: currentUserInfo.rank,
     points: currentUserInfo.points ?? 0,
-    name: userInfo.nickname || '我',
+    name: '我',
     avatar: userInfo.avatar || defaultAvatar
   } : listData.find((i) => i.isMe);
   
@@ -395,7 +419,7 @@ export default function PointsRank() {
       <View className='header-bg'>
         <View className='header-content'>
           <View className='top-row'>
-            <View className='back-arrow' onClick={() => Taro.navigateBack()}>
+            <View className='back-arrow' onClick={handleBack}>
               <Image 
                 className='back-arrow-icon'
                 src={'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/left-arrow.png'}
