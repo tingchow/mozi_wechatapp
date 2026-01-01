@@ -21,6 +21,10 @@ function App({ children }) {
       Taro.showTabBar();
     } else {
       Taro.hideTabBar();
+      // 如果返回 false，跳转到社区页
+      Taro.switchTab({
+        url: '/pages/community/index'
+      });
     }
     console.log('App launched.')
     console.log('🚀 全局 WebSocket 连接将在应用启动时建立')
