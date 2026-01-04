@@ -25,12 +25,10 @@ function App({ children }) {
       Taro.showTabBar();
     } else {
       Taro.hideTabBar();
-      // 如果返回 false，延迟跳转到宠物猫页面
-      setTimeout(() => {
-        Taro.reLaunch({
-          url: '/packages/petcat/index'
-        });
-      }, 100);
+      // 如果返回 false，跳转到会员中心页面
+      Taro.reLaunch({
+        url: '/packages/member/index'
+      });
     }
     console.log('App launched.')
     console.log('🚀 全局 WebSocket 连接将在应用启动时建立')

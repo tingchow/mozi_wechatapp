@@ -170,8 +170,8 @@ export default defineAppConfig({
       ]
     },
     {
-      root: "packages/petcat",
-      name: "petcat",
+      root: "packages/member",
+      name: "member",
       pages: [
         "index"
       ]

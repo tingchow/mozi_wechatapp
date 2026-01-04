@@ -18,6 +18,7 @@ import { Popup } from '../../components/PopLogin'
 import { MarketDistribution } from '../../components/MarketDistribution';
 import { WelcomePopup } from '../../components/WelcomePopup';
 import FloatingRobot from '../../components/FloatingRobot';
+import PageMask from '../../components/PageMask';
 import { jump2Detail, jump2Market, jump2List, jump2NoTab } from '../../utils/core';
 import './index.less';
 
@@ -98,6 +99,9 @@ export default function Index() {
   
   // 欢迎弹窗状态（每次进入首页都显示）
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  
+  // 页面遮罩层状态（当 showAll 为 false 时显示）
+  const [showPageMask, setShowPageMask] = useState(false);
 
   const handleCloseNotice = () => {
     setShowNotice(false);
@@ -226,6 +230,14 @@ export default function Index() {
   });
 
   useDidShow(() => {
+    // 检查 showAll 状态，如果为 false 则显示遮罩层
+    const showAllStatus = Taro.getStorageSync('showAllStatus');
+    if (showAllStatus === false) {
+      setShowPageMask(true);
+    } else {
+      setShowPageMask(false);
+    }
+    
     needLoop.current = true;
     allRequest();
     
@@ -769,6 +781,9 @@ export default function Index() {
         onClose={() => setShowWelcomePopup(false)}
         onConfirm={() => {}}
       />
+      
+      {/* 页面遮罩层（当 showAll 为 false 时显示） */}
+      <PageMask visible={showPageMask}/>
     </View>
   )
 }

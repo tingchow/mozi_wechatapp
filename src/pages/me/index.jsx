@@ -189,6 +189,15 @@ export default function Index() {
   };
 
   useDidShow(() => {
+    // 检查 showAll 状态，如果为 false 则重定向到会员中心页面
+    const showAllStatus = Taro.getStorageSync('showAllStatus');
+    if (showAllStatus === false) {
+      Taro.reLaunch({
+        url: '/packages/member/index'
+      });
+      return;
+    }
+    
     // console.log('Page loaded.')
     Taro.getStorage({
       key: 'token',

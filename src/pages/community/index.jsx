@@ -546,6 +546,15 @@ export default function CommunityPage() {
 
   // 监听页面显示
   Taro.useDidShow(() => {
+    // 检查 showAll 状态，如果为 false 则重定向到会员中心页面
+    const showAllStatus = Taro.getStorageSync('showAllStatus');
+    if (showAllStatus === false) {
+      Taro.reLaunch({
+        url: '/packages/member/index'
+      });
+      return;
+    }
+    
     // 设置当前页面导航栏背景色（仅社区页生效）
     try {
       Taro.setNavigationBarColor({
