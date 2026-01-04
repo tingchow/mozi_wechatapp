@@ -168,6 +168,13 @@ export default defineAppConfig({
       pages: [
         "index"
       ]
+    },
+    {
+      root: "packages/petcat",
+      name: "petcat",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {

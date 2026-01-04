@@ -17,14 +17,20 @@ function App({ children }) {
   useLaunch(async () => {
     const showAll = await isShowAll();
     console.log('showAll', showAll);
+    
+    // 保存状态到本地存储
+    Taro.setStorageSync('showAllStatus', showAll);
+    
     if (showAll == true) {
       Taro.showTabBar();
     } else {
       Taro.hideTabBar();
-      // 如果返回 false，跳转到社区页
-      Taro.switchTab({
-        url: '/pages/community/index'
-      });
+      // 如果返回 false，延迟跳转到宠物猫页面
+      setTimeout(() => {
+        Taro.reLaunch({
+          url: '/packages/petcat/index'
+        });
+      }, 100);
     }
     console.log('App launched.')
     console.log('🚀 全局 WebSocket 连接将在应用启动时建立')
