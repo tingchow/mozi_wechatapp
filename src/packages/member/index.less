@@ -43,17 +43,53 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
 }
 
+.user-header-btn {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  text-align: left;
+}
+
+.user-header-btn::after {
+  border: none;
+}
+
 .user-header {
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-right: 24rpx;
 }
 
 .user-avatar {
   width: 120rpx;
   height: 120rpx;
   border-radius: 60rpx;
-  margin-right: 24rpx;
   border: 4rpx solid #11B787;
+}
+
+.avatar-edit-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36rpx;
+  height: 36rpx;
+  background: #11B787;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid #fff;
+}
+
+.edit-icon {
+  font-size: 18rpx;
 }
 
 .user-info {
@@ -248,4 +284,118 @@
   font-size: 24rpx;
   color: #999;
   line-height: 1.6;
+}
+
+
+/* 编辑用户信息弹窗 */
+.edit-modal {
+  width: 100%;
+}
+
+.modal-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+.edit-section {
+  margin-bottom: 40rpx;
+}
+
+.edit-label {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.avatar-edit-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32rpx;
+  background: #F7F8FA;
+  border-radius: 16rpx;
+  cursor: pointer;
+}
+
+.edit-avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 80rpx;
+  margin-bottom: 16rpx;
+  border: 4rpx solid #11B787;
+}
+
+.change-avatar-btn {
+  padding: 12rpx 32rpx;
+  background: #11B787;
+  border-radius: 24rpx;
+}
+
+.change-text {
+  font-size: 24rpx;
+  color: #fff;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 88rpx;
+  background: #F7F8FA;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.nickname-input:focus {
+  border-color: #11B787;
+  background: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 48rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #F7F8FA;
+  color: #666;
+}
+
+.cancel-btn .btn-text {
+  color: #666;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #11B787 0%, #0E9A6F 100%);
+  box-shadow: 0 8rpx 20rpx rgba(17, 183, 135, 0.3);
+}
+
+.confirm-btn .btn-text {
+  color: #fff;
+}
+
+.modal-btn:active {
+  transform: scale(0.95);
 }

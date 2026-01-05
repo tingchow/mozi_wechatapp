@@ -1,6 +1,8 @@
 import { View, Text, Image, Button } from '@tarojs/components';
 import { useState } from 'react';
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useLoad, useDidShow } from '@tarojs/taro';
+import { request } from '../../utils/request';
+import { Interface } from '../../utils/constants';
 import './index.less';
 
 export default function MemberCenter() {
@@ -11,6 +13,7 @@ export default function MemberCenter() {
     vipName: '普通用户'
   });
   const [systemInfo, setSystemInfo] = useState({ statusBarHeight: 44 });
+  const [isLogin, setIsLogin] = useState(false);
 
   useLoad(() => {
     console.log('会员中心页面加载');
@@ -24,19 +27,235 @@ export default function MemberCenter() {
       }
     });
     
+    // 初始加载用户信息
+    loadUserInfo();
+  });
+
+  useDidShow(() => {
+    console.log('会员中心页面显示，重新加载用户信息');
+    // 每次页面显示时都重新加载
+    loadUserInfo();
+  });
+
+  const loadUserInfo = () => {
     // 获取用户信息
     const token = Taro.getStorageSync('token');
+    console.log('loadUserInfo - token:', token);
+    
     if (token) {
+      setIsLogin(true);
       const userInfoData = Taro.getStorageSync('userInfo');
-      if (userInfoData) {
-        setUserInfo({
+      
+      // 获取VIP等级
+      const savedVipLevel = Taro.getStorageSync('vipLevel');
+      const vipLevel = savedVipLevel !== null && savedVipLevel !== undefined 
+        ? savedVipLevel 
+        : (userInfoData?.vipLevel || 0);
+      
+      console.log('loadUserInfo - vipLevel:', vipLevel);
+      console.log('loadUserInfo - userInfoData:', userInfoData);
+      
+      const newUserInfo = {
+        nickname: userInfoData?.nickName || '用户',
+        avatar: userInfoData?.avatar || 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png',
+        vipLevel: vipLevel,
+        vipName: vipLevels[vipLevel]?.name || '普通用户'
+      };
+      
+      console.log('loadUserInfo - newUserInfo:', newUserInfo);
+      setUserInfo(newUserInfo);
+    } else {
+      setIsLogin(false);
+      // 重置为游客状态
+      setUserInfo({
+        nickname: '游客',
+        avatar: 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png',
+        vipLevel: 0,
+        vipName: '普通用户'
+      });
+    }
+  };
+
+  // 手机号登录
+  const phoneLogin = (e) => {
+    const phoneCode = e.detail.code || '';
+    Taro.login({
+      complete: async (res) => {
+        if (res.code) {
+          Taro.showLoading({mask:true});
+          const openIdCode = res.code;
+          console.log('openIdCode', openIdCode);
+          const tokenInfo = await request({
+            url: Interface.MOZI_LOGIN,
+            data: {
+              chanel:1, 
+              type:'login',
+              phoneCode,
+              loginCode: openIdCode,
+              channel:'miniapp'
+            },
+            method: 'POST'
+          });
+
+          console.log('tokenInfo', tokenInfo);
+          Taro.hideLoading();
+          if (tokenInfo?.data?.token) {
+            Taro.setStorageSync('token', tokenInfo?.data?.token);
+            console.log('用户信息本地缓存成功');
+
+            // 保存用户信息
+            const userInfoData = tokenInfo?.data?.userInfo;
+            const userId = tokenInfo?.data?.userId;
+            
+            // 单独保存 userId
+            if (userId) {
+              Taro.setStorageSync('userId', userId);
+            }
+            
+            if (userInfoData?.avatar && userInfoData?.nickName) {
+              Taro.setStorageSync('userInfo', {
+                avatar: userInfoData?.avatar,
+                nickName: userInfoData?.nickName,
+                userId: userId
+              });
+              
+              // 立即更新状态
+              setIsLogin(true);
+              setUserInfo({
+                nickname: userInfoData?.nickName,
+                avatar: userInfoData?.avatar,
+                vipLevel: 0,
+                vipName: '普通用户'
+              });
+            } else {
+              // 如果没有头像和昵称，也要更新登录状态
+              setIsLogin(true);
+            }
+
+            // 获取并保存用户详细数据
+            try {
+              const { fetchAndSaveUserData } = require('../../utils/userHelper');
+              await fetchAndSaveUserData();
+            } catch (error) {
+              console.error('获取用户详细数据失败:', error);
+            }
+            
+            // 登录成功后，自动上报每日登录任务
+            try {
+              const { reportDailyLogin } = require('../../utils/taskHelper');
+              await reportDailyLogin();
+            } catch (error) {
+              console.error('每日登录任务上报失败:', error);
+            }
+            
+            Taro.showToast({
+              title: '登录成功',
+              icon: 'success',
+              duration: 2000
+            });
+          } else {
+            console.log('登录失败');
+            Taro.showToast({
+              title: '登录失败',
+              icon: 'error',
+              duration: 2000
+            });
+          }
+        } else {
+          console.log('登录失败！' + res.errMsg)
+        }
+      }
+    })
+  };
+
+  // 处理头像点击（仅在已登录时调用）
+  const handleAvatarClick = () => {
+    console.log('头像被点击，显示编辑选项');
+    // 显示编辑选项
+    Taro.showActionSheet({
+      itemList: ['修改头像', '修改昵称'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          handleChooseAvatar();
+        } else if (res.tapIndex === 1) {
+          handleEditNickname();
+        }
+      }
+    });
+  };
+
+  // 选择头像
+  const handleChooseAvatar = () => {
+    Taro.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        // 这里应该上传到服务器，暂时只更新本地
+        const newUserInfo = {
           ...userInfo,
-          nickname: userInfoData.nickName || '用户',
-          avatar: userInfoData.avatar || userInfo.avatar
+          avatar: tempFilePath
+        };
+        setUserInfo(newUserInfo);
+        
+        // 更新本地存储
+        const storedUserInfo = Taro.getStorageSync('userInfo') || {};
+        Taro.setStorageSync('userInfo', {
+          ...storedUserInfo,
+          avatar: tempFilePath
+        });
+        
+        Taro.showToast({
+          title: '头像已更新',
+          icon: 'success',
+          duration: 2000
         });
       }
-    }
-  });
+    });
+  };
+
+  // 编辑昵称
+  const handleEditNickname = () => {
+    Taro.showModal({
+      title: '修改昵称',
+      editable: true,
+      placeholderText: '请输入新昵称',
+      content: userInfo.nickname,
+      success: (res) => {
+        if (res.confirm && res.content) {
+          const newNickname = res.content.trim();
+          if (newNickname === '') {
+            Taro.showToast({
+              title: '昵称不能为空',
+              icon: 'none',
+              duration: 2000
+            });
+            return;
+          }
+
+          const newUserInfo = {
+            ...userInfo,
+            nickname: newNickname
+          };
+          setUserInfo(newUserInfo);
+          
+          // 更新本地存储
+          const storedUserInfo = Taro.getStorageSync('userInfo') || {};
+          Taro.setStorageSync('userInfo', {
+            ...storedUserInfo,
+            nickName: newNickname
+          });
+          
+          Taro.showToast({
+            title: '昵称已更新',
+            icon: 'success',
+            duration: 2000
+          });
+        }
+      }
+    });
+  };
 
   // VIP等级配置
   const vipLevels = [
@@ -57,10 +276,8 @@ export default function MemberCenter() {
   ];
 
   const handleUpgrade = () => {
-    Taro.showToast({
-      title: '敬请期待',
-      icon: 'none',
-      duration: 2000
+    Taro.navigateTo({
+      url: '/packages/member/upgrade/index'
     });
   };
 
@@ -77,17 +294,41 @@ export default function MemberCenter() {
       <View className='content-wrapper' style={{ paddingTop: `${systemInfo.statusBarHeight + 44}px` }}>
         {/* 顶部用户信息卡片 */}
         <View className='user-card'>
-        <View className='user-header'>
-          <Image className='user-avatar' src={userInfo.avatar} mode='aspectFill' />
-          <View className='user-info'>
-            <Text className='user-nickname'>{userInfo.nickname}</Text>
-            <View className='vip-badge' style={{ backgroundColor: vipLevels[userInfo.vipLevel].color }}>
-              <Text className='vip-icon'>{vipLevels[userInfo.vipLevel].icon}</Text>
-              <Text className='vip-text'>{vipLevels[userInfo.vipLevel].name}</Text>
+          {!isLogin ? (
+            // 未登录状态 - 使用 Button 组件，不显示编辑图标
+            <Button className='user-header-btn' openType='getPhoneNumber' onGetPhoneNumber={phoneLogin}>
+              <View className='user-header'>
+                <View className='avatar-wrapper'>
+                  <Image className='user-avatar' src={userInfo.avatar} mode='aspectFill' />
+                </View>
+                <View className='user-info'>
+                  <Text className='user-nickname'>{userInfo.nickname}</Text>
+                  <View className='vip-badge' style={{ backgroundColor: vipLevels[userInfo.vipLevel].color }}>
+                    <Text className='vip-icon'>{vipLevels[userInfo.vipLevel].icon}</Text>
+                    <Text className='vip-text'>{vipLevels[userInfo.vipLevel].name}</Text>
+                  </View>
+                </View>
+              </View>
+            </Button>
+          ) : (
+            // 已登录状态 - 使用 View 组件，显示编辑图标
+            <View className='user-header' onClick={handleAvatarClick}>
+              <View className='avatar-wrapper'>
+                <Image className='user-avatar' src={userInfo.avatar} mode='aspectFill' />
+                <View className='avatar-edit-badge'>
+                  <Text className='edit-icon'>✏️</Text>
+                </View>
+              </View>
+              <View className='user-info'>
+                <Text className='user-nickname'>{userInfo.nickname}</Text>
+                <View className='vip-badge' style={{ backgroundColor: vipLevels[userInfo.vipLevel].color }}>
+                  <Text className='vip-icon'>{vipLevels[userInfo.vipLevel].icon}</Text>
+                  <Text className='vip-text'>{vipLevels[userInfo.vipLevel].name}</Text>
+                </View>
+              </View>
             </View>
-          </View>
+          )}
         </View>
-      </View>
 
       {/* VIP等级展示 */}
       <View className='vip-levels'>

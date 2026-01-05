@@ -173,7 +173,8 @@ export default defineAppConfig({
       root: "packages/member",
       name: "member",
       pages: [
-        "index"
+        "index",
+        "upgrade/index"
       ]
     }
   ],
