@@ -5,6 +5,14 @@ import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
 import './index.less';
 
+// VIP等级配置 - 移到组件外部，避免访问顺序问题
+const vipLevels = [
+  { level: 0, name: '普通用户', color: '#8C8C8C', icon: '👤' },
+  { level: 1, name: 'VIP会员', color: '#FA8C16', icon: '⭐' },
+  { level: 2, name: '高级VIP', color: '#1890FF', icon: '💎' },
+  { level: 3, name: '至尊VIP', color: '#722ED1', icon: '👑' }
+];
+
 export default function MemberCenter() {
   const [userInfo, setUserInfo] = useState({
     nickname: '游客',
@@ -55,11 +63,14 @@ export default function MemberCenter() {
       console.log('loadUserInfo - vipLevel:', vipLevel);
       console.log('loadUserInfo - userInfoData:', userInfoData);
       
+      // 确保 vipLevel 在有效范围内
+      const safeVipLevel = (vipLevel >= 0 && vipLevel < vipLevels.length) ? vipLevel : 0;
+      
       const newUserInfo = {
         nickname: userInfoData?.nickName || '用户',
         avatar: userInfoData?.avatar || 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/avatar.png',
-        vipLevel: vipLevel,
-        vipName: vipLevels[vipLevel]?.name || '普通用户'
+        vipLevel: safeVipLevel,
+        vipName: vipLevels[safeVipLevel]?.name || '普通用户'
       };
       
       console.log('loadUserInfo - newUserInfo:', newUserInfo);
@@ -78,91 +89,124 @@ export default function MemberCenter() {
 
   // 手机号登录
   const phoneLogin = (e) => {
+    console.log('phoneLogin 被调用', e);
     const phoneCode = e.detail.code || '';
+    
+    // 检查用户是否拒绝授权
+    if (!phoneCode) {
+      console.log('用户拒绝了手机号授权');
+      Taro.showToast({
+        title: '需要手机号授权才能登录',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
     Taro.login({
       complete: async (res) => {
         if (res.code) {
-          Taro.showLoading({mask:true});
+          Taro.showLoading({
+            title: '登录中...',
+            mask: true
+          });
           const openIdCode = res.code;
           console.log('openIdCode', openIdCode);
-          const tokenInfo = await request({
-            url: Interface.MOZI_LOGIN,
-            data: {
-              chanel:1, 
-              type:'login',
-              phoneCode,
-              loginCode: openIdCode,
-              channel:'miniapp'
-            },
-            method: 'POST'
-          });
+          
+          try {
+            const tokenInfo = await request({
+              url: Interface.MOZI_LOGIN,
+              data: {
+                chanel:1, 
+                type:'login',
+                phoneCode,
+                loginCode: openIdCode,
+                channel:'miniapp'
+              },
+              method: 'POST'
+            });
 
-          console.log('tokenInfo', tokenInfo);
-          Taro.hideLoading();
-          if (tokenInfo?.data?.token) {
-            Taro.setStorageSync('token', tokenInfo?.data?.token);
-            console.log('用户信息本地缓存成功');
+            console.log('tokenInfo', tokenInfo);
+            Taro.hideLoading();
+            
+            if (tokenInfo?.data?.token) {
+              Taro.setStorageSync('token', tokenInfo?.data?.token);
+              console.log('用户信息本地缓存成功');
 
-            // 保存用户信息
-            const userInfoData = tokenInfo?.data?.userInfo;
-            const userId = tokenInfo?.data?.userId;
-            
-            // 单独保存 userId
-            if (userId) {
-              Taro.setStorageSync('userId', userId);
-            }
-            
-            if (userInfoData?.avatar && userInfoData?.nickName) {
-              Taro.setStorageSync('userInfo', {
-                avatar: userInfoData?.avatar,
-                nickName: userInfoData?.nickName,
-                userId: userId
-              });
+              // 保存用户信息
+              const userInfoData = tokenInfo?.data?.userInfo;
+              const userId = tokenInfo?.data?.userId;
               
-              // 立即更新状态
-              setIsLogin(true);
-              setUserInfo({
-                nickname: userInfoData?.nickName,
-                avatar: userInfoData?.avatar,
-                vipLevel: 0,
-                vipName: '普通用户'
+              // 单独保存 userId
+              if (userId) {
+                Taro.setStorageSync('userId', userId);
+              }
+              
+              if (userInfoData?.avatar && userInfoData?.nickName) {
+                Taro.setStorageSync('userInfo', {
+                  avatar: userInfoData?.avatar,
+                  nickName: userInfoData?.nickName,
+                  userId: userId
+                });
+                
+                // 立即更新状态
+                setIsLogin(true);
+                setUserInfo({
+                  nickname: userInfoData?.nickName,
+                  avatar: userInfoData?.avatar,
+                  vipLevel: 0,
+                  vipName: '普通用户'
+                });
+              } else {
+                // 如果没有头像和昵称，也要更新登录状态
+                setIsLogin(true);
+              }
+
+              // 获取并保存用户详细数据
+              try {
+                const { fetchAndSaveUserData } = require('../../utils/userHelper');
+                await fetchAndSaveUserData();
+              } catch (error) {
+                console.error('获取用户详细数据失败:', error);
+              }
+              
+              // 登录成功后，自动上报每日登录任务
+              try {
+                const { reportDailyLogin } = require('../../utils/taskHelper');
+                await reportDailyLogin();
+              } catch (error) {
+                console.error('每日登录任务上报失败:', error);
+              }
+              
+              Taro.showToast({
+                title: '登录成功',
+                icon: 'success',
+                duration: 2000
               });
             } else {
-              // 如果没有头像和昵称，也要更新登录状态
-              setIsLogin(true);
+              console.log('登录失败 - 没有返回token');
+              Taro.showToast({
+                title: tokenInfo?.errorMsg || '登录失败，请重试',
+                icon: 'none',
+                duration: 2000
+              });
             }
-
-            // 获取并保存用户详细数据
-            try {
-              const { fetchAndSaveUserData } = require('../../utils/userHelper');
-              await fetchAndSaveUserData();
-            } catch (error) {
-              console.error('获取用户详细数据失败:', error);
-            }
-            
-            // 登录成功后，自动上报每日登录任务
-            try {
-              const { reportDailyLogin } = require('../../utils/taskHelper');
-              await reportDailyLogin();
-            } catch (error) {
-              console.error('每日登录任务上报失败:', error);
-            }
-            
+          } catch (error) {
+            console.error('登录请求失败:', error);
+            Taro.hideLoading();
             Taro.showToast({
-              title: '登录成功',
-              icon: 'success',
-              duration: 2000
-            });
-          } else {
-            console.log('登录失败');
-            Taro.showToast({
-              title: '登录失败',
-              icon: 'error',
+              title: '网络错误，请重试',
+              icon: 'none',
               duration: 2000
             });
           }
         } else {
-          console.log('登录失败！' + res.errMsg)
+          console.log('登录失败！' + res.errMsg);
+          Taro.showToast({
+            title: '登录失败：' + res.errMsg,
+            icon: 'none',
+            duration: 2000
+          });
         }
       }
     })
@@ -257,14 +301,6 @@ export default function MemberCenter() {
     });
   };
 
-  // VIP等级配置
-  const vipLevels = [
-    { level: 0, name: '普通用户', color: '#8C8C8C', icon: '👤' },
-    { level: 1, name: 'VIP会员', color: '#FA8C16', icon: '⭐' },
-    { level: 2, name: '高级VIP', color: '#1890FF', icon: '💎' },
-    { level: 3, name: '至尊VIP', color: '#722ED1', icon: '👑' }
-  ];
-
   // 会员特权列表
   const privileges = [
     { icon: '🎯', title: '专属标识', desc: 'VIP专属身份标识' },
@@ -276,9 +312,25 @@ export default function MemberCenter() {
   ];
 
   const handleUpgrade = () => {
-    Taro.navigateTo({
-      url: '/packages/member/upgrade/index'
-    });
+    console.log('立即升级按钮被点击');
+    try {
+      Taro.navigateTo({
+        url: '/packages/member/upgrade/index',
+        success: () => {
+          console.log('跳转成功');
+        },
+        fail: (err) => {
+          console.error('跳转失败:', err);
+          Taro.showToast({
+            title: '页面跳转失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+    } catch (error) {
+      console.error('跳转异常:', error);
+    }
   };
 
   return (
@@ -303,9 +355,9 @@ export default function MemberCenter() {
                 </View>
                 <View className='user-info'>
                   <Text className='user-nickname'>{userInfo.nickname}</Text>
-                  <View className='vip-badge' style={{ backgroundColor: vipLevels[userInfo.vipLevel].color }}>
-                    <Text className='vip-icon'>{vipLevels[userInfo.vipLevel].icon}</Text>
-                    <Text className='vip-text'>{vipLevels[userInfo.vipLevel].name}</Text>
+                  <View className='vip-badge' style={{ backgroundColor: (vipLevels[userInfo.vipLevel] || vipLevels[0]).color }}>
+                    <Text className='vip-icon'>{(vipLevels[userInfo.vipLevel] || vipLevels[0]).icon}</Text>
+                    <Text className='vip-text'>{(vipLevels[userInfo.vipLevel] || vipLevels[0]).name}</Text>
                   </View>
                 </View>
               </View>
@@ -321,9 +373,9 @@ export default function MemberCenter() {
               </View>
               <View className='user-info'>
                 <Text className='user-nickname'>{userInfo.nickname}</Text>
-                <View className='vip-badge' style={{ backgroundColor: vipLevels[userInfo.vipLevel].color }}>
-                  <Text className='vip-icon'>{vipLevels[userInfo.vipLevel].icon}</Text>
-                  <Text className='vip-text'>{vipLevels[userInfo.vipLevel].name}</Text>
+                <View className='vip-badge' style={{ backgroundColor: (vipLevels[userInfo.vipLevel] || vipLevels[0]).color }}>
+                  <Text className='vip-icon'>{(vipLevels[userInfo.vipLevel] || vipLevels[0]).icon}</Text>
+                  <Text className='vip-text'>{(vipLevels[userInfo.vipLevel] || vipLevels[0]).name}</Text>
                 </View>
               </View>
             </View>
