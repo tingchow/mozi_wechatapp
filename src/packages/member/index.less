@@ -1,8 +1,37 @@
 .member-center-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #11B787 0%, #EEF0F3 30%);
-  padding: 40rpx 32rpx;
   box-sizing: border-box;
+}
+
+/* 自定义导航栏 */
+.custom-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #11B787;
+}
+
+.navbar-content {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32rpx;
+}
+
+.navbar-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+}
+
+/* 内容区域 */
+.content-wrapper {
+  min-height: 100vh;
 }
 
 /* 用户信息卡片 */
@@ -10,7 +39,7 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 40rpx;
-  margin-bottom: 32rpx;
+  margin: 40rpx 32rpx 32rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
 }
 
@@ -63,7 +92,7 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 32rpx;
-  margin-bottom: 32rpx;
+  margin: 0 32rpx 32rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
 }
 
@@ -115,7 +144,7 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 32rpx;
-  margin-bottom: 32rpx;
+  margin: 0 32rpx 32rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
 }
 
@@ -157,12 +186,29 @@
 .action-section {
   display: flex;
   gap: 24rpx;
-  margin-bottom: 32rpx;
+  margin: 0 32rpx 32rpx;
+}
+
+.upgrade-btn,
+.contact-btn-wrapper {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  transition: all 0.3s;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+
+.contact-btn-wrapper::after {
+  border: none;
 }
 
 .upgrade-btn,
 .contact-btn {
-  flex: 1;
   height: 88rpx;
   display: flex;
   align-items: center;
@@ -185,6 +231,7 @@
 .contact-btn {
   background: #fff;
   border: 2rpx solid #11B787;
+  width: 100%;
 }
 
 .contact-text {

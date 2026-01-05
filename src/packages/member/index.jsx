@@ -1,4 +1,4 @@
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text, Image, Button } from '@tarojs/components';
 import { useState } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
 import './index.less';
@@ -10,9 +10,20 @@ export default function MemberCenter() {
     vipLevel: 0,
     vipName: '普通用户'
   });
+  const [systemInfo, setSystemInfo] = useState({ statusBarHeight: 44 });
 
   useLoad(() => {
     console.log('会员中心页面加载');
+    
+    // 获取系统信息
+    Taro.getSystemInfo({
+      success: (res) => {
+        setSystemInfo({
+          statusBarHeight: res.statusBarHeight || 44
+        });
+      }
+    });
+    
     // 获取用户信息
     const token = Taro.getStorageSync('token');
     if (token) {
@@ -53,18 +64,19 @@ export default function MemberCenter() {
     });
   };
 
-  const handleContact = () => {
-    Taro.showToast({
-      title: '请联系客服',
-      icon: 'none',
-      duration: 2000
-    });
-  };
-
   return (
     <View className='member-center-container'>
-      {/* 顶部用户信息卡片 */}
-      <View className='user-card'>
+      {/* 自定义导航栏 - 无返回按钮 */}
+      <View className='custom-navbar' style={{ paddingTop: `${systemInfo.statusBarHeight}px` }}>
+        <View className='navbar-content'>
+          <Text className='navbar-title'>会员中心</Text>
+        </View>
+      </View>
+      
+      {/* 内容区域 */}
+      <View className='content-wrapper' style={{ paddingTop: `${systemInfo.statusBarHeight + 44}px` }}>
+        {/* 顶部用户信息卡片 */}
+        <View className='user-card'>
         <View className='user-header'>
           <Image className='user-avatar' src={userInfo.avatar} mode='aspectFill' />
           <View className='user-info'>
@@ -113,14 +125,17 @@ export default function MemberCenter() {
         <View className='upgrade-btn' onClick={handleUpgrade}>
           <Text className='upgrade-text'>立即升级</Text>
         </View>
-        <View className='contact-btn' onClick={handleContact}>
-          <Text className='contact-text'>联系客服</Text>
-        </View>
+        <Button className='contact-btn-wrapper' openType='contact'>
+          <View className='contact-btn'>
+            <Text className='contact-text'>联系客服</Text>
+          </View>
+        </Button>
       </View>
 
       {/* 提示信息 */}
       <View className='tips'>
         <Text className='tips-text'>💡 升级会员，解锁更多专属特权</Text>
+      </View>
       </View>
     </View>
   );
