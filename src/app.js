@@ -15,26 +15,36 @@ function App({ children }) {
   };
 
   useLaunch(async () => {
-    const showAll = await isShowAll();
-    console.log('showAll', showAll);
-    
-    // 保存状态到本地存储
-    Taro.setStorageSync('showAllStatus', showAll);
-    
-    if (showAll == true) {
-      Taro.showTabBar();
-      console.log('📱 [App] 正常启动，显示 TabBar');
-    } else {
-      Taro.hideTabBar();
-      console.log('📱 [App] showAll 为 false，隐藏 TabBar，首页将显示会员中心');
+    // 立即隐藏 TabBar（在接口调用前）
+    try {
+      Taro.hideTabBar({ animation: false });
+    } catch (e) {
+      // 忽略错误
     }
     
-    // 隐藏 loading
-    setShowGlobalLoading(false);
-    console.log('� [ApWp] 隐藏 loading');
+    // 标记接口正在加载，禁用 tabBar 切换
+    Taro.setStorageSync('isShowAllLoading', true);
     
-    console.log('App launched.')
-    console.log('🚀 全局 WebSocket 连接将在应用启动时建立')
+    try {
+      const showAll = await isShowAll();
+      
+      // 保存状态到本地存储
+      Taro.setStorageSync('showAllStatus', showAll);
+      
+      if (showAll === true) {
+        Taro.showTabBar({ animation: true });
+      } else {
+        // 保持隐藏状态
+        Taro.hideTabBar({ animation: false });
+      }
+    } catch (error) {
+      // 失败时默认显示 tabBar（容错处理）
+      Taro.setStorageSync('showAllStatus', true);
+      Taro.showTabBar({ animation: true });
+    } finally {
+      // 标记接口加载完成，允许 tabBar 切换
+      Taro.setStorageSync('isShowAllLoading', false);
+    }
     
     // 处理邀请码逻辑
     handleInviteCode()
@@ -45,14 +55,11 @@ function App({ children }) {
     try {
       // 获取启动参数
       const launchOptions = Taro.getLaunchOptionsSync()
-      console.log('🔍 [邀请码] 启动参数:', launchOptions)
       
       // 从 query 中获取邀请码
       const inviteCode = launchOptions?.query?.inviteCode
       
       if (inviteCode) {
-        console.log('✅ [邀请码] 检测到邀请码:', inviteCode)
-        
         // 保存邀请码到本地存储
         Taro.setStorageSync('pendingInviteCode', inviteCode)
         
@@ -60,8 +67,6 @@ function App({ children }) {
         const token = Taro.getStorageSync('token')
         
         if (!token) {
-          console.log('⚠️ [邀请码] 用户未登录，需要先登录')
-          
           // 延迟一下，等待页面加载完成
           setTimeout(() => {
             Taro.showModal({
@@ -80,23 +85,18 @@ function App({ children }) {
             })
           }, 1000)
         } else {
-          console.log('✅ [邀请码] 用户已登录，可以绑定邀请关系')
           // TODO: 调用后端接口绑定邀请关系
           bindInviteCode(inviteCode)
         }
-      } else {
-        console.log('ℹ️ [邀请码] 未检测到邀请码')
       }
     } catch (error) {
-      console.error('❌ [邀请码] 处理邀请码失败:', error)
+      // 忽略错误
     }
   }
   
   // 绑定邀请码
   const bindInviteCode = async (inviteCode) => {
     try {
-      console.log('🔗 [邀请码] 开始绑定邀请关系:', inviteCode)
-      
       // TODO: 调用后端接口绑定邀请关系
       // const res = await request({
       //   url: Interface.BIND_INVITE_CODE,
@@ -105,7 +105,6 @@ function App({ children }) {
       // })
       
       // if (res?.code === 0) {
-      //   console.log('✅ [邀请码] 邀请关系绑定成功')
       //   Taro.removeStorageSync('pendingInviteCode')
       //   Taro.showToast({
       //     title: '邀请绑定成功',
@@ -115,9 +114,8 @@ function App({ children }) {
       
       // 暂时只清除待处理的邀请码
       Taro.removeStorageSync('pendingInviteCode')
-      console.log('✅ [邀请码] 邀请码已保存，等待后端接口对接')
     } catch (error) {
-      console.error('❌ [邀请码] 绑定邀请关系失败:', error)
+      // 忽略错误
     }
   }
 

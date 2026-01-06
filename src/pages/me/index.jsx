@@ -95,6 +95,18 @@ export default function Index() {
   }];
 
   useLoad(() => {
+    // 页面加载时立即隐藏 TabBar，等待 isShowAll 接口返回
+    const isLoading = Taro.getStorageSync('isShowAllLoading');
+    const showAllStatus = Taro.getStorageSync('showAllStatus');
+    
+    if (isLoading === true || showAllStatus === undefined) {
+      try {
+        Taro.hideTabBar({ animation: false });
+      } catch (e) {
+        // 忽略错误
+      }
+    }
+    
     Taro.showShareMenu({
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
@@ -651,19 +663,16 @@ export default function Index() {
             await fetchAndSaveUserData();
             
             // 登录成功后，自动上报每日登录任务
-            console.log('🔍 [Me页面] 准备上报每日登录任务');
             try {
               const { reportDailyLogin } = require('../../utils/taskHelper');
               await reportDailyLogin();
-              console.log('✅ [Me页面] 每日登录任务上报完成');
             } catch (error) {
-              console.error('❌ [Me页面] 每日登录任务上报失败:', error);
+              // 忽略错误
             }
             
             // 检查是否有待处理的邀请码
             const pendingInviteCode = Taro.getStorageSync('pendingInviteCode');
             if (pendingInviteCode) {
-              console.log('🔗 [邀请码] 检测到待处理的邀请码:', pendingInviteCode);
               // TODO: 调用后端接口绑定邀请关系
               // await request({
               //   url: Interface.BIND_INVITE_CODE,
@@ -730,7 +739,6 @@ export default function Index() {
       title: '退出成功',
       icon: 'success',
     })
-    console.log('✅ [退出登录] 已清除所有用户相关缓存，包括 pendingInviteCode');
   };
 
 

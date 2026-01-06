@@ -461,6 +461,21 @@ export default function CommunityPage() {
     });
   };
 
+  // 页面加载钩子
+  Taro.useLoad(() => {
+    // 页面加载时立即隐藏 TabBar，等待 isShowAll 接口返回
+    const isLoading = Taro.getStorageSync('isShowAllLoading');
+    const showAllStatus = Taro.getStorageSync('showAllStatus');
+    
+    if (isLoading === true || showAllStatus === undefined) {
+      try {
+        Taro.hideTabBar({ animation: false });
+      } catch (e) {
+        // 忽略错误
+      }
+    }
+  });
+
   useShareAppMessage((res) => {
     if (res.from === 'button') {
       // 来自页面内转发按钮

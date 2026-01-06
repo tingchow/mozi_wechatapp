@@ -222,11 +222,22 @@ export default function Index() {
   };
 
   useLoad(async () => {
+    // 页面加载时立即隐藏 TabBar，等待 isShowAll 接口返回
+    const isLoading = Taro.getStorageSync('isShowAllLoading');
+    const showAllStatus = Taro.getStorageSync('showAllStatus');
+    
+    if (isLoading === true || showAllStatus === undefined) {
+      try {
+        Taro.hideTabBar({ animation: false });
+      } catch (e) {
+        // 忽略错误
+      }
+    }
+    
     Taro.showShareMenu({
       withShareTicket: true,
       showShareItems: ['wechatFriends', 'wechatMoment']
     });
-    // allRequest();
   });
 
   useDidShow(() => {
@@ -254,7 +265,6 @@ export default function Index() {
           Taro.setStorageSync('welcomePopupLastShown', today);
         }
       } catch (error) {
-        console.error('检查欢迎弹窗显示状态失败:', error);
         // 出错时也显示弹窗
         setShowWelcomePopup(true);
       }
