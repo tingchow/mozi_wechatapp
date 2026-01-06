@@ -3,27 +3,18 @@ import { useGlobalIconFont } from './components/iconfont/helper';
 
 export default defineAppConfig({
   pages: [
+    // 社区（设为首页）
+    'pages/community/index',
     // 首页
     'pages/index/index',
-    // 社区
-    'pages/community/index',
     // 发现页
     'pages/find/index',
-    // 通用列表页（已迁移到分包 list）
     // 我的
     'pages/me/index',
-    // 币种详情页（已迁移到分包 detail）
-    // 搜索页（已迁移到分包 search）
     // 用户信息
     'pages/user/index',
-    // 多空比（已迁移到分包 putcallratio）
     // 持仓量
     'pages/positionsize/index',
-    // 资金费率（已迁移到分包 fundingrate）
-    // 持仓量（已迁移到分包 tradevol）
-    // 横向图表（已迁移到分包 landscapechart）
-    // 配置告警页（已迁移到分包 addwarn）
-    // 我的告警页（已迁移到分包 mywarn）
   ],
   subpackages: [
     {

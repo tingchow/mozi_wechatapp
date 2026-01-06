@@ -23,13 +23,16 @@ function App({ children }) {
     
     if (showAll == true) {
       Taro.showTabBar();
+      console.log('📱 [App] 正常启动，显示 TabBar');
     } else {
       Taro.hideTabBar();
-      // 如果返回 false，跳转到会员中心页面
-      Taro.reLaunch({
-        url: '/packages/member/index'
-      });
+      console.log('📱 [App] showAll 为 false，隐藏 TabBar，首页将显示会员中心');
     }
+    
+    // 隐藏 loading
+    setShowGlobalLoading(false);
+    console.log('� [ApWp] 隐藏 loading');
+    
     console.log('App launched.')
     console.log('🚀 全局 WebSocket 连接将在应用启动时建立')
     
