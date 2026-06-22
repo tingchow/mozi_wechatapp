@@ -18,7 +18,8 @@ export const request = async (options) => {
     const { data = {} } = await Taro.request({
       ...options,
       header: {
-        authentication: token || ''
+        authentication: token || '',
+        ...(options.header || {}) // 合并自定义 header
       }
     });
     // if (!data.isLogin) {

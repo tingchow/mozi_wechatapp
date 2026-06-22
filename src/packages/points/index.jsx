@@ -249,7 +249,10 @@ function PointsPage() {
       
       const res = await request({
         url: Interface.TASK_LIST,
-        method: 'GET'
+        method: 'GET',
+        header: {
+          'Accept-Language': 'en'
+        }
       })
       
       console.log('🔍 [任务列表] 接口返回:', res)
