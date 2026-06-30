@@ -25,8 +25,9 @@ import { SkeletonPage } from '../../components/Skeleton';
 import { detailPageSkeletonConfig } from '../../components/Skeleton/configs';
 import { GardenLoading } from '../../components/Loading';
 import FloatingRobot from '../../components/FloatingRobot';
-const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community-no-actived.png';
-const shareIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/community/share.png';
+import OneClickAlarmModal from '../../components/OneClickAlarmModal';
+import ExchangePickerModal from '../../components/ExchangePickerModal';
+const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/icons/new_detail/community.svg';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
 const downIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/down.png';
 
@@ -97,7 +98,11 @@ export default function Detail() {
   const wsConnectionTimeoutRef = useRef(null); // WebSocket连接超时定时器
   const useHttpFallbackRef = useRef(false); // 是否使用HTTP降级
   const pollingTimerRef = useRef(null); // HTTP轮询定时器
-  const wsUnsubscribeRefs = useRef({ kline: null }); // 存储取消订阅函数
+  const wsUnsubscribeRefs = useRef({ kline: null });
+
+  const [oneClickAlarmOpen, setOneClickAlarmOpen] = useState(false);
+  const [oneClickAlarmMode, setOneClickAlarmMode] = useState('oneClick');
+  const [exchangePickerOpen, setExchangePickerOpen] = useState(false);
 
   // 启动HTTP降级模式
   const startHttpFallback = () => {
@@ -1126,8 +1131,36 @@ export default function Detail() {
   };
 
   const jump2Land = () => {
-    // 将当前图表类型一并传递给横屏页面
     jump2DataPage('landscapechart', 'chartData', { ...chartData.current, forceType: chartTypeRef.current });
+  };
+
+  const jump2Alert = () => {
+    setOneClickAlarmMode('config');
+    setOneClickAlarmOpen(true);
+  };
+
+  const overlayOpen = oneClickAlarmOpen || exchangePickerOpen;
+
+  const handleGoTrade = () => {
+    setExchangePickerOpen(true);
+  };
+
+  const handleSelectExchange = (exchangeId) => {
+    const map = {
+      binance: 'https://www.bsmkweb.cc/register?ref=195208591',
+      okx: 'https://www.growthhivex.com/join/12214659',
+      bitget: 'https://partner.bitget.com/bg/7RMWVR',
+      gate: 'https://www.gate.io/signup/AgBGFwxa',
+    };
+    const url = map[exchangeId];
+    setExchangePickerOpen(false);
+    if (!url) return;
+    Taro.setClipboardData({
+      data: url,
+      success: () => {
+        Taro.showToast({ title: '链接已复制，请在浏览器打开', icon: 'none', duration: 2500 });
+      },
+    });
   };
 
   const jump2Community = () => {
@@ -1155,6 +1188,7 @@ export default function Detail() {
   // }
 
   return (
+    <>
     <View className='indexBox'>
       {/* 头部详情 */}
       <View className='box'>
@@ -1293,7 +1327,7 @@ export default function Detail() {
             <TabBar.Item key='week' title='1周' />
             <TabBar.Item key='month' title='1月' />
           </TabBar>
-          <View className='chartBox detail-kline-large' style={{position: 'relative'}}>
+          <View className='chartBox detail-kline-large' style={{ position: 'relative' }} hidden={overlayOpen}>
             <View className='chart-arrawsalt detail-landscape-btn' onClick={jump2Land}>
               <IconFont name='arrawsalt' size={30} color='#fff' />
             </View>
@@ -1399,30 +1433,6 @@ export default function Detail() {
           </MoziGrid>
         </MoziCard>
       </div> */}
-      {/* 评论 */}
-      {/* {coinInfo?.symbol && ( */}
-        <View className='footer-list'>
-          <View className='footer-item'>
-            <AddCollect isOwn={coinInfo?.isSelfSelected || false} symbol={symbol} />
-            <View>加自选</View>
-          </View>
-          <View className='footer-item' onClick={() => {jump2NoTab('addwarn', {symbol})}}>
-            <IconFont name='bell-fill' size={40} color='#C7C9CD' />
-            <View>告警</View>
-          </View>
-          <Button className='footer-item' openType='share'>
-            <Image className='footer-icon' src={shareIcon} mode='aspectFit' />
-            <View>分享</View>
-          </Button>
-          <View className='footer-item' onClick={jump2Community}>
-            <Image className='footer-icon' src={communityIcon} mode='aspectFit' />
-            <View>社区</View>
-          </View>
-        </View>
-      {/* )} */}
-      {/* <Canvas canvasId="screenshotCanvas"/> */}
-      {/* <PageLogin show={popVis} hideCb={() => {setPopVis(false)}} /> */}
-      {/* 悬浮机器人按钮 */}
       <FloatingRobot 
         message={`想听听我对${symbol}的看法吗？`}
         targetPath="/packages/robot/index"
@@ -1432,6 +1442,58 @@ export default function Detail() {
         showOnSelector=".marketBox"
       />
     </View>
+    {!overlayOpen ? (
+    <View className='footer-list'>
+      <View className='footer-left'>
+        <View className='footer-item'>
+          <View className='footer-icon-slot'>
+            <AddCollect
+              variant='footer'
+              isOwn={coinInfo?.isSelfSelected || false}
+              symbol={symbol}
+            />
+          </View>
+          <View className='footer-text'>加自选</View>
+        </View>
+        <View className='footer-item' onClick={jump2Community}>
+          <View className='footer-icon-slot'>
+            <Image className='footer-icon' src={communityIcon} mode='aspectFit' />
+          </View>
+          <View className='footer-text'>社区</View>
+        </View>
+      </View>
+      <View className='footer-right'>
+        <View className='alarm-pill'>
+          <View className='alarm-config' onClick={jump2Alert}>配置告警</View>
+          <View
+            className='alarm-start'
+            onClick={() => {
+              setOneClickAlarmMode('oneClick');
+              setOneClickAlarmOpen(true);
+            }}
+          >
+            立即开启
+          </View>
+        </View>
+        <View className='trade-btn-mobile' onClick={handleGoTrade}>去交易</View>
+      </View>
+    </View>
+    ) : null}
+      <OneClickAlarmModal
+        open={oneClickAlarmOpen}
+        mode={oneClickAlarmMode}
+        symbol={symbol}
+        onClose={() => setOneClickAlarmOpen(false)}
+        onConfirm={() => setOneClickAlarmOpen(false)}
+        onSkip={() => setOneClickAlarmOpen(false)}
+      />
+      <ExchangePickerModal
+        open={exchangePickerOpen}
+        symbol={symbol}
+        onClose={() => setExchangePickerOpen(false)}
+        onSelect={handleSelectExchange}
+      />
+    </>
   )
 }
 

@@ -123,6 +123,10 @@ export const Interface = {
   CLOSE_WARN: '/alarm/off',
   // 删除币种的所有告警
   DELETE_ALARM: '/alarm/delete',
+  ADD_ALARM: '/alarm/add',
+  GET_ALERT_CONFIG: '/user/alert/config',
+  ADD_ALERT_CONFIG: '/user/alert/config/add',
+  UPDATE_ALERT_CONFIG: '/user/alert/config/update',
   // 订阅公告
   SUBSCRIBE_ANNOUNCEMENT: '/announcement/subscribe',
 

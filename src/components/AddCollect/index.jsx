@@ -1,5 +1,5 @@
 import IconFont from '../iconfont';
-import { Input, View, PageContainer, Button } from '@tarojs/components'
+import { View, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useEffect, useState, useRef } from 'react';
 import { request } from '../../utils/request';
@@ -9,9 +9,12 @@ import './index.less';
 
 let isClick = false;
 
+const LIKE_ACTIVE = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/icons/new_detail/like_actived.svg';
+const LIKE_INACTIVE = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/icons/new_detail/like_no_actived.svg';
+
 export const AddCollect = (props) => {
 
-  const { unselectedColor = '#C7C9CD', ...otherProps } = props;
+  const { unselectedColor = '#C7C9CD', variant, ...otherProps } = props;
 
   const [ isOwn, setOwn ] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
@@ -99,7 +102,15 @@ export const AddCollect = (props) => {
   return (
     <View>
       <View className='collect' onClick={changeOwn} catchMove={true}>
-        <IconFont name='heart-fill' color={curOwn? '#FA5F5F': unselectedColor} size={40} />
+        {variant === 'footer' ? (
+          <Image
+            className='collect-icon'
+            src={curOwn ? LIKE_ACTIVE : LIKE_INACTIVE}
+            mode='aspectFit'
+          />
+        ) : (
+          <IconFont name='heart-fill' color={curOwn ? '#FA5F5F' : unselectedColor} size={40} />
+        )}
       </View>
       { showLogin && <PopLogin hideCb={() => {setShowLogin(false)}} /> }
     </View>

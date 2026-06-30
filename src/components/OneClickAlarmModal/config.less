@@ -1,0 +1,266 @@
+/* H5 config.module.less — 所有 px 数值 ×2（Taro rpx 换算） */
+/* 加载态：在固定高度面板内居中 */
+.config-loading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 80px 32px;
+  box-sizing: border-box;
+}
+
+.page-loading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 80px 32px;
+  box-sizing: border-box;
+}
+
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #11b787;
+  border-radius: 50%;
+  animation: config-spin 1s linear infinite;
+  margin-bottom: 32px;
+}
+
+.loading-text {
+  font-size: 28px;
+  color: #999;
+}
+
+@keyframes config-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.config-body {
+  padding: 150px 32px 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.config-mode-wrap {
+  background: #fff;
+  overflow: hidden;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-radius: 40px 40px 0 0;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.config-scroll {
+  flex: 1;
+  min-height: 0;
+  height: 0;
+  padding-bottom: 32px;
+  box-sizing: border-box;
+}
+
+.config-bottom-buttons {
+  padding: 32px 32px calc(32px + env(safe-area-inset-bottom));
+  flex-shrink: 0;
+  background: #fff;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+
+.price-info {
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #eef0f3;
+  border-bottom: 4px solid #eef0f3;
+  box-sizing: border-box;
+}
+
+.config-price-info {
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+
+.coin-symbol {
+  font-size: 32px;
+  font-weight: 500;
+  color: #333;
+}
+
+.price-details {
+  display: flex;
+  align-items: center;
+}
+
+.price-details .price-label {
+  margin-right: 24px;
+}
+
+.price-details .price-value {
+  margin-right: 24px;
+}
+
+.price-label {
+  font-size: 28px;
+  color: #666;
+}
+
+.price-value {
+  font-size: 32px;
+  font-weight: 500;
+  color: #333;
+}
+
+.price-change {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.positive {
+  color: #0b7556;
+}
+
+.negative {
+  color: #750b0d;
+}
+
+.config-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 0;
+  margin: 0 0 20px;
+  box-shadow: 0 8px 60px 0 rgba(27, 25, 86, 0.1);
+  box-sizing: border-box;
+}
+
+.config-item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: 24px 0;
+  box-sizing: border-box;
+}
+
+.config-item:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.config-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.config-label {
+  font-size: 28px;
+  color: #1a1a2e;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.config-input-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 0 24px;
+  height: 80px;
+  background: #f8fafc;
+}
+
+.config-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 28px;
+  color: #333;
+  height: 80px;
+  line-height: 80px;
+}
+
+.config-unit {
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 44px;
+  color: #313030;
+  flex-shrink: 0;
+}
+
+.config-switch-wrap {
+  flex-shrink: 0;
+  transform: scale(0.8);
+  transform-origin: center right;
+}
+
+/* H5：label + switchOnlySpacer + Switch */
+.config-item-big-order {
+  flex-direction: row;
+  align-items: center;
+  padding: 24px 0;
+}
+
+.switch-only-spacer {
+  flex: 1;
+  min-width: 16px;
+}
+
+.bottom-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.save-button {
+  background: #11b787;
+  color: #fff;
+  border: none;
+  border-radius: 90px;
+  height: 96px;
+  line-height: 96px;
+  font-size: 32px;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 32px;
+
+  &::after {
+    border: none;
+  }
+
+  &.save-button-disabled {
+    background: #d9d9d9;
+    color: #999;
+  }
+}
+
+.view-button {
+  background: #fff;
+  color: #11b787;
+  border-radius: 90px;
+  height: 96px;
+  line-height: 96px;
+  font-size: 32px;
+  width: 100%;
+  text-align: center;
+}
