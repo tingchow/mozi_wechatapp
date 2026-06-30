@@ -31,6 +31,14 @@ const ICON_PHONE_INPUT = `${ICON_CDN}/new_detail/telephone_num.svg`;
 const ICON_EMAIL_INPUT = `${ICON_CDN}/new_detail/email_num.svg`;
 const ICON_DOWN_ARROW = `${ICON_CDN}/new_detail/down_arrow.svg`;
 
+const LINK_INPUT_ICON_STYLE = {
+  backgroundImage:
+    "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M10 13a5 5 0 007.07 0l1.42-1.42a5 5 0 00-7.07-7.07L10 6M14 11a5 5 0 00-7.07 0L5.51 12.42a5 5 0 007.07 7.07L14 18' stroke='%236b7280' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  backgroundSize: '36px 36px',
+};
+
 const CONFIG_KEYS = ['priceRise', 'priceFall', 'risePercent', 'fallPercent'];
 
 const LABELS = {
@@ -659,10 +667,10 @@ export default function OneClickAlarmModal({
                 {webhookUrls.map((url, index) => (
                   <View key={`webhook-${index}`} className='one-click-webhook-input-group'>
                     <View className='one-click-input-row one-click-webhook-input-row'>
-                      <View className='one-click-link-input-icon'>
-                        <View className='one-click-link-icon-bar one-click-link-icon-bar-top' />
-                        <View className='one-click-link-icon-bar one-click-link-icon-bar-bottom' />
-                      </View>
+                      <View
+                        className='one-click-input-icon one-click-input-icon-link'
+                        style={LINK_INPUT_ICON_STYLE}
+                      />
                       <Input
                         className='one-click-webhook-input'
                         placeholder='请输入URL'
