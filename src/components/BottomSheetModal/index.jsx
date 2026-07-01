@@ -5,6 +5,7 @@ export default function BottomSheetModal({
   open = false,
   onClose,
   header,
+  topOverlay,
   children,
   sheetClassName = '',
   sheetInnerClassName = '',
@@ -31,6 +32,7 @@ export default function BottomSheetModal({
     <View className='bottom-sheet-root' catchMove>
       <View className='bottom-sheet-mask' onClick={onClose} />
       <View className={panelClass} style={panelStyle}>
+        {topOverlay}
         <View className={`bottom-sheet-inner ${sheetInnerClassName}`}>
           {header}
           <View className={`bottom-sheet-body ${bodyClassName}`}>

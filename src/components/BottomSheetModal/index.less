@@ -9,6 +9,7 @@
   flex-direction: column;
   justify-content: flex-end;
   pointer-events: none;
+  overflow: visible;
 }
 
 .bottom-sheet-mask {
@@ -55,17 +56,23 @@
 .bottom-sheet-panel--config {
   height: 85vh;
   max-height: 92vh;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .bottom-sheet-panel--oneclick {
   max-height: 90vh;
-  overflow: hidden;
+  overflow: visible;
 
-  .bottom-sheet-inner,
+  .bottom-sheet-inner {
+    flex: 1;
+    min-height: 0;
+    overflow: visible;
+  }
+
   .bottom-sheet-body {
     flex: 1;
     min-height: 0;
+    overflow: visible;
   }
 }
 

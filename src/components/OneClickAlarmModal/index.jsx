@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, Input, Switch, Image, ScrollView } from '@tarojs/components';
+import { View, Text, Input, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import BottomSheetModal from '../BottomSheetModal';
 import CountryPickerOverlay from '../CountryPickerOverlay';
@@ -19,6 +19,7 @@ import {
 import './index.less';
 
 const ALERT_TEXT_ZH = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/images/new_detail/alert_text_zh.svg';
+const ALERT_DECO_ICON = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/images/new_detail/alert.svg';
 const ICON_CDN = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/icons';
 const ICON_PHONE = `${ICON_CDN}/new_detail/telephone.svg`;
 const ICON_SMS = `${ICON_CDN}/sms_alert.svg`;
@@ -133,7 +134,7 @@ export default function OneClickAlarmModal({
   const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [hideInputs, setHideInputs] = useState(false);
+  const [, setHideInputs] = useState(false);
   const [phoneError, setPhoneError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [smsError, setSmsError] = useState('');
@@ -526,25 +527,22 @@ export default function OneClickAlarmModal({
             const config = configs[key];
             return (
               <View key={key} className='config-item'>
-                <View className='config-item-head'>
-                  <Text className='config-label'>{config.label}</Text>
-                  <View className='config-switch-wrap'>
-                    <Switch
-                      checked={config.enabled}
-                      color='#11B787'
-                      onChange={(e) => handleSwitchChange(key, e.detail.value)}
+                <Text className='config-label'>{config.label}</Text>
+                <View className='config-item-main'>
+                  <View className='config-input-wrap'>
+                    <Input
+                      className='config-input'
+                      type='digit'
+                      value={config.value}
+                      placeholder={config.value || '请输入数值'}
+                      onInput={(e) => handleInputChange(key, e.detail.value)}
                     />
+                    <Text className='config-unit'>{config.unit}</Text>
                   </View>
-                </View>
-                <View className='config-input-wrap'>
-                  <Input
-                    className='config-input'
-                    type='digit'
-                    value={config.value}
-                    placeholder={config.value || '请输入数值'}
-                    onInput={(e) => handleInputChange(key, e.detail.value)}
+                  <Toggle
+                    checked={config.enabled}
+                    onChange={(enabled) => handleSwitchChange(key, enabled)}
                   />
-                  <Text className='config-unit'>{config.unit}</Text>
                 </View>
               </View>
             );
@@ -555,13 +553,10 @@ export default function OneClickAlarmModal({
           <View className='config-item config-item-big-order'>
             <Text className='config-label'>{configs.bigOrderDetect.label}</Text>
             <View className='switch-only-spacer' />
-            <View className='config-switch-wrap'>
-              <Switch
-                checked={configs.bigOrderDetect.enabled}
-                color='#11B787'
-                onChange={(e) => handleSwitchChange('bigOrderDetect', e.detail.value)}
-              />
-            </View>
+            <Toggle
+              checked={configs.bigOrderDetect.enabled}
+              onChange={(enabled) => handleSwitchChange('bigOrderDetect', enabled)}
+            />
           </View>
         </View>
       </ScrollView>
@@ -594,15 +589,12 @@ export default function OneClickAlarmModal({
         <ScrollView scrollY enhanced showScrollbar={false} className='one-click-card-scroll'>
           <View className='one-click-card-scroll-inner'>
             <View className='one-click-notify-section'>
-              <View className={`one-click-input-row ${hideInputs ? 'one-click-input-row-disabled' : ''}`}>
+              <View className='one-click-input-row'>
                 <Image className='one-click-input-icon' src={ICON_PHONE_INPUT} mode='aspectFit' />
                 <View className='one-click-country-code-wrap'>
                   <View
                     className='one-click-country-picker-trigger'
-                    onClick={() => {
-                      if (hideInputs) return;
-                      setCountryPickerOpen(true);
-                    }}
+                    onClick={() => setCountryPickerOpen(true)}
                   >
                     <Text className='one-click-country-picker-value'>{countryCode}</Text>
                     <Image className='one-click-country-picker-arrow' src={ICON_DOWN_ARROW} mode='aspectFit' />
@@ -613,7 +605,6 @@ export default function OneClickAlarmModal({
                   type='number'
                   placeholder='请输入手机号'
                   value={phone}
-                  disabled={hideInputs}
                   onInput={(e) => {
                     setPhone(e.detail.value);
                     if (phoneError) setPhoneError('');
@@ -639,13 +630,12 @@ export default function OneClickAlarmModal({
 
             <View className='one-click-below-inset'>
               <NotifyRow icon={ICON_EMAIL} label='邮件告警' checked={emailEnabled} onChange={setEmailEnabled} />
-              <View className={`one-click-input-row ${hideInputs ? 'one-click-input-row-disabled' : ''}`}>
+              <View className='one-click-input-row'>
                 <Image className='one-click-input-icon one-click-input-icon-email' src={ICON_EMAIL_INPUT} mode='aspectFit' />
                 <Input
                   className='one-click-email-input-inline'
                   placeholder='请输入邮箱'
                   value={email}
-                  disabled={hideInputs}
                   onInput={(e) => {
                     setEmail(e.detail.value);
                     if (emailError) setEmailError('');
@@ -773,12 +763,17 @@ export default function OneClickAlarmModal({
 
   const sheetClass = mode === 'config' ? 'one-click-sheet-config' : 'one-click-sheet-oneclick';
 
+  const topOverlay = (mode === 'config' || mode === 'oneClick') ? (
+    <Image className='one-click-alert-deco' src={ALERT_DECO_ICON} mode='aspectFit' />
+  ) : null;
+
   return (
     <>
       <BottomSheetModal
         open={open}
         onClose={onClose}
         mode={mode}
+        topOverlay={topOverlay}
         sheetClassName={`one-click-sheet ${sheetClass}`}
         sheetInnerClassName='one-click-sheet-inner-mask'
         bodyClassName={mode === 'config' ? 'config-body' : 'one-click-body-no-padding'}

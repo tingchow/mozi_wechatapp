@@ -1,11 +1,13 @@
 @import './config.less';
 
+/* H5 index.module.less：375 设计稿 px ×2 → 750 设计稿 rpx（Taro pxtransform） */
+
 @sheet-top-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20375%20447'%20preserveAspectRatio='none'%3E%3Cpath%20fill='white'%20d='M0.954241%2029.9885C0.979531%2018.962%209.92443%2010.0362%2020.9509%2010.0344L233.113%2010C236.476%209.99947%20239.614%2011.6894%20241.464%2014.4975L252.036%2030.5401C253.886%2033.3478%20257.024%2035.0376%20260.386%2035.0376H354.049C365.075%2035.0376%20374.022%2043.9623%20374.049%2054.989L375%20446.038H0L0.954241%2029.9885Z'/%3E%3C/svg%3E");
 
 .bottom-sheet-panel.one-click-sheet-config,
 .bottom-sheet-panel.one-click-sheet-oneclick {
   background: transparent;
-  overflow: visible;
+  overflow: visible !important;
 }
 
 .one-click-sheet {
@@ -27,6 +29,7 @@
   flex: 1;
   min-height: 0;
   height: 100%;
+  overflow: visible;
   background: linear-gradient(
       180deg,
       #a1eadd 0%,
@@ -43,19 +46,14 @@
   mask-position: bottom center;
 }
 
-.one-click-sheet-config::before,
-.one-click-sheet-oneclick::before {
-  content: '';
+/* H5 sheetOneClick::before：挂在 panel 层，不在 mask 容器内 */
+.one-click-alert-deco {
   position: absolute;
-  top: -84px;
+  top: -80px;
   right: 20px;
   width: 256px;
   height: 256px;
-  z-index: 10;
-  background-image: url('https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/images/new_detail/alert.svg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  z-index: 20;
   pointer-events: none;
 }
 
@@ -72,12 +70,15 @@
 .one-click-title-block {
   position: relative;
   z-index: 12;
-  padding: 16px 216px 24px 36px;
+  /* H5 padding-top 8px；小程序 mask 顶边视觉偏高，top 略加大 */
+  padding: 32px 216px 24px 36px;
   box-sizing: border-box;
   pointer-events: none;
 }
 
 .one-click-title {
+  display: block;
+  margin: 0;
   font-weight: 700;
   font-size: 44px;
   line-height: 1.25;
@@ -86,17 +87,18 @@
 }
 
 .one-click-subtitle {
-  margin-top: 12px;
+  display: block;
+  margin: 12px 0 0;
   font-weight: 400;
   font-size: 26px;
   line-height: 1.35;
   color: #6b7280;
 }
 
-/* H5 bodyNoPadding ×2 */
+/* H5 bodyNoPadding 6px 16px 0 ×2 */
 .one-click-body-no-padding {
   padding: 12px 32px 0;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -145,6 +147,23 @@
   border-radius: 24px;
   background: #fff;
   box-sizing: border-box;
+
+  .one-click-input-row {
+    margin-bottom: 0;
+  }
+
+  .one-click-notify-row {
+    margin-top: 16px;
+  }
+
+  .one-click-notify-row + .one-click-notify-row {
+    margin-top: 0;
+  }
+
+  .one-click-error {
+    margin: 12px 0 0;
+    padding-left: 0;
+  }
 }
 
 .one-click-below-inset {
@@ -253,6 +272,14 @@
 }
 
 .one-click-notify-row + .one-click-notify-row {
+  margin-top: 4px;
+}
+
+.one-click-below-inset .one-click-notify-row {
+  margin-top: 24px;
+}
+
+.one-click-below-inset .one-click-notify-row + .one-click-notify-row {
   margin-top: 4px;
 }
 
@@ -432,10 +459,6 @@
   font-size: 22px;
   line-height: 1.45;
   color: #9ca3af;
-}
-
-.one-click-notify-section .one-click-error {
-  margin: 12px 0 0;
 }
 
 .one-click-input-row-disabled {

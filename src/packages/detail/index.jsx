@@ -27,6 +27,7 @@ import { GardenLoading } from '../../components/Loading';
 import FloatingRobot from '../../components/FloatingRobot';
 import OneClickAlarmModal from '../../components/OneClickAlarmModal';
 import ExchangePickerModal from '../../components/ExchangePickerModal';
+import { fetchUserAlertConfig } from '../../api/user';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/icons/new_detail/community.svg';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
 const downIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/down.png';
@@ -219,6 +220,24 @@ export default function Detail() {
     }
   }, [isAuthenticated, symbol]);
 
+  const loadUserAlertConfig = async () => {
+    try {
+      const userId = Taro.getStorageSync('userId');
+      if (!userId) {
+        Taro.removeStorageSync('alertConfig');
+        return;
+      }
+      const config = await fetchUserAlertConfig();
+      if (config) {
+        Taro.setStorageSync('alertConfig', JSON.stringify(config));
+      } else {
+        Taro.removeStorageSync('alertConfig');
+      }
+    } catch (error) {
+      console.error('获取告警配置失败:', error);
+    }
+  };
+
   useDidShow(() => {
     needLoop.current = true;
     
@@ -241,6 +260,7 @@ export default function Detail() {
     }
     
     getROIData(symbol);
+    loadUserAlertConfig();
     // 初次进入按默认类型渲染一次，避免先闪K再变线
     setTimeout(() => {
       renderCurrentChart();
