@@ -24,10 +24,7 @@ const ICON_CDN = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_pub
 const ICON_PHONE = `${ICON_CDN}/new_detail/telephone.svg`;
 const ICON_SMS = `${ICON_CDN}/sms_alert.svg`;
 const ICON_EMAIL = `${ICON_CDN}/new_detail/email.svg`;
-const ICON_PUSH = `${ICON_CDN}/new_detail/push.svg`;
 const ICON_HOOK = `${ICON_CDN}/hook_alert.svg`;
-const ICON_WECHAT = `${ICON_CDN}/wechat_alert.svg`;
-const ICON_TGBOT = `${ICON_CDN}/tgbot_alert.svg`;
 const ICON_PHONE_INPUT = `${ICON_CDN}/new_detail/telephone_num.svg`;
 const ICON_EMAIL_INPUT = `${ICON_CDN}/new_detail/email_num.svg`;
 const ICON_DOWN_ARROW = `${ICON_CDN}/new_detail/down_arrow.svg`;
@@ -112,7 +109,6 @@ export default function OneClickAlarmModal({
       emailEnabled: false,
       email: '',
       smsEnabled: false,
-      pushEnabled: false,
       ...(initialValue || {}),
     }),
     [initialValue]
@@ -124,7 +120,6 @@ export default function OneClickAlarmModal({
   const [emailEnabled, setEmailEnabled] = useState(init.emailEnabled);
   const [email, setEmail] = useState(init.email);
   const [smsEnabled, setSmsEnabled] = useState(init.smsEnabled);
-  const [pushEnabled, setPushEnabled] = useState(init.pushEnabled);
   const [webhookEnabled, setWebhookEnabled] = useState(false);
   const [webhookUrls, setWebhookUrls] = useState(['']);
   const [wechatEnabled, setWechatEnabled] = useState(false);
@@ -185,7 +180,6 @@ export default function OneClickAlarmModal({
           if (alertConfig.alertEmail) setEmail(alertConfig.alertEmail);
           if (alertConfig.phoneEnabled !== undefined) setPhoneEnabled(alertConfig.phoneEnabled === 1);
           if (alertConfig.emailEnabled !== undefined) setEmailEnabled(alertConfig.emailEnabled === 1);
-          if (alertConfig.defaultEnabled !== undefined) setPushEnabled(alertConfig.defaultEnabled === 1);
           if (alertConfig.smsEnabled !== undefined) setSmsEnabled(alertConfig.smsEnabled === 1);
           if (alertConfig.webhookEnabled !== undefined) {
             setWebhookEnabled(isAlertFlagOn(alertConfig.webhookEnabled));
@@ -380,7 +374,6 @@ export default function OneClickAlarmModal({
         phoneEnabled: phoneEnabled ? 1 : 0,
         emailEnabled: emailEnabled ? 1 : 0,
         smsEnabled: smsEnabled ? 1 : 0,
-        defaultEnabled: pushEnabled ? 1 : 0,
         webhookEnabled: webhookEnabled ? 1 : 0,
         webhookUrls: webhookCheck.urls,
         alertFrequency: alertFrequencyToApi(alertFrequency),
@@ -412,7 +405,6 @@ export default function OneClickAlarmModal({
           emailEnabled,
           email,
           smsEnabled,
-          pushEnabled,
         });
 
         setTimeout(() => {
@@ -691,28 +683,6 @@ export default function OneClickAlarmModal({
               </View>
               <Text className='one-click-field-hint'>警报触发时，向您指定的URL发送POST请求</Text>
               {webhookError ? <Text className='one-click-error'>{webhookError}</Text> : null}
-
-              <NotifyRow
-                icon={ICON_WECHAT}
-                label='微信告警'
-                sub='请开启微信通知，以便接收告警'
-                checked={wechatEnabled}
-                onChange={setWechatEnabled}
-              />
-              <NotifyRow
-                icon={ICON_TGBOT}
-                label='Telegram bot'
-                sub='请点击启动bot，以便接收告警'
-                checked={telegramEnabled}
-                onChange={setTelegramEnabled}
-              />
-              <NotifyRow
-                icon={ICON_PUSH}
-                label='显示弹窗通知'
-                sub='在应用或浏览器内以弹窗形式提醒您'
-                checked={pushEnabled}
-                onChange={setPushEnabled}
-              />
 
               <View className='one-click-freq-section'>
                 <Text className='one-click-freq-title'>预警频次</Text>
