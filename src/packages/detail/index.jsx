@@ -26,7 +26,6 @@ import { detailPageSkeletonConfig } from '../../components/Skeleton/configs';
 import { GardenLoading } from '../../components/Loading';
 import FloatingRobot from '../../components/FloatingRobot';
 import OneClickAlarmModal from '../../components/OneClickAlarmModal';
-import ExchangePickerModal from '../../components/ExchangePickerModal';
 import { fetchUserAlertConfig } from '../../api/user';
 const communityIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/mozi_public/icons/new_detail/community.svg';
 const upIcon = 'https://image-1317406749.cos.ap-shanghai.myqcloud.com/assets/icon/up.png';
@@ -103,8 +102,6 @@ export default function Detail() {
 
   const [oneClickAlarmOpen, setOneClickAlarmOpen] = useState(false);
   const [oneClickAlarmMode, setOneClickAlarmMode] = useState('oneClick');
-  const [exchangePickerOpen, setExchangePickerOpen] = useState(false);
-
   // 启动HTTP降级模式
   const startHttpFallback = () => {
     console.log('[Detail] ========== 启动HTTP降级模式 ==========');
@@ -1159,29 +1156,7 @@ export default function Detail() {
     setOneClickAlarmOpen(true);
   };
 
-  const overlayOpen = oneClickAlarmOpen || exchangePickerOpen;
-
-  const handleGoTrade = () => {
-    setExchangePickerOpen(true);
-  };
-
-  const handleSelectExchange = (exchangeId) => {
-    const map = {
-      binance: 'https://www.bsmkweb.cc/register?ref=195208591',
-      okx: 'https://www.growthhivex.com/join/12214659',
-      bitget: 'https://partner.bitget.com/bg/7RMWVR',
-      gate: 'https://www.gate.io/signup/AgBGFwxa',
-    };
-    const url = map[exchangeId];
-    setExchangePickerOpen(false);
-    if (!url) return;
-    Taro.setClipboardData({
-      data: url,
-      success: () => {
-        Taro.showToast({ title: '链接已复制，请在浏览器打开', icon: 'none', duration: 2500 });
-      },
-    });
-  };
+  const overlayOpen = oneClickAlarmOpen;
 
   const jump2Community = () => {
     // 跳转社区tab
@@ -1495,7 +1470,6 @@ export default function Detail() {
             立即开启
           </View>
         </View>
-        <View className='trade-btn-mobile' onClick={handleGoTrade}>去交易</View>
       </View>
     </View>
     ) : null}
@@ -1506,12 +1480,6 @@ export default function Detail() {
         onClose={() => setOneClickAlarmOpen(false)}
         onConfirm={() => setOneClickAlarmOpen(false)}
         onSkip={() => setOneClickAlarmOpen(false)}
-      />
-      <ExchangePickerModal
-        open={exchangePickerOpen}
-        symbol={symbol}
-        onClose={() => setExchangePickerOpen(false)}
-        onSelect={handleSelectExchange}
       />
     </>
   )
