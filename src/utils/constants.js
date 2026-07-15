@@ -184,6 +184,8 @@ export const Interface = {
 
   // 是否展示全部内容
   SHOW_ALL: '/switch/status',
+  SHOW_ALL_1: '/switch/1',
+  SHOW_ALL_2: '/switch/2',
 
   // 涨跌分布（市场数据）
   // 获取涨跌分布数据
