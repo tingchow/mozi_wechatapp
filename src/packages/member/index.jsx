@@ -136,6 +136,9 @@ export default function MemberCenter() {
               // 保存用户信息
               const userInfoData = tokenInfo?.data?.userInfo;
               const userId = tokenInfo?.data?.userId;
+
+              const { saveOpenIdFromLogin, fetchAndSaveUserData } = require('../../utils/userHelper');
+              saveOpenIdFromLogin(tokenInfo.data);
               
               // 单独保存 userId
               if (userId) {
@@ -164,7 +167,6 @@ export default function MemberCenter() {
 
               // 获取并保存用户详细数据
               try {
-                const { fetchAndSaveUserData } = require('../../utils/userHelper');
                 await fetchAndSaveUserData();
               } catch (error) {
                 console.error('获取用户详细数据失败:', error);

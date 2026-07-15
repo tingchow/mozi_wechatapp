@@ -73,3 +73,26 @@ export function validateWebhookUrls(urls, webhookEnabled) {
 export function isAlertFlagOn(value) {
   return value === 1 || value === true || value === '1';
 }
+
+/** 开关统一转为后端 0/1 */
+export function alertFlagToApi(value) {
+  return isAlertFlagOn(value) ? 1 : 0;
+}
+
+/**
+ * 微信推送字段校验
+ * wechatEnabled=1 → openId 必填
+ */
+export function validateWechatFields({ wechatEnabled, openId }) {
+  const wechatOn = isAlertFlagOn(wechatEnabled);
+  const trimmedOpenId = openId == null ? '' : String(openId).trim();
+
+  if (wechatOn && !trimmedOpenId) {
+    return { ok: false, error: 'openId', message: '开启微信推送时请填写 openId' };
+  }
+
+  return {
+    ok: true,
+    openId: wechatOn ? trimmedOpenId : null,
+  };
+}

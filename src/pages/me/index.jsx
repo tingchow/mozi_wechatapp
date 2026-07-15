@@ -617,6 +617,9 @@ export default function Index() {
             // 先保存用户信息
             const userInfo = tokenInfo?.data?.userInfo;
             const userId = tokenInfo?.data?.userId;
+
+            const { saveOpenIdFromLogin } = require('../../utils/userHelper');
+            saveOpenIdFromLogin(tokenInfo.data);
             
             // 保存订阅公告状态
             const subscribeAnnouncementValue = tokenInfo?.data?.subscribeAnnouncement;
@@ -731,6 +734,8 @@ export default function Index() {
     Taro.removeStorageSync('userId');
     Taro.removeStorageSync('userData');
     Taro.removeStorageSync('pointsData');
+    Taro.removeStorageSync('openId');
+    Taro.removeStorageSync('openid');
     Taro.removeStorageSync('pendingInviteCode'); // 清除待处理的邀请码
     setIsLogin(false);
     setUserInfo({})

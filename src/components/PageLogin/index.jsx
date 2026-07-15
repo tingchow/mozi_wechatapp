@@ -36,6 +36,8 @@ export const PageLogin = ({show = false, hideCb}) => {
             if (tokenInfo?.data?.userId) {
               Taro.setStorageSync('userId', tokenInfo?.data?.userId);
             }
+            const { saveOpenIdFromLogin } = require('../../utils/userHelper');
+            saveOpenIdFromLogin(tokenInfo.data);
             // 新增：保存登录返回的 subscribeAnnouncement 字段到本地
             if (typeof tokenInfo?.data?.subscribeAnnouncement !== 'undefined') {
               Taro.setStorageSync('subscribeAnnouncement', tokenInfo.data.subscribeAnnouncement);

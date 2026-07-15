@@ -8,12 +8,14 @@ import { request } from '../../utils/request';
 import { Interface } from '../../utils/constants';
 import { jump2NoTab } from '../../utils/core';
 import { createAlertConfig, modifyAlertConfig } from '../../api/user';
+import { getSavedOpenId } from '../../utils/userHelper';
 import {
   alertFrequencyFromApi,
-  alertFrequencyToApi,
+  alertFlagToApi,
   isAlertFlagOn,
   MAX_WEBHOOK_URLS,
   parseWebhookUrlsFromConfig,
+  validateWechatFields,
   validateWebhookUrls,
 } from '../../utils/alertConfig';
 import './index.less';
@@ -25,6 +27,7 @@ const ICON_PHONE = `${ICON_CDN}/new_detail/telephone.svg`;
 const ICON_SMS = `${ICON_CDN}/sms_alert.svg`;
 const ICON_EMAIL = `${ICON_CDN}/new_detail/email.svg`;
 const ICON_HOOK = `${ICON_CDN}/hook_alert.svg`;
+const ICON_WECHAT = `${ICON_CDN}/wechat_alert.svg`;
 const ICON_PHONE_INPUT = `${ICON_CDN}/new_detail/telephone_num.svg`;
 const ICON_EMAIL_INPUT = `${ICON_CDN}/new_detail/email_num.svg`;
 const ICON_DOWN_ARROW = `${ICON_CDN}/new_detail/down_arrow.svg`;
@@ -123,9 +126,10 @@ export default function OneClickAlarmModal({
   const [webhookEnabled, setWebhookEnabled] = useState(false);
   const [webhookUrls, setWebhookUrls] = useState(['']);
   const [wechatEnabled, setWechatEnabled] = useState(false);
-  const [telegramEnabled, setTelegramEnabled] = useState(false);
+  const [openId, setOpenId] = useState('');
   const [alertFrequency, setAlertFrequency] = useState('daily');
   const [webhookError, setWebhookError] = useState('');
+  const [openIdError, setOpenIdError] = useState('');
   const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -178,12 +182,17 @@ export default function OneClickAlarmModal({
             }
           }
           if (alertConfig.alertEmail) setEmail(alertConfig.alertEmail);
-          if (alertConfig.phoneEnabled !== undefined) setPhoneEnabled(alertConfig.phoneEnabled === 1);
-          if (alertConfig.emailEnabled !== undefined) setEmailEnabled(alertConfig.emailEnabled === 1);
-          if (alertConfig.smsEnabled !== undefined) setSmsEnabled(alertConfig.smsEnabled === 1);
+          if (alertConfig.phoneEnabled !== undefined) setPhoneEnabled(isAlertFlagOn(alertConfig.phoneEnabled));
+          if (alertConfig.emailEnabled !== undefined) setEmailEnabled(isAlertFlagOn(alertConfig.emailEnabled));
+          if (alertConfig.smsEnabled !== undefined) setSmsEnabled(isAlertFlagOn(alertConfig.smsEnabled));
           if (alertConfig.webhookEnabled !== undefined) {
             setWebhookEnabled(isAlertFlagOn(alertConfig.webhookEnabled));
           }
+          if (alertConfig.wechatEnabled !== undefined) {
+            setWechatEnabled(isAlertFlagOn(alertConfig.wechatEnabled));
+          }
+          const configOpenId = alertConfig.openId != null ? String(alertConfig.openId).trim() : '';
+          setOpenId(configOpenId || getSavedOpenId() || '');
           setWebhookUrls(parseWebhookUrlsFromConfig(alertConfig));
           setAlertFrequency(alertFrequencyFromApi(alertConfig.alertFrequency));
         } else {
@@ -196,13 +205,16 @@ export default function OneClickAlarmModal({
               const legacyUrls = parseWebhookUrlsFromConfig(legacy);
               if (legacyUrls.length > 1 || legacyUrls[0]) setWebhookUrls(legacyUrls);
               if (typeof legacy.wechatEnabled === 'boolean') setWechatEnabled(legacy.wechatEnabled);
-              if (typeof legacy.telegramEnabled === 'boolean') setTelegramEnabled(legacy.telegramEnabled);
+              const legacyOpenId = legacy.openId ? String(legacy.openId).trim() : '';
+              setOpenId(legacyOpenId || getSavedOpenId() || '');
               if (legacy.alertFrequency) {
                 setAlertFrequency(alertFrequencyFromApi(legacy.alertFrequency));
               }
+            } else {
+              setOpenId(getSavedOpenId() || '');
             }
           } catch {
-            /* ignore legacy parse */
+            setOpenId(getSavedOpenId() || '');
           }
         }
       } catch (error) {
@@ -333,6 +345,7 @@ export default function OneClickAlarmModal({
       setEmailError('');
       setSmsError('');
       setWebhookError('');
+      setOpenIdError('');
 
       const userId = Taro.getStorageSync('userId');
       if (!userId) {
@@ -368,15 +381,38 @@ export default function OneClickAlarmModal({
         return;
       }
 
+      const wechatCheck = validateWechatFields({ wechatEnabled, openId });
+      if (!wechatCheck.ok) {
+        setOpenIdError(wechatCheck.message);
+        return;
+      }
+
       setIsLoading(true);
 
+      const existingConfigStr = Taro.getStorageSync('alertConfig');
+      const hasExistingConfig = existingConfigStr && existingConfigStr !== 'null';
+      let defaultEnabled = 0;
+      if (hasExistingConfig) {
+        try {
+          const existing = JSON.parse(existingConfigStr);
+          if (existing?.defaultEnabled !== undefined) {
+            defaultEnabled = alertFlagToApi(existing.defaultEnabled);
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+
       const alertConfig = {
-        phoneEnabled: phoneEnabled ? 1 : 0,
-        emailEnabled: emailEnabled ? 1 : 0,
-        smsEnabled: smsEnabled ? 1 : 0,
-        webhookEnabled: webhookEnabled ? 1 : 0,
+        phoneEnabled: alertFlagToApi(phoneEnabled),
+        emailEnabled: alertFlagToApi(emailEnabled),
+        smsEnabled: alertFlagToApi(smsEnabled),
+        defaultEnabled,
+        webhookEnabled: alertFlagToApi(webhookEnabled),
         webhookUrls: webhookCheck.urls,
-        alertFrequency: alertFrequencyToApi(alertFrequency),
+        alertFrequency,
+        wechatEnabled: alertFlagToApi(wechatEnabled),
+        openId: wechatCheck.openId,
       };
 
       if ((phoneEnabled || smsEnabled) && phone && String(phone).trim()) {
@@ -386,9 +422,6 @@ export default function OneClickAlarmModal({
       if (emailEnabled && email) {
         alertConfig.alertEmail = email;
       }
-
-      const existingConfigStr = Taro.getStorageSync('alertConfig');
-      const hasExistingConfig = existingConfigStr && existingConfigStr !== 'null';
 
       const result = hasExistingConfig
         ? await modifyAlertConfig(alertConfig)
@@ -405,6 +438,8 @@ export default function OneClickAlarmModal({
           emailEnabled,
           email,
           smsEnabled,
+          wechatEnabled,
+          openId: wechatCheck.openId,
         });
 
         setTimeout(() => {
@@ -683,6 +718,36 @@ export default function OneClickAlarmModal({
               </View>
               <Text className='one-click-field-hint'>警报触发时，向您指定的URL发送POST请求</Text>
               {webhookError ? <Text className='one-click-error'>{webhookError}</Text> : null}
+
+              <NotifyRow
+                icon={ICON_WECHAT}
+                label='微信告警'
+                sub='请开启微信通知，以便接收告警'
+                checked={wechatEnabled}
+                onChange={(v) => {
+                  setWechatEnabled(v);
+                  if (openIdError) setOpenIdError('');
+                  if (v && !String(openId || '').trim()) {
+                    setOpenId(getSavedOpenId() || '');
+                  }
+                }}
+              />
+              {wechatEnabled ? (
+                <>
+                  <View className='one-click-input-row'>
+                    <Input
+                      className='one-click-email-input-inline'
+                      placeholder='请输入微信 openId'
+                      value={openId}
+                      onInput={(e) => {
+                        setOpenId(e.detail.value);
+                        if (openIdError) setOpenIdError('');
+                      }}
+                    />
+                  </View>
+                  {openIdError ? <Text className='one-click-error'>{openIdError}</Text> : null}
+                </>
+              ) : null}
 
               <View className='one-click-freq-section'>
                 <Text className='one-click-freq-title'>预警频次</Text>

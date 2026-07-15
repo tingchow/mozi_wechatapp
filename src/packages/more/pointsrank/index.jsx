@@ -184,6 +184,9 @@ export default function PointsRank() {
             
             const userInfo = tokenInfo?.data?.userInfo
             const userId = tokenInfo?.data?.userId
+
+            const { saveOpenIdFromLogin, fetchAndSaveUserData } = require('../../../utils/userHelper')
+            saveOpenIdFromLogin(tokenInfo.data)
             
             if (userId) {
               Taro.setStorageSync('userId', userId)
@@ -201,7 +204,6 @@ export default function PointsRank() {
             setPopVisible(false)
             
             // 获取并保存用户详细数据（包括邀请码）
-            const { fetchAndSaveUserData } = require('../../../utils/userHelper')
             await fetchAndSaveUserData()
             
             // 检查是否有待处理的邀请码

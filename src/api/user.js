@@ -35,14 +35,18 @@ export const updateAlertConfig = (params) => {
   });
 };
 
-export const createAlertConfig = async (config) => {
+/** 组装告警配置完整 payload（update 需传完整配置） */
+const buildAlertConfigPayload = (config) => {
   const payload = {
     phoneEnabled: config.phoneEnabled,
     emailEnabled: config.emailEnabled,
     smsEnabled: config.smsEnabled,
+    defaultEnabled: config.defaultEnabled ?? 0,
     webhookEnabled: config.webhookEnabled || 0,
     webhookUrls: config.webhookUrls || [],
     alertFrequency: alertFrequencyToApi(config.alertFrequency),
+    wechatEnabled: config.wechatEnabled ?? 0,
+    openId: config.openId ?? null,
   };
   if (config.alertPhone) {
     payload.alertPhone = config.alertPhone;
@@ -50,7 +54,11 @@ export const createAlertConfig = async (config) => {
   }
   if (config.alertEmail) payload.alertEmail = config.alertEmail;
 
-  const res = await addAlertConfig(payload);
+  return payload;
+};
+
+export const createAlertConfig = async (config) => {
+  const res = await addAlertConfig(buildAlertConfigPayload(config));
   if (res?.code === 0 && res.data) {
     return { success: true, data: res.data };
   }
@@ -58,21 +66,7 @@ export const createAlertConfig = async (config) => {
 };
 
 export const modifyAlertConfig = async (config) => {
-  const payload = {
-    phoneEnabled: config.phoneEnabled,
-    emailEnabled: config.emailEnabled,
-    smsEnabled: config.smsEnabled,
-    webhookEnabled: config.webhookEnabled || 0,
-    webhookUrls: config.webhookUrls || [],
-    alertFrequency: alertFrequencyToApi(config.alertFrequency),
-  };
-  if (config.alertPhone) {
-    payload.alertPhone = config.alertPhone;
-    payload.alertPhoneCountryCode = config.alertPhoneCountryCode || '+86';
-  }
-  if (config.alertEmail) payload.alertEmail = config.alertEmail;
-
-  const res = await updateAlertConfig(payload);
+  const res = await updateAlertConfig(buildAlertConfigPayload(config));
   if (res?.code === 0 && res.data) {
     return { success: true, data: res.data };
   }
