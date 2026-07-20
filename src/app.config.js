@@ -167,6 +167,13 @@ export default defineAppConfig({
         "index",
         "upgrade/index"
       ]
+    },
+    {
+      root: "packages/wechatqrcode",
+      name: "wechatqrcode",
+      pages: [
+        "index"
+      ]
     }
   ],
   preloadRule: {

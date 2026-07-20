@@ -442,9 +442,14 @@ export default function OneClickAlarmModal({
           openId: wechatCheck.openId,
         });
 
+        const shouldNavigateWechatQrcode = wechatEnabled;
+
         setTimeout(() => {
           onClose?.();
           setIsLoading(false);
+          if (shouldNavigateWechatQrcode) {
+            jump2NoTab('wechatqrcode');
+          }
         }, 500);
       } else {
         Taro.showToast({ title: result.error || '开启失败', icon: 'none' });

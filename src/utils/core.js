@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro';
 import isEmpty from 'lodash/isEmpty';
 
 // 需要走分包路径的页面
-const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn', 'list', 'tradevol', 'search', 'fundingrate', 'landscapechart', 'putcallratio', 'robot', 'mycomments', 'mylikes', 'mynotices', 'theme']);
+const SUBPACKAGE_PAGES = new Set(['addwarn', 'mywarn', 'list', 'tradevol', 'search', 'fundingrate', 'landscapechart', 'putcallratio', 'robot', 'mycomments', 'mylikes', 'mynotices', 'theme', 'wechatqrcode']);
 
 // 跳转币种详情页
 export const jump2Detail = (symbol) => {
