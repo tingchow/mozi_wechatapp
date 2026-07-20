@@ -102,9 +102,29 @@ export default function Mywarn() {
 
   const changeSide = (value) => {
     setActiveKey(value);
+    setEditingIndex(-1);
+    setEditValue('');
     setWarnData({
       ...warnData,
       sideData: warnData.data[Object.keys(warnData.data)[value]]
+    });
+  };
+
+  const updateCurrentCoinWarnContent = (newWarnContent) => {
+    const symbol = Object.keys(warnData.data)[activeKey];
+    setWarnData({
+      ...warnData,
+      data: {
+        ...warnData.data,
+        [symbol]: {
+          ...warnData.data[symbol],
+          warnContent: newWarnContent,
+        },
+      },
+      sideData: {
+        ...warnData.sideData,
+        warnContent: newWarnContent,
+      },
     });
   };
 
@@ -145,6 +165,33 @@ export default function Mywarn() {
     });
   };
 
+  // /alarm/add 为全量更新，需提交当前币种所有已设置告警值
+  const buildFullAlarmContent = (standardizedContent, overrides = {}) => {
+    return standardizedContent.reduce((acc, item) => {
+      const value = overrides[item.code] ?? item.content;
+      if (value && value !== '--') {
+        acc[item.code] = value;
+      }
+      return acc;
+    }, {});
+  };
+
+  const saveFullAlarmContent = async (symbol, standardizedContent, overrides = {}) => {
+    const content = buildFullAlarmContent(standardizedContent, overrides);
+    if (Object.keys(content).length === 0) {
+      return { success: false, errorMsg: '请先设置告警值' };
+    }
+    return request({
+      url: Interface.ADD_WARN,
+      method: 'POST',
+      data: {
+        symbol,
+        channel: 'miniapp',
+        content,
+      },
+    });
+  };
+
   const startEdit = (item, index) => {
     // 提取数字部分，如果是默认值 '--' 则设为空
     let numericValue = item.content.replace(/[%$]/g, '').trim();
@@ -171,22 +218,14 @@ export default function Mywarn() {
     const sideKey = ['priceRise', 'priceFall', 'priceRiseChange24HPercent', 'priceFallChange24HPercent'];
     const codeIndex = sideKey.indexOf(code);
     const formattedValue = (codeIndex === 0 || codeIndex === 1) ? editValue : `${editValue}%`;
+    const standardizedContent = getStandardizedWarnContent();
     Taro.showLoading();
-    const addRes = await request({
-      url: Interface.ADD_WARN,
-      method: 'POST',
-      data: {
-        symbol,
-        channel: 'miniapp',
-        content: {
-          [code]: formattedValue
-        }
-      }
+    const addRes = await saveFullAlarmContent(symbol, standardizedContent, {
+      [code]: formattedValue,
     });
     Taro.hideLoading();
     if (addRes.data === true) {
       // 更新本地数据
-      const standardizedContent = getStandardizedWarnContent();
       const currentItem = standardizedContent[index];
       
       // 检查这个条目是否已存在于后端数据中
@@ -217,13 +256,7 @@ export default function Mywarn() {
         ];
       }
       
-      setWarnData({
-        ...warnData,
-        sideData: {
-          ...warnData.sideData,
-          warnContent: newWarnContent
-        }
-      });
+      updateCurrentCoinWarnContent(newWarnContent);
       
       
       setEditValue('');
@@ -247,13 +280,13 @@ export default function Mywarn() {
   const switchChange = async (code, active, index) => {
     const standardizedContent = getStandardizedWarnContent();
     const currentItem = standardizedContent[index];
-    
-    // 检查这个条目是否是默认条目（后端没有数据）
-    const backendContent = warnData.sideData.warnContent || [];
+    let backendContent = warnData.sideData.warnContent || [];
     const backendItem = backendContent.find(item => item.code === currentItem.code);
-    
-    // 如果是默认条目（显示 '--' 或默认值）且要开启，提示用户先设置值
-    if (!backendItem && !active) {
+    const hasValidValue = currentItem.content && currentItem.content !== '--';
+    const symbol = Object.keys(warnData.data)[activeKey];
+
+    // 要开启时，必须已有有效告警值（-- 表示未设置）
+    if (!active && !hasValidValue) {
       Taro.showToast({
         title: '请先设置告警值',
         icon: 'none',
@@ -262,21 +295,42 @@ export default function Mywarn() {
       });
       return;
     }
-    
-    let interfaceurl = Interface.CLOSE_WARN;
-    if (!active) {
-      interfaceurl = Interface.OPEN_WARN;
+
+    // 后端尚无该告警项，但界面有默认/已填值时，先全量保存再开启
+    if (!backendItem && !active) {
+      Taro.showLoading();
+      const addRes = await saveFullAlarmContent(symbol, standardizedContent);
+      Taro.hideLoading();
+      if (addRes?.data !== true) {
+        Taro.showToast({
+          title: addRes?.errorMsg || '启动失败',
+          icon: 'error',
+          duration: 2000,
+          mask: true
+        });
+        return;
+      }
+      backendContent = [
+        ...backendContent,
+        {
+          code: currentItem.code,
+          content: currentItem.content,
+          active: false
+        }
+      ];
+      updateCurrentCoinWarnContent(backendContent);
     }
+
+    const interfaceurl = !active ? Interface.OPEN_WARN : Interface.CLOSE_WARN;
     const { data } = await request({
       url: interfaceurl,
       data: {
         code,
-        symbol: Object.keys(warnData.data)[activeKey],
+        symbol,
         channel: 'miniapp'
       }
     });
     if (data) {
-      // 更新后端数据中对应的 active 状态
       const newWarnContent = backendContent.map((warnItem) => {
         if (warnItem.code === code) {
           return {
@@ -286,14 +340,8 @@ export default function Mywarn() {
         }
         return warnItem;
       });
-      
-      setWarnData({
-        ...warnData,
-        sideData: {
-          ...warnData.sideData,
-          warnContent: newWarnContent
-        }
-      });
+
+      updateCurrentCoinWarnContent(newWarnContent);
       Taro.showToast({
         title: active? '关闭成功': '启动成功',
         icon: 'success',

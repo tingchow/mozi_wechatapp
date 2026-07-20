@@ -575,17 +575,6 @@ export default function OneClickAlarmModal({
             );
           })}
         </View>
-
-        <View className='config-card'>
-          <View className='config-item config-item-big-order'>
-            <Text className='config-label'>{configs.bigOrderDetect.label}</Text>
-            <View className='switch-only-spacer' />
-            <Toggle
-              checked={configs.bigOrderDetect.enabled}
-              onChange={(enabled) => handleSwitchChange('bigOrderDetect', enabled)}
-            />
-          </View>
-        </View>
       </ScrollView>
 
       <View className='bottom-buttons config-bottom-buttons'>
